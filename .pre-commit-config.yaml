@@ -1,0 +1,40 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.0.1
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-toml
+      - id: check-added-large-files
+      - id: pretty-format-json
+      - id: check-merge-conflict
+      - id: detect-private-key
+      - id: fix-encoding-pragma
+      - id: no-commit-to-branch
+        args: [--branch, main, --branch, staging]
+      - id: requirements-txt-fixer
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.910-1
+    hooks:
+      - id: mypy
+        additional_dependencies: [django~=3.2.9]
+
+  - repo: https://github.com/PyCQA/flake8
+    rev: 4.0.1
+    hooks:
+      - id: flake8
+        additional_dependencies: [flake8-django, flake8-eradicate, flake8-print, flake8-requirements, flake8-todos, flake8-cognitive-complexity, flake8-docstrings, flake8-rst]
+
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.10.1
+    hooks:
+      - id: isort
+
+  - repo: https://github.com/psf/black
+    rev: 21.11b1
+    hooks:
+      - id: black
+        args: [--target-version, py310]
