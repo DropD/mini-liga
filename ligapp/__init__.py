@@ -1,0 +1,1 @@
+"""Ligapp package init module."""

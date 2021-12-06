@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Django settings for miniliga project.
 
@@ -34,6 +33,7 @@ ALLOWED_HOSTS: list[str] = []
 # Application definition
 
 INSTALLED_APPS = [
+    "ligapp.apps.LigappConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",

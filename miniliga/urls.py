@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 miniliga URL Configuration.
 
@@ -16,8 +15,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 
 urlpatterns = [
+    path("liga/", include("ligapp.urls")),
     path("admin/", admin.site.urls),
 ]

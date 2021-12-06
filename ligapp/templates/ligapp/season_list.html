@@ -1,0 +1,10 @@
+<h1>Ligapp</h1>
+
+{% block content %}
+  <h2>Running Seasons</h2>
+  <ul>
+    {% for season in all_seasons %}
+    <li>{{ season.name }}</li>
+    {% endfor %}
+  </ul>
+{% endblock %}
