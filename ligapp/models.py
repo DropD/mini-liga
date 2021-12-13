@@ -1,14 +1,16 @@
 """Ligapp models."""
+from typing import Optional
+
 from django.core.validators import MaxValueValidator
 from django.db import models
 
 
-class Participant(models.Model):
+class Player(models.Model):
     """A participant in the league."""
 
     name = models.CharField(max_length=80)
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Represent participant as a string."""
         return self.name
 
@@ -18,9 +20,9 @@ class Season(models.Model):
 
     name = models.CharField(max_length=80)
     start_date = models.DateTimeField("start date")
-    participants = models.ManyToManyField(Participant)
+    participants = models.ManyToManyField(Player)
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Represent seaon as a string."""
         return self.name
 
@@ -30,10 +32,10 @@ class Match(models.Model):
 
     date_played = models.DateTimeField("date played")
     first_player = models.ForeignKey(
-        Participant, on_delete=models.PROTECT, related_name="matches_first"
+        Player, on_delete=models.PROTECT, related_name="matches_first"
     )
     second_player = models.ForeignKey(
-        Participant, on_delete=models.PROTECT, related_name="matches_second"
+        Player, on_delete=models.PROTECT, related_name="matches_second"
     )
     season = models.ForeignKey(
         Season, on_delete=models.CASCADE, related_name="matches", null=True
@@ -44,7 +46,7 @@ class Match(models.Model):
 
         verbose_name_plural = "Matches"
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Represent match as a string."""
         sets = ", ".join(str(set) for set in self.sets.all())
         return (
@@ -64,13 +66,19 @@ class TimedMatch(Match):
 
         verbose_name_plural = "TimedMatches"
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Represent a timed match as a string."""
         return (
             f"{self.date_played}: "
             f"{self.first_player} vs {self.second_player}; "
-            "{self.sets.first()}"
+            f"{self.sets.first()}; {self.minutes_played}'"
         )
+
+    @property
+    def winner(self) -> Optional[Player]:
+        """Find the player who won more points or None in case of a draw."""
+        score = self.sets.first()
+        return score.winner
 
 
 class MultiSetMatch(Match):
@@ -81,6 +89,18 @@ class MultiSetMatch(Match):
 
         verbose_name_plural = "MultiSetMatches"
 
+    @property
+    def winner(self) -> Optional[Player]:
+        """Find the player who won more sets or None in case of a draw."""
+        set_winners = [s.winner for s in self.sets.all()]
+        first_sets_won = set_winners.count(self.first_player)
+        second_sets_won = set_winners.count(self.second_player)
+        if first_sets_won > second_sets_won:
+            return self.first_player
+        elif first_sets_won < second_sets_won:
+            return self.second_player
+        return None
+
 
 class Set(models.Model):
     """A set (game)."""
@@ -88,7 +108,22 @@ class Set(models.Model):
     first_score = models.PositiveSmallIntegerField(validators=[MaxValueValidator(90)])
     second_score = models.PositiveSmallIntegerField(validators=[MaxValueValidator(90)])
     match = models.ForeignKey(Match, related_name="sets", on_delete=models.CASCADE)
+    order = models.PositiveSmallIntegerField(validators=[MaxValueValidator(99)])
 
-    def __str__(self):
+    class Meta:
+        """Options for the set model."""
+
+        ordering = ["order"]
+
+    def __str__(self) -> str:
         """Represent a set as a string."""
         return f"{self.first_score} : {self.second_score}"
+
+    @property
+    def winner(self) -> Optional[Player]:
+        """Find the player who won this set or None in case of a draw."""
+        if self.first_score > self.second_score:
+            return self.match.first_player
+        elif self.first_score < self.second_score:
+            return self.match.second_player
+        return None
