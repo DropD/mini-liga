@@ -1,5 +1,5 @@
 """Ligapp models."""
-from typing import Optional
+from typing import Optional, Union
 
 from django.core.validators import MaxValueValidator
 from django.db import models
@@ -9,6 +9,11 @@ class Player(models.Model):
     """A participant in the league."""
 
     name = models.CharField(max_length=80)
+
+    class Meta:
+        """Options for the player model."""
+
+        ordering = ["name"]
 
     def __str__(self) -> str:
         """Represent participant as a string."""
@@ -20,11 +25,16 @@ class Season(models.Model):
 
     name = models.CharField(max_length=80)
     start_date = models.DateTimeField("start date")
+    end_date = models.DateTimeField("end date", null=True)
     participants = models.ManyToManyField(Player)
 
     def __str__(self) -> str:
         """Represent seaon as a string."""
         return self.name
+
+    @property
+    def end_date_str(self):
+        return self.end_date or "open"
 
 
 class Match(models.Model):
@@ -45,13 +55,26 @@ class Match(models.Model):
         """Options for the match model."""
 
         verbose_name_plural = "Matches"
+        ordering = ["date_played"]
 
     def __str__(self) -> str:
         """Represent match as a string."""
-        sets = ", ".join(str(set) for set in self.sets.all())
-        return (
-            f"{self.date_played}: {self.first_player} vs {self.second_player}; {sets}"
-        )
+        return f"{self.date_played}: {self.first_player} vs {self.second_player}; {self.score_str}"
+
+    @property
+    def score_str(self) -> str:
+        return ", ".join(str(set) for set in self.sets.all())
+
+    @property
+    def minutes_played_str(self) -> str:
+        timedmatch = getattr(self, "timedmatch", None)
+        if timedmatch:
+            return timedmatch.minutes_played_str
+        return ""
+
+    @property
+    def child(self) -> Union["TimedMatch", "MultiSetMatch"]:
+        return getattr(self, "multisetmatch", getattr(self, "timedmatch", self))
 
 
 class TimedMatch(Match):
@@ -69,10 +92,14 @@ class TimedMatch(Match):
     def __str__(self) -> str:
         """Represent a timed match as a string."""
         return (
-            f"{self.date_played}: "
+            f"{self.date_played} ({self.minutes_played_str}): "
             f"{self.first_player} vs {self.second_player}; "
-            f"{self.sets.first()}; {self.minutes_played}'"
+            f"{self.sets.first()};"
         )
+
+    @property
+    def minutes_played_str(self) -> str:
+        return f"{self.minutes_played} min"
 
     @property
     def winner(self) -> Optional[Player]:

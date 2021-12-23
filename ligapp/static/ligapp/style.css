@@ -1,0 +1,27 @@
+.winner {
+  font-weight: bold;
+}
+
+.accordion-button {
+  background-color: #ddd;
+}
+
+.match-list {
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.match-list th {
+  padding-right: 10px;
+}
+
+.match-list td {
+  padding-right: 10px;
+}
+
+.player-list-grid {
+  display: flex;
+  flex-flow: row wrap;
+  gap: 10px;
+}

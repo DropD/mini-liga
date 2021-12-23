@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load l10n %}
+{% load match %}
+{% load bootstrap %}
+
+{% block title %}{{ season.name }}{% endblock %}
+{% block pagetitle %}{{ season.name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <div class="accordion">
+
+      <div class="accordion-item">
+        <div class="accordion-header">
+        <button {% accordion-button-props "info" "h2" %}>
+            Info
+          </button>
+        </div>
+
+        <ul {% accordion-body-props "info" "list-group-flush" %}>
+          <li class="list-group-item">{{ season.start_date.date | localize }} - {{ season.end_date_str.date | localize }}</li>
+        </ul>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header">
+        <button {% accordion-button-props "participants" "h2" %}>
+            Participants
+          </button>
+        </div>
+
+        <div {% accordion-body-props "participants" "player-list-grid" %}>
+          {% for participant in season.participants.all %}
+          <div class="player-item">{{ participant.name }}</div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header">
+          <button {% accordion-button-props "matches" "h2" %}>
+            Matches
+          </button>
+        </div>
+        <div {% accordion-body-props "matches"%}>
+          {% match_list season.matches "matchlist"%}
+        </div>
+      </div>
+
+    </div>
+
+</div>
+{% endblock %}
