@@ -1,7 +1,7 @@
 """Ligapp views."""
 from django.views.generic import DetailView, ListView
 
-from .models import Season
+from .models import Match, Season
 
 
 class SeasonListView(ListView):
@@ -16,3 +16,10 @@ class SeasonDetailView(DetailView):
 
     model = Season
     context_object_name = "season"
+
+
+class MatchDetailView(DetailView):
+    """Display a match."""
+
+    model = Match
+    context_object_name = "match"

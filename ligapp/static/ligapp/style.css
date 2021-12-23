@@ -25,3 +25,25 @@
   flex-flow: row wrap;
   gap: 10px;
 }
+
+.player-item {
+  order: 1;
+}
+
+.player-item.btn {
+  order: 0;
+}
+
+form.player-item{
+  order: 0;
+  max-height: 30px;
+}
+
+.add-player-inputs {
+  width: auto;
+}
+
+.add-player-inputs form input {
+  min-width: 80px;
+  max-width: 100px;
+}

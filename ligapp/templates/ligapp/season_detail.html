@@ -34,6 +34,16 @@
           {% for participant in season.participants.all %}
           <div class="player-item">{{ participant.name }}</div>
           {% endfor %}
+          <button id="button-show-add-player" class="player-item btn btn-sm btn-outline-primary" data-bs-toggle="collapse" data-bs-target=".add-player-inputs" role="button">
+            <i class="bi bi-person-plus"></i>
+          </button>
+          <form class="player-item input-group add-player-inputs collapse collapse-horizontal" action="{% url 'ligapp:add-player' %}" method="post">
+            {% csrf_token %}
+            <fieldset>
+              <input type="text" class="form-control" placeholder="Name" aria-label="New participant name" aria-describedby="button-show-add-player">
+            </fieldset>
+            <button type="submit" id="button-add-player" class="btn btn-sm btn-success"><i class="bi bi-plus"></i></button>
+          </form>
         </div>
       </div>
 

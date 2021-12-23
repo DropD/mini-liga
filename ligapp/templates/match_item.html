@@ -7,4 +7,5 @@
   <td class="match-vs">vs.</td>
   <td class="match-player"><span {% if match.child.winner.pk == match.second_player.pk %}class="winner"{% endif %}>{{ match.second_player }}</span></td>
   <td class="match-score">{{ match.score_str }}</td>
+  <td class="match-detail-link"><a href="/liga/match/{{ match.pk }}">details</a><td>
 </tr>
