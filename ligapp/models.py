@@ -3,6 +3,7 @@ from typing import Optional, Union
 
 from django.core.validators import MaxValueValidator
 from django.db import models
+from django.urls import reverse
 
 
 class Player(models.Model):
@@ -32,6 +33,9 @@ class Season(models.Model):
         """Represent seaon as a string."""
         return self.name
 
+    def get_absolute_url(self):
+        return reverse("ligapp:season-detail", kwargs={"pk": self.pk})
+
     @property
     def end_date_str(self):
         return self.end_date or "open"
@@ -60,6 +64,9 @@ class Match(models.Model):
     def __str__(self) -> str:
         """Represent match as a string."""
         return f"{self.date_played}: {self.first_player} vs {self.second_player}; {self.score_str}"
+
+    def get_absolute_url(self):
+        return reverse("ligapp:match-detail", kwargs={"pk": self.pk})
 
     @property
     def score_str(self) -> str:

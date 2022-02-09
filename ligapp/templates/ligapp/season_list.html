@@ -6,6 +6,7 @@
 {% block content %}
   <h2>Running Seasons</h2>
   <ul>
+    <li><a href="new-season">New Season</a></li>
     {% for season in all_seasons %}
     <li><a href="seasons/{{season.pk}}">{{ season.name }}</a></li>
     {% endfor %}
