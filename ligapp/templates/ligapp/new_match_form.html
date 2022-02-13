@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %} Ligapp - Create new match {% endblock %}
+{% block pagetitle %} Create new match {% endblock %}
+
+{% block content %}
+<form method="post">{% csrf_token %}
+  <div class="match-grid">
+    <div class="match-type">{{ form.match_type }}</div>
+    <div></div>
+    <div class="match-date">{{ form.date_played }}</div>
+    <div class="player-1">{{ form.first_player }}</div>
+    <div class="match-vs">vs.</div>
+    <div class="player-2">{{ form.second_player }}</div>
+    <div class="score-1-1">{{ form.first_score_1 }}</div>
+    <div class="sep-1">:</div>
+    <div class="score-1-2">{{ form.second_score_1 }}</div>
+    <div class="score-2-1">{{ form.first_score_2 }}</div>
+    <div class="sep-2">:</div>
+    <div class="score-2-2">{{ form.second_score_2 }}</div>
+    <div class="score-3-1">{{ form.first_score_3 }}</div>
+    <div class="sep-3">:</div>
+    <div class="score-3-2">{{ form.second_score_3 }}</div>
+  </div>
+  <input type="submit" value="Save">
+</form>
+{% endblock %}

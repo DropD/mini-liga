@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load l10n %}
+{% load match %}
+{% load bootstrap %}
+
+{% block title %}{{ season.name }}{% endblock %}
+{% block pagetitle %}{{ season.name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <div class="accordion">
+
+      <div class="accordion-item">
+        <div class="accordion-header">
+        <button {% accordion-button-props "info" "h2" %}>
+            Info
+          </button>
+        </div>
+
+        <ul {% accordion-body-props "info" "list-group-flush" %}>
+          <li class="list-group-item">{{ season.start_date.date | localize }} - {{ season.end_date_str.date | localize }}</li>
+        </ul>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header">
+        <button {% accordion-button-props "participants" "h2" %}>
+            Participants
+          </button>
+        </div>
+
+        <div {% accordion-body-props "participants" "player-list-grid" %}>
+          {% for participant in season.participants.all %}
+          <div class="player-item">{{ participant.name }}</div>
+          {% endfor %}
+          <button id="button-show-add-player" class="player-item btn btn-sm btn-outline-primary" data-bs-toggle="collapse" data-bs-target=".add-player-inputs" role="button">
+            <i class="bi bi-person-plus"></i>
+          </button>
+          <form class="player-item input-group add-player-inputs collapse collapse-horizontal" action="{% url 'ligapp:add-player' %}" method="post">
+            {% csrf_token %}
+            <fieldset>
+              <input type="text" class="form-control" placeholder="Name" aria-label="New participant name" aria-describedby="button-show-add-player">
+            </fieldset>
+            <button type="submit" id="button-add-player" class="btn btn-sm btn-success"><i class="bi bi-plus"></i></button>
+          </form>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header">
+          <button {% accordion-button-props "matches" "h2" %}>
+            Matches
+          </button>
+        </div>
+        <div {% accordion-body-props "matches"%}>
+          <a id="button-add-match" class="btn btn-sm btn-outline-primary" href={% url "ligapp:add-match" season=season.pk %}>
+            <i class="bi bi-plus"></i> Add new match
+          </a>
+          {% match_list season.matches "matchlist"%}
+        </div>
+      </div>
+
+    </div>
+
+</div>
+{% endblock %}

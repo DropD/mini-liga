@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load l10n %}
+{% load match %}
+
+{% block title %}Match {{ match.pk }}: {{ match.first_player }} vs. {{ match.second_player }}{% endblock %}
+{% block pagetitle %}{{ match.first_player}} vs. {{ match.second_player }}{% endblock %}
+
+{% block content %}
+  <div class="card list-group">
+    <div class="list-group-item">Date played: {{match.date_played.date | localize }}</div>
+    <div class="list-group-item">Score: {{ match.score_str }}</div>
+    {% if match.minutes_played_str %}
+    <div class="list-group-item">Minutes played: {{ match.minutes_played_str }}</div>
+    {% endif %}
+    <div class="list-group-item"><a href="/liga/seasons/{{ match.season.pk }}">{{ match.season.name}}</a></div>
+  </div>
+{% endblock %}
