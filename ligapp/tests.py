@@ -60,7 +60,7 @@ class TimedMatchTestCase(TestCase):
     def test_str(self):
         """Test tthe string representation."""
         assert str(self.match) == (
-            "2000-01-02 00:00:00+00:00: Test Player 1 vs Test Player 2; 17 : 9; 10'"
+            "2000-01-02 00:00:00+00:00 (10 min): Test Player 1 vs Test Player 2; 17 : 9"
         )
 
     def test_winner(self):
