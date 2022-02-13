@@ -9,6 +9,7 @@ repos:
       - id: check-toml
       - id: check-added-large-files
       - id: pretty-format-json
+        args: [--autofix]
       - id: check-merge-conflict
       - id: detect-private-key
       - id: no-commit-to-branch

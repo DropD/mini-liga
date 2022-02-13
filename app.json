@@ -1,10 +1,8 @@
 {
-  "name": "Minimal league with ranking system",
+  "addons": [
+    "heroku-postgresql"
+  ],
   "description": "A service to track matches in a small player pool over time with ranking info",
-  "image": "heroku/python",
-  "repository": "https://github.com/DropD/mini-liga",
-  "keywords": ["python", "django"],
-  "addons": ["heroku-postgresql"],
   "env": {
     "SECRET_KEY": {
       "description": "The secret key for the Django application.",
@@ -14,10 +12,16 @@
   "environments": {
     "test": {
       "scripts": {
-        "test-setup": "python manage.py collectstatic --noinput",
-        "test": "python manage.py test"
+        "test": "python manage.py test",
+        "test-setup": "python manage.py collectstatic --noinput"
       }
     }
-  }
-}
+  },
+  "image": "heroku/python",
+  "keywords": [
+    "python",
+    "django"
+  ],
+  "name": "Minimal league with ranking system",
+  "repository": "https://github.com/DropD/mini-liga"
 }
