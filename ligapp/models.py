@@ -101,7 +101,7 @@ class TimedMatch(Match):
         return (
             f"{self.date_played} ({self.minutes_played_str}): "
             f"{self.first_player} vs {self.second_player}; "
-            f"{self.sets.first()};"
+            f"{self.sets.first()}"
         )
 
     @property
