@@ -31,4 +31,4 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel pre-commit
 
       - name: Run Checks
-        run: pre-commit run --all-files
+        run: pre-commit run --hook-stage manual --all-files
