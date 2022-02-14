@@ -3,10 +3,10 @@ name: Code Quality
 on:
   push:
     branches:
-      - main
+      - [ main ]
   pull_requeest:
     branches:
-      - main
+      - [ main ]
 
 jobs:
   build:
