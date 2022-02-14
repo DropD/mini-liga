@@ -3,10 +3,10 @@ name: Test Django App
 on:
   push:
     branches:
-      - [ main ]
-  pull_requeest:
+      - main
+  pull_request:
     branches:
-      - [ main ]
+      - main
 
 jobs:
   build:
