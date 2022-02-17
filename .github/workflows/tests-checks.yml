@@ -29,6 +29,21 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel pre-commit
+          pip install -r requirements.txt
+          pip install -r dev-requirements.txt
 
+  code-quality:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
       - name: Run Checks
         run: pre-commit run --hook-stage manual --all-files
+
+  run-tests:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Run Tests
+        run: pytest -s -vv --cov
