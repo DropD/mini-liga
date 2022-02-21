@@ -1,3 +1,5 @@
 pre-commit
+pytest-bdd
 pytest-coverage
 pytest-django
+pytest-splinter
