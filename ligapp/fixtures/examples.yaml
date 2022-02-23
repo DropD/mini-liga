@@ -1,3 +1,15 @@
+- model: auth.user
+  pk: 2
+  fields:
+    password: pbkdf2_sha256$320000$D7HHFWMnN6U0uSk6Ko2p1y$oSs7ha5VjejVeJQHvUPkv22JKuLj5kn3ImwVKt0a1TQ=
+    is_superuser: false
+    username: testuser
+    first_name: 'Test'
+    last_name: 'User'
+    email: 'test@u.ser'
+    is_staff: false
+    is_active: true
+    date_joined: 2022-02-23 08:06:59.782142+00:00
 - model: ligapp.player
   pk: 1
   fields:
