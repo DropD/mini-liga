@@ -28,8 +28,5 @@
     "django"
   ],
   "name": "Minimal league with ranking system",
-  "repository": "https://github.com/DropD/mini-liga",
-  "scripts": {
-    "postdeploy": "python manage.py loaddata ./ligapp/fixtures/examples.yaml"
-  }
+  "repository": "https://github.com/DropD/mini-liga"
 }
