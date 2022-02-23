@@ -69,11 +69,11 @@ jobs:
       - name: Start X Virtual Frame Buffer
         run: Xvfb :99 &
 
-      - name: Start App
-        run: python manage.py runserver &
-
-      - name: Load fixtures
-        run: python manage.py loaddata ./ligapp/fixtures/examples.yaml
+      - name: Start App with fixtures
+        run: |
+          python manage.py migrate
+          python manage.py loaddata ./ligapp/fixtures/examples.yaml
+          python manage.py runserver &
 
       - name: Run Tests
         run: pytest -s -vv --cov
