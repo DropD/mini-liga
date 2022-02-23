@@ -54,6 +54,12 @@ jobs:
           cache: pip
           cache-dependency-path: "*requirements.txt"
 
+      - name: Setup Firefox
+        uses: browser-actions/setup-firefox@latest
+
+      - name: Setup GeckoDriver
+        uses: browser-actions/setup-geckodriver@latest
+
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel pre-commit
