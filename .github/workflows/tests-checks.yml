@@ -72,6 +72,9 @@ jobs:
       - name: Start App
         run: python manage.py runserver &
 
+      - name: Load fixtures
+        run: python manage.py loaddata ./ligapp/fixtures/examples.yaml
+
       - name: Run Tests
         run: pytest -s -vv --cov
         env:
