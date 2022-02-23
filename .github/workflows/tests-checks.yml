@@ -66,8 +66,13 @@ jobs:
           pip install -r requirements.txt
           pip install -r dev-requirements.txt
 
+      - name: Start X Virtual Frame Buffer
+        run: Xvfb :99 &
+
+      - name: Start App
+        run: python manage.py runserver &
 
       - name: Run Tests
-        run: |
-          python manage.py runserver &
-          pytest -s -vv --cov
+        run: pytest -s -vv --cov
+        env:
+          DISPLAY: :99
