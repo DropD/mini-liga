@@ -30,6 +30,5 @@ urlpatterns = [
         auth_views.LogoutView.as_view(next_page="ligapp:index"),
         name="logout",
     ),
-    path("accounts/", include("django.contrib.auth.urls")),
     path("admin/", admin.site.urls),
 ]
