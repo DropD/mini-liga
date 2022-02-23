@@ -12,7 +12,7 @@
   "environments": {
     "review": {
       "scripts": {
-        "postdeploy": "python manage.py loaddata ./ligapp/fixtures/examples.yaml",
+        "postdeploy": "python manage.py migrate && python manage.py loaddata ./ligapp/fixtures/examples.yaml",
         "release": "python manage.py migrate"
       }
     },
