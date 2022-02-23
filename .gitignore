@@ -3,6 +3,7 @@ staticfiles
 
 # pytest-bdd
 ligapp.tests*
+tests.*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

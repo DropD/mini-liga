@@ -63,5 +63,5 @@ jobs:
 
       - name: Run Tests
         run: |
-          python manage.py runserver
+          python manage.py runserver &
           pytest -s -vv --cov
