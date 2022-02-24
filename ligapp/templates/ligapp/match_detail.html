@@ -12,6 +12,6 @@
     {% if match.minutes_played_str %}
     <div class="list-group-item">Minutes played: {{ match.minutes_played_str }}</div>
     {% endif %}
-    <div class="list-group-item"><a href="/liga/seasons/{{ match.season.pk }}">{{ match.season.name}}</a></div>
+    <div class="list-group-item"><a href={% url "ligapp:season-detail" match.season.pk %}>{{ match.season.name}}</a></div>
   </div>
 {% endblock %}

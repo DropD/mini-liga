@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*l
 """
 Django settings for miniliga project.
 

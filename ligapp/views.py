@@ -1,4 +1,5 @@
 """Ligapp views."""
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
 from django.views.generic import CreateView, DetailView, FormView, ListView
 
@@ -6,35 +7,36 @@ from .forms import NewMatchForm
 from .models import Match, Season
 
 
-class SeasonListView(ListView):
+class SeasonListView(LoginRequiredMixin, ListView):
     """Main view lists Seasons."""
 
+    login_url = "/accounts/login"
     model = Season
     context_object_name = "all_seasons"
 
 
-class SeasonDetailView(DetailView):
+class SeasonDetailView(LoginRequiredMixin, DetailView):
     """Display a season."""
 
     model = Season
     context_object_name = "season"
 
 
-class MatchDetailView(DetailView):
+class MatchDetailView(LoginRequiredMixin, DetailView):
     """Display a match."""
 
     model = Match
     context_object_name = "match"
 
 
-class CreateSeasonView(CreateView):
+class CreateSeasonView(LoginRequiredMixin, CreateView):
     """Display the season creation form."""
 
     model = Season
     fields = "__all__"
 
 
-class CreateMatchView(CreateView):
+class CreateMatchView(LoginRequiredMixin, CreateView):
     """Automatic match creation view."""
 
     model = Match
@@ -48,7 +50,7 @@ class CreateMatchView(CreateView):
         return initial
 
 
-class NewMatchView(FormView):
+class NewMatchView(LoginRequiredMixin, FormView):
     """View for recording a new match with scores and all."""
 
     form_class = NewMatchForm

@@ -10,6 +10,11 @@
     }
   },
   "environments": {
+    "review": {
+      "scripts": {
+        "postdeploy": "python manage.py loaddata ./ligapp/fixtures/examples.yaml"
+      }
+    },
     "test": {
       "scripts": {
         "test": "python manage.py test",
