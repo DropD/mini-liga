@@ -38,7 +38,7 @@ class Season(models.Model):
 
     @property
     def end_date_str(self):
-        return self.end_date or "open"
+        return str(self.end_date or "open")
 
 
 class Match(models.Model):

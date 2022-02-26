@@ -1,3 +1,7 @@
+.invalid-feedback {
+  display: block;
+}
+
 .winner {
   font-weight: bold;
 }
