@@ -1,11 +1,12 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 
 {% block title %} Ligapp - Create new match {% endblock %}
 {% block pagetitle %} Create new match {% endblock %}
 
 {% block content %}
 <div class="invalid-feedback">{{ form.non_field_errors }}</div>
-<form method="post">{% csrf_token %}
+<!-- <form method="post">{% csrf_token %}
   <div>{{ form.season }}</div>
   <div class="match-grid">
     <div class="match-type">{{ form.match_type }}</div>
@@ -35,5 +36,7 @@
   </div>
   <input class="btn btn-success" type="submit" value="Save">
   <a class="btn btn-danger" href={% url "ligapp:season-detail" season.pk %}>Cancel</a>
-</form>
+</form> -->
+
+{% crispy form %}
 {% endblock %}

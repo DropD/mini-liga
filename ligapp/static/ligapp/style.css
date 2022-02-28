@@ -83,3 +83,22 @@ form.player-item{
   margin-bottom: 20px;
   grid-row-gap: 10px;
 }
+
+.match-input {
+  max-width: 280px;
+}
+
+.score-input {
+  max-width: 130px;
+  min-width: 80px;
+}
+
+.score-vs {
+  max-width: 20px;
+  text-align: center;
+  padding-top: 15px;
+}
+
+.player-vs{
+  text-align: center;
+}
