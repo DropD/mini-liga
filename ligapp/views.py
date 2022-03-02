@@ -61,6 +61,9 @@ class NewMatchView(LoginRequiredMixin, SingleObjectMixin, FormView):
     pk_url_kwarg = "season"
     context_object_name = "season"
 
+    def get_form_kwargs(self):
+        return {"season": self.kwargs["season"]}
+
     def get_context_data(self, **kwargs):
         self.object = self.get_object()
         return super().get_context_data(**kwargs)

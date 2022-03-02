@@ -144,9 +144,11 @@ class NewMatchForm(forms.Form):
     first_score_3 = ScoreField(label="Score", required=False)
     second_score_3 = ScoreField(label="Score", required=False)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, season, **kwargs):
         """Add the helper instance attr."""
         super().__init__(*args, **kwargs)
+        self.fields["first_player"].queryset = Player.objects.filter(season=season)
+        self.fields["second_player"].queryset = Player.objects.filter(season=season)
         self.helper = self.get_helper()
 
     def clean(self):
