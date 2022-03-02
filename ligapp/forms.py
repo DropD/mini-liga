@@ -1,4 +1,5 @@
 """Forms for the ligapp."""
+import json
 from datetime import datetime
 
 from crispy_bootstrap5.bootstrap5 import FloatingField
@@ -10,6 +11,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import TextChoices
 from django.utils.formats import get_format
 from django.utils.translation import gettext as _
+from dominate import tags
 
 from .models import Player, Season
 
@@ -47,6 +49,80 @@ class DatePickerField(forms.DateField):
         raise ValidationError(_("Invalid date."), code="invalid")
 
 
+class DatePickerLayout(layout.Layout):
+    """Layout for a date input with js for date picker widget."""
+
+    def __init__(
+        self, name, *args, css_class: str = None, date_lang: str = "de-ch", **kwargs
+    ):
+        """Add a floating field and a script html tag."""
+        self.name = name
+        self.date_lang = date_lang
+        super().__init__(
+            FloatingField(name, css_class=css_class, id=f"{name}_picker"),
+            layout.HTML(self._gen_script()),
+            *args,
+            **kwargs,
+        )
+
+    def _gen_config(self):
+        return json.dumps(
+            {
+                "localization": {"locale": f"'{self.date_lang}'"},
+                "display": {
+                    "components": {
+                        "date": True,
+                        "decades": True,
+                        "month": True,
+                        "year": True,
+                        "hours": False,
+                        "minutes": False,
+                        "seconds": False,
+                    }
+                },
+            }
+        ).replace('"', "")
+
+    def _gen_script(self):
+        element = f"document.getElementById('div_id_{self.name}')"
+        config = self._gen_config()
+        return tags.script(
+            f"const datepicker = new tempusDominus.TempusDominus({element}, {config})",
+            type="text/javascript",
+        ).render()
+
+
+class SetScoresLayout(layout.Layout):
+    """Layout for scores of both players for a set of play."""
+
+    def __init__(self, name_left, name_right, *args, **kwargs):
+        """Create a bootstrap 5 row / col layout with <score> : <score>."""
+        super().__init__(
+            layout.Row(
+                layout.Div(
+                    FloatingField(
+                        name_left,
+                        label="Score",
+                        css_class="match-input score-input",
+                    ),
+                    css_class="col",
+                ),
+                layout.HTML("<div class='col score-vs'>:</div>"),
+                layout.Div(
+                    FloatingField(
+                        name_right,
+                        label="Score",
+                        css_class="match-input score-input",
+                    ),
+                    css_class="col",
+                ),
+                css_class="row g-0 match-input",
+            ),
+            *args,
+            **kwargs,
+        )
+
+
 class NewMatchForm(forms.Form):
     """Form for recording a match."""
 
@@ -61,12 +137,12 @@ class NewMatchForm(forms.Form):
     )
     match_type = forms.ChoiceField(choices=MatchType.choices, initial=MatchType.SETS)
     date_played = DatePickerField(lang="de-ch")
-    first_score_1 = ScoreField(label="Score", localize=True)
-    second_score_1 = ScoreField(label="Score", localize=True)
-    first_score_2 = ScoreField(label="Score", required=False, localize=True)
-    second_score_2 = ScoreField(label="Score", required=False, localize=True)
-    first_score_3 = ScoreField(label="Score", required=False, localize=True)
-    second_score_3 = ScoreField(label="Score", required=False, localize=True)
+    first_score_1 = ScoreField(label="Score")
+    second_score_1 = ScoreField(label="Score")
+    first_score_2 = ScoreField(label="Score", required=False)
+    second_score_2 = ScoreField(label="Score", required=False)
+    first_score_3 = ScoreField(label="Score", required=False)
+    second_score_3 = ScoreField(label="Score", required=False)
 
     def __init__(self, *args, **kwargs):
         """Add the helper instance attr."""
@@ -166,82 +242,15 @@ class NewMatchForm(forms.Form):
             layout.Fieldset(
                 "",
                 FloatingField("match_type", css_class="match-input"),
-                FloatingField(
-                    "date_played", css_class="match-input", id="dateplayedpicker"
-                ),
-                layout.HTML(
-                    "<script type='text/javascript'>"
-                    "const datepicker = new tempusDominus.TempusDominus("
-                    "document.getElementById('div_id_date_played'), "
-                    f"{{localization: {{locale: '{date_lang}' }}, "
-                    "display: {components: {date: true, decades: true, month: true, "
-                    "year: true, hours: false, minutes: false, seconds: false}}}"
-                    ");"
-                    "</script>"
+                DatePickerLayout(
+                    "date_played", css_class="match-input", date_lang=date_lang
                 ),
             ),
             layout.Fieldset(
                 "",
-                layout.Div(
-                    FloatingField(
-                        "first_score_1",
-                        label="Score",
-                        css_class="match-input score-input",
-                    ),
-                    css_class="col",
-                ),
-                layout.HTML("<div class='col score-vs'>:</div>"),
-                layout.Div(
-                    FloatingField(
-                        "second_score_1",
-                        label="Score",
-                        css_class="match-input score-input",
-                    ),
-                    css_class="col",
-                ),
-                css_class="row g-0 match-input",
-            ),
-            layout.Fieldset(
-                "",
-                layout.Div(
-                    FloatingField(
-                        "first_score_2",
-                        label="Score",
-                        css_class="match-input score-input",
-                    ),
-                    css_class="col",
-                ),
-                layout.HTML("<div class='col score-vs'>:</div>"),
-                layout.Div(
-                    FloatingField(
-                        "second_score_2",
-                        label="Score",
-                        css_class="match-input score-input",
-                    ),
-                    css_class="col",
-                ),
-                css_class="row g-0 match-input",
-            ),
-            layout.Fieldset(
-                "",
-                layout.Div(
-                    FloatingField(
-                        "first_score_3",
-                        label="Score",
-                        css_class="match-input score-input",
-                    ),
-                    css_class="col",
-                ),
-                layout.HTML("<div class='col score-vs'>:</div>"),
-                layout.Div(
-                    FloatingField(
-                        "second_score_3",
-                        label="Score",
-                        css_class="match-input score-input",
-                    ),
-                    css_class="col",
-                ),
-                css_class="row g-0 match-input",
+                SetScoresLayout("first_score_1", "second_score_1"),
+                SetScoresLayout("first_score_2", "second_score_2"),
+                SetScoresLayout("first_score_3", "second_score_3"),
             ),
         )
         return helper
