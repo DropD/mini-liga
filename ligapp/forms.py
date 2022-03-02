@@ -41,7 +41,6 @@ class DatePickerField(forms.DateField):
     def to_python(self, value):
         for format in get_format("DATE_INPUT_FORMATS", self.lang):
             try:
-                print(f"trying {format}")
                 return datetime.strptime(value, format).date()
             except ValueError:
                 continue
@@ -78,6 +77,7 @@ class NewMatchForm(forms.Form):
         cleaned_data = super().clean()
         self.validate_players_different(cleaned_data)
         self.validate_players_in_season(cleaned_data)
+        self.validate_scores(cleaned_data)
         return cleaned_data
 
     def validate_players_different(self, cleaned_data):
@@ -106,13 +106,57 @@ class NewMatchForm(forms.Form):
                     ),
                 )
 
+    def validate_scores(self, cleaned_data):
+        scores = [
+            (
+                cleaned_data.get(f"first_score_{i}"),
+                cleaned_data.get(f"second_score_{i}"),
+            )
+            for i in range(1, 4)
+        ]
+        match_type = cleaned_data.get("match_type")
+        if match_type == MatchType.SETS.value:
+            for i, score_set in enumerate(scores):
+                self._validate_set_complete(score_set, i + 1)
+                self._validate_set_is_regulation(score_set, i + 1)
+
+    def _validate_set_complete(self, score_set, set_nr):
+        scores_added = [i is not None for i in score_set]
+        message = _("Can not be empty if the other player has a score in this set.")
+        if any(scores_added):
+            if not scores_added[0]:
+                self.add_error(
+                    f"first_score_{set_nr}", ValidationError(message, code="required")
+                )
+            if not scores_added[1]:
+                self.add_error(
+                    f"second_score_{set_nr}", ValidationError(message, code="required")
+                )
+
+    def _validate_set_is_regulation(self, score_set, set_nr):
+        """
+        Validate scoring rules.
+
+        Currently, regulation only means there are no draws.
+        More rigorous rules should be added in a customizable way on the season record.
+        """
+        scores_added = [i is not None for i in score_set]
+        message = _("Can not be the same as the other player's score in this set.")
+        if any(scores_added):
+            if score_set[0] == score_set[1]:
+                self.add_error(
+                    f"first_score_{set_nr}", ValidationError(message, code="invalid")
+                )
+                self.add_error(
+                    f"second_score_{set_nr}", ValidationError(message, code="invalid")
+                )
+
     def get_helper(self):
         helper = FormHelper()
         helper.add_input(layout.Submit("submit", "Save", css_class="btn btn-success"))
         helper.add_input(layout.Button("cancel", "Cancel", css_class="btn btn-danger"))
         date_lang = self.fields["date_played"].lang
         helper.layout = layout.Layout(
-            "Info",
             layout.Fieldset(
                 "",
                 FloatingField("first_player", css_class="match-input"),
