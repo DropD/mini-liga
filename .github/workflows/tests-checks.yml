@@ -72,12 +72,10 @@ jobs:
       - name: Start App with fixtures
         run: |
           python manage.py migrate
-          python manage.py loaddata ./ligapp/fixtures/examples.yaml
+          python manage.py loaddata ./ligapp/fixtures/tests.yaml
           python manage.py runserver &
 
       - name: Run Tests
         run: pytest -s -vv --cov
         env:
           DISPLAY: :99
-          TESTUSER_NAME: ${{ secrets.TESTUSER_NAME }}
-          TESTUSER_PW: ${{ secrets.TESTUSER_PW }}

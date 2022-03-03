@@ -1,6 +1,4 @@
 """Fixtures & stuff for behavioral tests."""
-import os
-
 import pytest  # noqa: I900
 
 
@@ -11,4 +9,4 @@ def index_page():
 
 @pytest.fixture
 def user_credentials():
-    yield os.environ["TESTUSER_NAME"], os.environ["TESTUSER_PW"]
+    yield "testuser", "test the pw"
