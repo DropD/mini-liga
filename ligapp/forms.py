@@ -1,6 +1,7 @@
 """Forms for the ligapp."""
 import json
-from datetime import datetime
+from datetime import date, datetime
+from typing import Any, Optional
 
 from crispy_bootstrap5.bootstrap5 import FloatingField
 from crispy_forms import layout  # noqa: I900 # comes from django-crispy-forms
@@ -35,12 +36,14 @@ class ScoreField(forms.IntegerField):
 class DatePickerField(forms.DateField):
     """Field for use with TempusDominus date picker."""
 
-    def __init__(self, *args, lang, **kwargs):
+    def __init__(self, *args, lang: str, **kwargs):
         """Add the lang keyword for date localization."""
         super().__init__(*args, **kwargs)
         self.lang = lang
 
-    def to_python(self, value):
+    def to_python(self, value: Optional[str]) -> Optional[date]:
+        if not isinstance(value, str):
+            return value
         for format in get_format("DATE_INPUT_FORMATS", self.lang):
             try:
                 return datetime.strptime(value, format).date()
@@ -53,7 +56,12 @@ class DatePickerLayout(layout.Layout):
     """Layout for a date input with js for date picker widget."""
 
     def __init__(
-        self, name, *args, css_class: str = None, date_lang: str = "de-ch", **kwargs
+        self,
+        name: str,
+        *args,
+        css_class: str = None,
+        date_lang: str = "de-ch",
+        **kwargs,
     ):
         """Add a floating field and a script html tag."""
         self.name = name
@@ -65,7 +73,7 @@ class DatePickerLayout(layout.Layout):
             **kwargs,
         )
 
-    def _gen_config(self):
+    def _gen_config(self) -> str:
         return json.dumps(
             {
                 "localization": {"locale": f"'{self.date_lang}'"},
@@ -83,7 +91,7 @@ class DatePickerLayout(layout.Layout):
             }
         ).replace('"', "")
 
-    def _gen_script(self):
+    def _gen_script(self) -> str:
         element = f"document.getElementById('div_id_{self.name}')"
         config = self._gen_config()
         return tags.script(
@@ -95,7 +103,7 @@ class DatePickerLayout(layout.Layout):
 class SetScoresLayout(layout.Layout):
     """Layout for scores of both players for a set of play."""
 
-    def __init__(self, name_left, name_right, *args, **kwargs):
+    def __init__(self, name_left: str, name_right: str, *args, **kwargs):
         """Create a bootstrap 5 row / col layout with <score> : <score>."""
         super().__init__(
             layout.Row(
@@ -136,7 +144,7 @@ class NewMatchForm(forms.Form):
         queryset=Player.objects, empty_label="Select a Player"
     )
     match_type = forms.ChoiceField(choices=MatchType.choices, initial=MatchType.SETS)
-    date_played = DatePickerField(lang="de-ch")
+    date_played = DatePickerField(lang="de-ch", initial=datetime.now().date())
     first_score_1 = ScoreField(label="Score")
     second_score_1 = ScoreField(label="Score")
     first_score_2 = ScoreField(label="Score", required=False)
@@ -151,14 +159,14 @@ class NewMatchForm(forms.Form):
         self.fields["second_player"].queryset = Player.objects.filter(season=season)
         self.helper = self.get_helper()
 
-    def clean(self):
+    def clean(self) -> dict[str, Any]:
         cleaned_data = super().clean()
         self.validate_players_different(cleaned_data)
         self.validate_players_in_season(cleaned_data)
         self.validate_scores(cleaned_data)
         return cleaned_data
 
-    def validate_players_different(self, cleaned_data):
+    def validate_players_different(self, cleaned_data: dict[str, Any]) -> None:
         if "first_player" and "second_player" in cleaned_data:
             first = cleaned_data["first_player"]
             second = cleaned_data["second_player"]
@@ -170,7 +178,7 @@ class NewMatchForm(forms.Form):
                     ),
                 )
 
-    def validate_players_in_season(self, cleaned_data):
+    def validate_players_in_season(self, cleaned_data: dict[str, Any]) -> None:
         season = cleaned_data.get("season")
         if not season:
             return None
@@ -184,7 +192,7 @@ class NewMatchForm(forms.Form):
                     ),
                 )
 
-    def validate_scores(self, cleaned_data):
+    def validate_scores(self, cleaned_data: dict[str, Any]) -> None:
         scores = [
             (
                 cleaned_data.get(f"first_score_{i}"),
@@ -193,14 +201,16 @@ class NewMatchForm(forms.Form):
             for i in range(1, 4)
         ]
         match_type = cleaned_data.get("match_type")
-        if match_type == MatchType.SETS.value:
+        if match_type == MatchType.SETS:
             for i, score_set in enumerate(scores):
                 self._validate_set_complete(score_set, i + 1)
                 self._validate_set_is_regulation(score_set, i + 1)
 
-    def _validate_set_complete(self, score_set, set_nr):
+    def _validate_set_complete(
+        self, score_set: tuple[Optional[int], Optional[int]], set_nr: int
+    ) -> None:
         scores_added = [i is not None for i in score_set]
-        message = _("Can not be empty if the other player has a score in this set.")
+        message = _("Incomplete set.")
         if any(scores_added):
             if not scores_added[0]:
                 self.add_error(
@@ -211,7 +221,9 @@ class NewMatchForm(forms.Form):
                     f"second_score_{set_nr}", ValidationError(message, code="required")
                 )
 
-    def _validate_set_is_regulation(self, score_set, set_nr):
+    def _validate_set_is_regulation(
+        self, score_set: tuple[Optional[int], Optional[int]], set_nr: int
+    ) -> None:
         """
         Validate scoring rules.
 
@@ -219,7 +231,7 @@ class NewMatchForm(forms.Form):
         More rigorous rules should be added in a customizable way on the season record.
         """
         scores_added = [i is not None for i in score_set]
-        message = _("Can not be the same as the other player's score in this set.")
+        message = _("Scores in set must be different.")
         if any(scores_added):
             if score_set[0] == score_set[1]:
                 self.add_error(
@@ -229,7 +241,7 @@ class NewMatchForm(forms.Form):
                     f"second_score_{set_nr}", ValidationError(message, code="invalid")
                 )
 
-    def get_helper(self):
+    def get_helper(self) -> FormHelper:
         helper = FormHelper()
         helper.add_input(layout.Submit("submit", "Save", css_class="btn btn-success"))
         helper.add_input(layout.Button("cancel", "Cancel", css_class="btn btn-danger"))

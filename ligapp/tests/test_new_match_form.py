@@ -1,4 +1,3 @@
-# noqa: F811
 import pytest
 from django.test.client import Client
 from django.urls import reverse
@@ -21,13 +20,14 @@ def test_valid(season, player, other_player):
     season.participants.add(player)
     season.participants.add(other_player)
     form = NewMatchForm(
+        season=season.pk,
         initial={"season": season},
         data={
             "season": season.pk,
             "first_player": player,
             "second_player": other_player,
             "match_type": MatchType.SETS,
-            "date_played": str(timezone.now()),
+            "date_played": str(timezone.now().date()),
             "first_score_1": 30,
             "second_score_1": 29,
         },
@@ -36,7 +36,7 @@ def test_valid(season, player, other_player):
 
 
 def test_empty():
-    form = NewMatchForm(data={})
+    form = NewMatchForm(data={}, season=0)
     assert not form.is_valid()
     assert set(form.errors.keys()) == {
         "season",
@@ -52,6 +52,7 @@ def test_empty():
 @pytest.mark.django_db
 def test_invalid_scores(season, player, other_player):
     form = NewMatchForm(
+        season=season.pk,
         initial={"season": season},
         data={
             "season": season,
@@ -69,9 +70,50 @@ def test_invalid_scores(season, player, other_player):
 
 
 @pytest.mark.django_db
+def test_invalid_draw(season, player, other_player):
+    form = NewMatchForm(
+        season=season.pk,
+        initial={"season": season},
+        data={
+            "season": season,
+            "first_player": player,
+            "second_player": other_player,
+            "match_type": MatchType.SETS,
+            "date_played": str(timezone.now()),
+            "first_score_1": 11,
+            "second_score_1": 11,
+        },
+    )
+    assert not form.is_valid()
+    assert form.errors["first_score_1"] == ["Scores in set must be different."]
+    assert form.errors["second_score_1"] == ["Scores in set must be different."]
+
+
+@pytest.mark.django_db
+def test_incomplete_set(season, player, other_player):
+    form = NewMatchForm(
+        season=season.pk,
+        initial={"season": season},
+        data={
+            "season": season,
+            "first_player": player,
+            "second_player": other_player,
+            "match_type": MatchType.SETS,
+            "date_played": str(timezone.now()),
+            "first_score_1": 11,
+            "second_score_1": 11,
+            "first_score_2": 11,
+        },
+    )
+    assert not form.is_valid()
+    assert form.errors["second_score_2"] == ["Incomplete set."]
+
+
+@pytest.mark.django_db
 def test_player_vs_self(season, player):
     season.participants.add(player)
     form = NewMatchForm(
+        season=season.pk,
         initial={"season": season},
         data={
             "season": season,
@@ -88,6 +130,26 @@ def test_player_vs_self(season, player):
 
 
 @pytest.mark.django_db
+def test_nonseason_player(season, player, other_player):
+    season.participants.add(player)
+    form = NewMatchForm(
+        season=season.pk,
+        initial={"season": season},
+        data={
+            "season": season,
+            "first_player": player,
+            "second_player": other_player,
+            "match_type": MatchType.SETS,
+            "date_played": timezone.now(),
+            "first_score_1": 21,
+            "second_score_1": 11,
+        },
+    )
+    assert not form.is_valid()
+    assert form.errors["second_player"][0].startswith("Select a valid choice.")
+
+
+@pytest.mark.django_db
 def test_view_valid(season, player, other_player):
     season.participants.add(player)
     season.participants.add(other_player)
@@ -95,13 +157,14 @@ def test_view_valid(season, player, other_player):
     response = client.get(reverse("ligapp:new-match", kwargs={"season": season.pk}))
     view = NewMatchView(request=response.wsgi_request, kwargs={"season": season.pk})
     form = NewMatchForm(
+        season=season.pk,
         initial={"season": season},
         data={
             "season": season.pk,
             "first_player": player,
             "second_player": other_player,
             "match_type": MatchType.SETS,
-            "date_played": str(timezone.now()),
+            "date_played": str(timezone.now().date()),
             "first_score_1": 30,
             "second_score_1": 29,
         },

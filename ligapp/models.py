@@ -63,24 +63,31 @@ class Match(models.Model):
 
     def __str__(self) -> str:
         """Represent match as a string."""
-        return f"{self.date_played}: {self.first_player} vs {self.second_player}; {self.score_str}"
+        return "{date}{minutes}: {first} vs {second}; {score}".format(
+            date=self.date_played.date(),
+            minutes=self.minutes_played_str,
+            first=self.first_player,
+            second=self.second_player,
+            score=self.score_str,
+        )
 
     def get_absolute_url(self):
+        """Get url to view this match."""
         return reverse("ligapp:match-detail", kwargs={"pk": self.pk})
 
     @property
     def score_str(self) -> str:
-        return ", ".join(str(set) for set in self.sets.all())
+        """Represent all possible score states (including no scores)."""
+        return ", ".join(str(set) for set in self.sets.all()) or "--"
 
     @property
     def minutes_played_str(self) -> str:
-        timedmatch = getattr(self, "timedmatch", None)
-        if timedmatch:
-            return timedmatch.minutes_played_str
+        """Represent duration of the match (empty except for ``TimedMatch``)."""
         return ""
 
     @property
     def child(self) -> Union["TimedMatch", "MultiSetMatch"]:
+        """Handle to the derived database record if accessed through ``Match``."""
         return getattr(self, "multisetmatch", getattr(self, "timedmatch", self))
 
 
@@ -96,23 +103,18 @@ class TimedMatch(Match):
 
         verbose_name_plural = "TimedMatches"
 
-    def __str__(self) -> str:
-        """Represent a timed match as a string."""
-        return (
-            f"{self.date_played} ({self.minutes_played_str}): "
-            f"{self.first_player} vs {self.second_player}; "
-            f"{self.sets.first()}"
-        )
-
     @property
     def minutes_played_str(self) -> str:
-        return f"{self.minutes_played} min"
+        """Represent the match duration."""
+        return f" ({self.minutes_played} min)"
 
     @property
     def winner(self) -> Optional[Player]:
         """Find the player who won more points or None in case of a draw."""
         score = self.sets.first()
-        return score.winner
+        if score:
+            return score.winner
+        return None
 
 
 class MultiSetMatch(Match):
@@ -134,6 +136,11 @@ class MultiSetMatch(Match):
         elif first_sets_won < second_sets_won:
             return self.second_player
         return None
+
+    @property
+    def minutes_played_str(self) -> str:
+        """Represent the match duration (always empty)."""
+        return ""
 
 
 class Set(models.Model):

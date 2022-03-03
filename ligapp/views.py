@@ -46,7 +46,7 @@ class CreateMatchView(LoginRequiredMixin, CreateView):
 
     def get_initial(self):
         initial = super().get_initial()
-        initial["date_played"] = timezone.now()
+        initial["date_played"] = timezone.now().date()
         if "season" in self.kwargs:
             initial["season"] = Season.objects.get(pk=self.kwargs["season"])
         return initial
@@ -62,7 +62,9 @@ class NewMatchView(LoginRequiredMixin, SingleObjectMixin, FormView):
     context_object_name = "season"
 
     def get_form_kwargs(self):
-        return {"season": self.kwargs["season"]}
+        form_kwargs = super().get_form_kwargs()
+        form_kwargs.update({"season": self.kwargs["season"]})
+        return form_kwargs
 
     def get_context_data(self, **kwargs):
         self.object = self.get_object()
@@ -70,10 +72,9 @@ class NewMatchView(LoginRequiredMixin, SingleObjectMixin, FormView):
 
     def get_initial(self):
         initial = super().get_initial()
-        initial["date_played"] = timezone.now()
+        initial["date_played"] = timezone.now().date()
         if "season" in self.kwargs:
             initial["season"] = Season.objects.get(pk=self.kwargs["season"])
-
         return initial
 
     def form_valid(self, form):
