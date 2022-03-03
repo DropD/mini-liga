@@ -7,7 +7,7 @@
     username: exampleuser
     first_name: 'Example'
     last_name: 'User'
-    email: ''
+    email: 'example@u.ser'
     is_staff: false
     is_active: true
     date_joined: 2022-03-03 12:27:18.243235+00:00
