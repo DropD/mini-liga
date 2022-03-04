@@ -155,6 +155,7 @@ class NewMatchForm(forms.Form):
     def __init__(self, *args, season, **kwargs):
         """Add the helper instance attr."""
         super().__init__(*args, **kwargs)
+        self.season = season
         self.fields["first_player"].queryset = Player.objects.filter(season=season)
         self.fields["second_player"].queryset = Player.objects.filter(season=season)
         self.helper = self.get_helper()
@@ -242,9 +243,8 @@ class NewMatchForm(forms.Form):
                 )
 
     def get_helper(self) -> FormHelper:
+        season = Season.objects.get(pk=self.season)
         helper = FormHelper()
-        helper.add_input(layout.Submit("submit", "Save", css_class="btn btn-success"))
-        helper.add_input(layout.Button("cancel", "Cancel", css_class="btn btn-danger"))
         date_lang = self.fields["date_played"].lang
         helper.layout = layout.Layout(
             layout.Fieldset(
@@ -265,6 +265,13 @@ class NewMatchForm(forms.Form):
                 SetScoresLayout("first_score_1", "second_score_1"),
                 SetScoresLayout("first_score_2", "second_score_2"),
                 SetScoresLayout("first_score_3", "second_score_3"),
+            ),
+            layout.Div(
+                layout.Submit("submit", "Save", css_class="btn btn-success"),
+                layout.HTML(
+                    f"<a href={season.get_absolute_url()} class='btn btn-danger'>Cancel</a>"
+                ),
+                css_class="mb-3",
             ),
         )
         return helper

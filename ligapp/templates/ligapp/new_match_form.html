@@ -5,38 +5,5 @@
 {% block pagetitle %} Create new match {% endblock %}
 
 {% block content %}
-<div class="invalid-feedback">{{ form.non_field_errors }}</div>
-<!-- <form method="post">{% csrf_token %}
-  <div>{{ form.season }}</div>
-  <div class="match-grid">
-    <div class="match-type">{{ form.match_type }}</div>
-    <div></div>
-    <div class="match-date">{{ form.date_played }}
-    </div>
-    <div class="player-1">{{ form.first_player }}
-      {% for error in form.errors.first_player %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
-    </div>
-    <div class="match-vs">vs.</div>
-    <div class="player-2">{{ form.second_player }}
-      {% for error in form.errors.second_player %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
-    </div>
-    <div class="score-1-1">{{ form.first_score_1 }}
-      {% for error in form.errors.first_score_1 %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
-    </div>
-    <div class="sep-1">:</div>
-    <div class="score-1-2">{{ form.second_score_1 }}
-      {% for error in form.errors.second_score_1 %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
-    </div>
-    <div class="score-2-1">{{ form.first_score_2 }}</div>
-    <div class="sep-2">:</div>
-    <div class="score-2-2">{{ form.second_score_2 }}</div>
-    <div class="score-3-1">{{ form.first_score_3 }}</div>
-    <div class="sep-3">:</div>
-    <div class="score-3-2">{{ form.second_score_3 }}</div>
-  </div>
-  <input class="btn btn-success" type="submit" value="Save">
-  <a class="btn btn-danger" href={% url "ligapp:season-detail" season.pk %}>Cancel</a>
-</form> -->
-
 {% crispy form %}
 {% endblock %}

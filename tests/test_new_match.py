@@ -16,6 +16,20 @@ def test_new_match(
     ...
 
 
+@scenario("new_match.feature", "Cancel adding a new match")
+def test_cancel_match(
+    season,
+    user,
+    authbrowser,
+    client,
+    live_server,
+    transactional_db,
+    django_db_serialized_rollback,
+):
+    """Auto-collect steps and test scenario."""
+    ...
+
+
 @given("I am logged in on the season list")
 def logged_in(
     authbrowser,
@@ -53,6 +67,11 @@ def enter_valid_match_data(season, authbrowser):
     authbrowser.fill("first_score_1", 21)
     authbrowser.fill("second_score_1", 19)
     authbrowser.find_by_name("submit").first.click()
+
+
+@when("I click cancel")
+def cancel_new_match(authbrowser):
+    authbrowser.find_link_by_text("Cancel").click()
 
 
 @then("I should be redirected to the season detail page")
