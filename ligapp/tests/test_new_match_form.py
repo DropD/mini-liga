@@ -35,8 +35,9 @@ def test_valid(season, player, other_player):
     assert form.is_valid(), form.errors
 
 
-def test_empty():
-    form = NewMatchForm(data={}, season=0)
+@pytest.mark.django_db
+def test_empty(season):
+    form = NewMatchForm(data={}, season=season.pk)
     assert not form.is_valid()
     assert set(form.errors.keys()) == {
         "season",
