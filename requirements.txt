@@ -1,4 +1,8 @@
+crispy-bootstrap5
 django
+django-crispy-forms
 django-heroku
+dominate
+fontawesomefree
 gunicorn
 pyyaml

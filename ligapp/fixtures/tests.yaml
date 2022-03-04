@@ -1,18 +1,15 @@
 - model: auth.user
-  pk: 1
+  pk: 2
   fields:
-    password: pbkdf2_sha256$320000$alFntP4eqVnePO4CoomJy6$WbpiDReD4pzhjsYK88sCB9PC1Te9gMAO/a950uM0wGE=
-    last_login: null
+    password: pbkdf2_sha256$320000$D7HHFWMnN6U0uSk6Ko2p1y$oSs7ha5VjejVeJQHvUPkv22JKuLj5kn3ImwVKt0a1TQ=
     is_superuser: false
-    username: exampleuser
-    first_name: 'Example'
+    username: testuser
+    first_name: 'Test'
     last_name: 'User'
-    email: 'example@u.ser'
+    email: 'test@u.ser'
     is_staff: false
     is_active: true
-    date_joined: 2022-03-03 12:27:18.243235+00:00
-    groups: []
-    user_permissions: []
+    date_joined: 2022-02-23 08:06:59.782142+00:00
 - model: ligapp.player
   pk: 1
   fields:

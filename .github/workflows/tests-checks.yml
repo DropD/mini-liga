@@ -69,11 +69,9 @@ jobs:
       - name: Start X Virtual Frame Buffer
         run: Xvfb :99 &
 
-      - name: Start App with fixtures
+      - name: Prepare static files for live_server
         run: |
-          python manage.py migrate
-          python manage.py loaddata ./ligapp/fixtures/examples.yaml
-          python manage.py runserver &
+          python manage.py collectstatic
 
       - name: Run Tests
         run: pytest -s -vv --cov

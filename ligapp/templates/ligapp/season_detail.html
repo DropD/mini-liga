@@ -54,7 +54,7 @@
           </button>
         </div>
         <div {% accordion-body-props "matches"%}>
-          <a id="button-add-match" class="btn btn-sm btn-outline-primary" href={% url "ligapp:add-match" season=season.pk %}>
+          <a id="button-add-match" class="btn btn-sm btn-outline-primary" href={% url "ligapp:new-match" season=season.pk %}>
             <i class="bi bi-plus"></i> Add new match
           </a>
           {% match_list season.matches "matchlist"%}

@@ -1,10 +1,12 @@
 """Ligapp views."""
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse
 from django.utils import timezone
 from django.views.generic import CreateView, DetailView, FormView, ListView
+from django.views.generic.detail import SingleObjectMixin
 
 from .forms import NewMatchForm
-from .models import Match, Season
+from .models import Match, MultiSetMatch, Season, Set
 
 
 class SeasonListView(LoginRequiredMixin, ListView):
@@ -44,21 +46,67 @@ class CreateMatchView(LoginRequiredMixin, CreateView):
 
     def get_initial(self):
         initial = super().get_initial()
-        initial["date_played"] = timezone.now()
+        initial["date_played"] = timezone.now().date()
         if "season" in self.kwargs:
             initial["season"] = Season.objects.get(pk=self.kwargs["season"])
         return initial
 
 
-class NewMatchView(LoginRequiredMixin, FormView):
+class NewMatchView(LoginRequiredMixin, SingleObjectMixin, FormView):
     """View for recording a new match with scores and all."""
 
     form_class = NewMatchForm
     template_name = "ligapp/new_match_form.html"
+    model = Season
+    pk_url_kwarg = "season"
+    context_object_name = "season"
+
+    def get_form_kwargs(self):
+        form_kwargs = super().get_form_kwargs()
+        form_kwargs.update({"season": self.kwargs["season"]})
+        return form_kwargs
+
+    def get_context_data(self, **kwargs):
+        self.object = self.get_object()
+        return super().get_context_data(**kwargs)
 
     def get_initial(self):
         initial = super().get_initial()
-        initial["date_played"] = timezone.now()
+        initial["date_played"] = timezone.now().date()
         if "season" in self.kwargs:
             initial["season"] = Season.objects.get(pk=self.kwargs["season"])
         return initial
+
+    def form_valid(self, form):
+        data = form.cleaned_data
+        match = MultiSetMatch(
+            season=data["season"],
+            date_played=data["date_played"],
+            first_player=data["first_player"],
+            second_player=data["second_player"],
+        )
+        match.save()
+        Set(
+            first_score=data["first_score_1"],
+            second_score=data["second_score_1"],
+            match=match,
+            order=1,
+        ).save()
+        if data["first_score_2"]:
+            Set(
+                first_score=data["first_score_2"],
+                second_score=data["second_score_2"],
+                match=match,
+                order=2,
+            ).save()
+            if data["first_score_3"]:
+                Set(
+                    first_score=data["first_score_3"],
+                    second_score=data["second_score_3"],
+                    match=match,
+                    order=3,
+                ).save()
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse("ligapp:season-detail", kwargs={"pk": self.kwargs["season"]})
