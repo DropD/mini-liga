@@ -1,3 +1,4 @@
+"""Test NewMatchForm and it's view class."""
 import pytest
 from django.test.client import Client
 from django.urls import reverse
@@ -6,11 +7,10 @@ from django.utils import timezone
 from ligapp.forms import MatchType, NewMatchForm
 from ligapp.views import NewMatchView
 
-from .model_fixtures import other_player, player, season
-
 
 @pytest.fixture
 def new_match_view(season, player):
+    """Provide an instance of the view."""
     view = NewMatchView()
     view.kwargs = {"season": season.pk}
 
@@ -37,6 +37,7 @@ def test_valid(season, player, other_player):
 
 @pytest.mark.django_db
 def test_empty(season):
+    """Test that the empty form is not valid and the required fields give errors."""
     form = NewMatchForm(data={}, season=season.pk)
     assert not form.is_valid()
     assert set(form.errors.keys()) == {
@@ -52,6 +53,7 @@ def test_empty(season):
 
 @pytest.mark.django_db
 def test_invalid_scores(season, player, other_player):
+    """Test submitting the form with too large and negative scores."""
     form = NewMatchForm(
         season=season.pk,
         initial={"season": season},
@@ -72,6 +74,7 @@ def test_invalid_scores(season, player, other_player):
 
 @pytest.mark.django_db
 def test_invalid_draw(season, player, other_player):
+    """Test submitting scores that would mean a draw."""
     form = NewMatchForm(
         season=season.pk,
         initial={"season": season},
@@ -92,6 +95,7 @@ def test_invalid_draw(season, player, other_player):
 
 @pytest.mark.django_db
 def test_incomplete_set(season, player, other_player):
+    """Test submitting an incomplete second set."""
     form = NewMatchForm(
         season=season.pk,
         initial={"season": season},
@@ -112,6 +116,7 @@ def test_incomplete_set(season, player, other_player):
 
 @pytest.mark.django_db
 def test_player_vs_self(season, player):
+    """Test submitting the same player for first and second players."""
     season.participants.add(player)
     form = NewMatchForm(
         season=season.pk,
@@ -132,6 +137,7 @@ def test_player_vs_self(season, player):
 
 @pytest.mark.django_db
 def test_nonseason_player(season, player, other_player):
+    """Test submitting players who are not in the season."""
     season.participants.add(player)
     form = NewMatchForm(
         season=season.pk,
@@ -152,6 +158,7 @@ def test_nonseason_player(season, player, other_player):
 
 @pytest.mark.django_db
 def test_view_valid(season, player, other_player):
+    """Test after submitting valid data all the models are there."""
     season.participants.add(player)
     season.participants.add(other_player)
     client = Client()
