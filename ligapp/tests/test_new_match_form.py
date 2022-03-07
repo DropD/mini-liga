@@ -157,11 +157,12 @@ def test_nonseason_player(season, player, other_player):
 
 
 @pytest.mark.django_db
-def test_view_valid(season, player, other_player):
+def test_view_valid(season, season_admin, player, other_player):
     """Test after submitting valid data all the models are there."""
     season.participants.add(player)
     season.participants.add(other_player)
     client = Client()
+    client.force_login(season_admin)
     response = client.get(reverse("ligapp:new-match", kwargs={"season": season.pk}))
     view = NewMatchView(request=response.wsgi_request, kwargs={"season": season.pk})
     form = NewMatchForm(
