@@ -11,6 +11,7 @@ class Player(models.Model):
     """A participant in the league."""
 
     name = models.CharField(max_length=80)
+    user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True)
 
     class Meta:
         """Options for the player model."""

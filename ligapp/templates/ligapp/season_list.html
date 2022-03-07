@@ -10,7 +10,7 @@
     <li><a href={% url "ligapp:add-season" %}>New Season</a></li>
     {% endif %}
     {% for season in all_seasons %}
-    {% if user in season.admins.all or user.is_staff %}
+    {% if user in season.admins.all or user.is_staff or user.player in season.participants.all %}
     <li><a href={% url "ligapp:season-detail" season.pk %}>{{ season.name }}</a></li>
     {% endif %}
     {% endfor %}

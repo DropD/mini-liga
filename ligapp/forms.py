@@ -275,3 +275,12 @@ class NewMatchForm(forms.Form):
             ),
         )
         return helper
+
+
+class NewPlayerMatchForm(NewMatchForm):
+    """Same as NewMatchForm, except the first player is fixed."""
+
+    def __init__(self, *args, **kwargs):
+        """Add the helper instance attr."""
+        super().__init__(*args, **kwargs)
+        self.fields["first_player"].disabled = True
