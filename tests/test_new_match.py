@@ -6,6 +6,7 @@ from pytest_bdd import given, scenario, then, when  # noqa: I900 # dev requireme
 def test_new_match(
     season,
     user,
+    user_is_seasonadmin,
     authbrowser,
     client,
     live_server,
@@ -20,6 +21,7 @@ def test_new_match(
 def test_cancel_match(
     season,
     user,
+    user_is_seasonadmin,
     authbrowser,
     client,
     live_server,

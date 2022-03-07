@@ -50,6 +50,12 @@ def season(season_name):
 
 
 @pytest.fixture
+def user_is_seasonadmin(season, user):
+    """Make the test user admin of the test season."""
+    season.admins.add(user)
+
+
+@pytest.fixture
 def authbrowser(browser, client, index_page, user, django_db_serialized_rollback):
     """Provide a pre-authenticated browser."""
     client.force_login(user)
