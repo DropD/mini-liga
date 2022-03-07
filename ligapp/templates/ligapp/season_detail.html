@@ -58,6 +58,10 @@
           <a id="button-add-match" class="btn btn-sm btn-outline-primary" href={% url "ligapp:new-match" season=season.pk %}>
             <i class="bi bi-plus"></i> Add new match
           </a>
+          {% elif user.player in season.participants.all %}
+          <a id="button-add-match" class="btn btn-sm btn-outline-primary" href={% url "ligapp:new-match-as-player" season=season.pk player=user.player.pk %}>
+            <i class="bi bi-plus"></i> Add new match
+          </a>
           {% endif %}
           {% match_list season.matches "matchlist"%}
         </div>

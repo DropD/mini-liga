@@ -5,8 +5,8 @@ from django.utils import timezone
 from django.views.generic import CreateView, DetailView, FormView, ListView
 from django.views.generic.detail import SingleObjectMixin
 
-from .forms import NewMatchForm
-from .models import Match, MultiSetMatch, Season, Set
+from .forms import NewMatchForm, NewPlayerMatchForm
+from .models import Match, MultiSetMatch, Player, Season, Set
 
 
 class SeasonListView(LoginRequiredMixin, ListView):
@@ -121,3 +121,26 @@ class NewMatchView(UserPassesTestMixin, SingleObjectMixin, FormView):
 
     def get_success_url(self):
         return reverse("ligapp:season-detail", kwargs={"pk": self.kwargs["season"]})
+
+
+class NewPlayerMatchView(NewMatchView):
+    """View for recording a new match as a player."""
+
+    form_class = NewPlayerMatchForm
+
+    def test_func(self):
+        """Make sure the user is a player in the season."""
+        season = self.get_object()
+        player = Player.objects.get(pk=self.kwargs["player"])
+        print(str(player))
+        user_player = self.request.user.player
+        print(str(user_player))
+        print(season.participants.all())
+        print(season.participants.contains(user_player))
+        return season.participants.contains(user_player) and user_player == player
+
+    def get_initial(self):
+        """Prefill the first player additionally."""
+        initial = super().get_initial()
+        initial["first_player"] = self.request.user.player
+        return initial
