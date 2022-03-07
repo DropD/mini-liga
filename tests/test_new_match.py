@@ -4,24 +4,23 @@ from pytest_bdd import given, scenario, then, when  # noqa: I900 # dev requireme
 
 @scenario("new_match.feature", "Add a new match to an existing season")
 def test_new_match(
+    user_is_seasonadmin,
     season,
     user,
-    user_is_seasonadmin,
     authbrowser,
     client,
     live_server,
     transactional_db,
-    django_db_serialized_rollback,
+    #  django_db_serialized_rollback,
 ):
     """Auto-collect steps and test scenario."""
-    ...
 
 
 @scenario("new_match.feature", "Cancel adding a new match")
 def test_cancel_match(
+    user_is_seasonadmin,
     season,
     user,
-    user_is_seasonadmin,
     authbrowser,
     client,
     live_server,
@@ -29,7 +28,20 @@ def test_cancel_match(
     django_db_serialized_rollback,
 ):
     """Auto-collect steps and test scenario."""
-    ...
+
+
+@scenario("new_match.feature", "Season only shows up for admin")
+def test_non_admin_list(
+    season, user, authbrowser, transactional_db, django_db_serialized_rollback
+):
+    """Auto-collect steps and test scenario."""
+
+
+@scenario("new_match.feature", "Nonadmin unable to add new match")
+def test_non_admin_no_add(
+    season, user, authbrowser, transactional_db, django_db_serialized_rollback
+):
+    """Auto-collect steps and test scenario."""
 
 
 @given("I am logged in on the season list")
@@ -40,6 +52,16 @@ def logged_in(
     """Ensure logged in and on seasons list."""
     authbrowser.visit(index_page)
     assert authbrowser.find_by_text("Running Seasons")
+
+
+@given("I am season admin for the test season")
+def am_season_admin(user, season):
+    season.admins.add(user)
+
+
+@given("I am logged in on the season detail view")
+def on_season_detail(authbrowser, live_server, season):
+    authbrowser.visit(live_server + season.get_absolute_url())
 
 
 @when("I browse to the first season in the list")
@@ -93,3 +115,13 @@ def new_match_in_list(
     assert new_match.parent.find_by_text("Kento")
     assert new_match.parent.find_by_text("Victor")
     assert new_match.parent.find_by_text("21 : 19")
+
+
+@then("I should not see the add match button")
+def no_add_match(authbrowser):
+    assert not authbrowser.find_link_by_partial_text("new match")
+
+
+@then("I should not see any seasons")
+def season_not_in_list(authbrowser, season_name):
+    assert not authbrowser.links.find_by_text(season_name)
