@@ -6,6 +6,8 @@ Tests using these need to request the database with pytest.mark.django_db.
 from datetime import datetime
 
 import pytest
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import User
 from django.utils import timezone
 
 from ligapp import models
@@ -75,3 +77,13 @@ def get_sets():
         )
 
     yield sets_
+
+
+@pytest.fixture
+def season_admin(season):
+    """Provide a user instance which is allowed to change the test season."""
+    user = User.objects.get_or_create(
+        username="seasonadmin", password=make_password("season admin password")
+    )[0]
+    season.admins.add(user)
+    yield user
