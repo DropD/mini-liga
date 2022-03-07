@@ -54,9 +54,11 @@
           </button>
         </div>
         <div {% accordion-body-props "matches"%}>
+          {% if user in season.admins.all or user.is_staff %}
           <a id="button-add-match" class="btn btn-sm btn-outline-primary" href={% url "ligapp:new-match" season=season.pk %}>
             <i class="bi bi-plus"></i> Add new match
           </a>
+          {% endif %}
           {% match_list season.matches "matchlist"%}
         </div>
       </div>

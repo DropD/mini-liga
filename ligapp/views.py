@@ -1,5 +1,5 @@
 """Ligapp views."""
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse
 from django.utils import timezone
 from django.views.generic import CreateView, DetailView, FormView, ListView
@@ -45,6 +45,7 @@ class CreateMatchView(LoginRequiredMixin, CreateView):
     fields = ["first_player", "second_player", "date_played", "season"]
 
     def get_initial(self):
+        """Get initial data to prefill the form."""
         initial = super().get_initial()
         initial["date_played"] = timezone.now().date()
         if "season" in self.kwargs:
@@ -52,7 +53,7 @@ class CreateMatchView(LoginRequiredMixin, CreateView):
         return initial
 
 
-class NewMatchView(LoginRequiredMixin, SingleObjectMixin, FormView):
+class NewMatchView(UserPassesTestMixin, SingleObjectMixin, FormView):
     """View for recording a new match with scores and all."""
 
     form_class = NewMatchForm
@@ -61,7 +62,15 @@ class NewMatchView(LoginRequiredMixin, SingleObjectMixin, FormView):
     pk_url_kwarg = "season"
     context_object_name = "season"
 
+    def test_func(self):
+        """Make sure the user should be allowed to see this view."""
+        is_season_admin = self.request.user.season_admin_for.contains(self.get_object())
+        is_staff = self.request.user.is_staff
+        is_superuser = self.request.user.is_superuser
+        return is_season_admin or is_staff or is_superuser
+
     def get_form_kwargs(self):
+        """Pass the season url parameter on to the form."""
         form_kwargs = super().get_form_kwargs()
         form_kwargs.update({"season": self.kwargs["season"]})
         return form_kwargs
@@ -71,6 +80,7 @@ class NewMatchView(LoginRequiredMixin, SingleObjectMixin, FormView):
         return super().get_context_data(**kwargs)
 
     def get_initial(self):
+        """Get initial data to prefill the form."""
         initial = super().get_initial()
         initial["date_played"] = timezone.now().date()
         if "season" in self.kwargs:
@@ -78,6 +88,7 @@ class NewMatchView(LoginRequiredMixin, SingleObjectMixin, FormView):
         return initial
 
     def form_valid(self, form):
+        """Create and save the right objects if the form was submitted in a valid state."""
         data = form.cleaned_data
         match = MultiSetMatch(
             season=data["season"],

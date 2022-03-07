@@ -6,9 +6,13 @@
 {% block content %}
   <h2>Running Seasons</h2>
   <ul>
+    {% if perms.ligapp.seasons.create %}
     <li><a href={% url "ligapp:add-season" %}>New Season</a></li>
+    {% endif %}
     {% for season in all_seasons %}
+    {% if user in season.admins.all or user.is_staff %}
     <li><a href={% url "ligapp:season-detail" season.pk %}>{{ season.name }}</a></li>
+    {% endif %}
     {% endfor %}
   </ul>
 {% endblock %}

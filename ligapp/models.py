@@ -1,6 +1,7 @@
 """Ligapp models."""
 from typing import Optional, Union
 
+from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator
 from django.db import models
 from django.urls import reverse
@@ -28,6 +29,7 @@ class Season(models.Model):
     start_date = models.DateTimeField("start date")
     end_date = models.DateTimeField("end date", null=True)
     participants = models.ManyToManyField(Player)
+    admins = models.ManyToManyField(User, related_name="season_admin_for")
 
     def __str__(self) -> str:
         """Represent seaon as a string."""
