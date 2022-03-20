@@ -67,6 +67,17 @@
         </div>
       </div>
 
+      <div class="accordion-item">
+        <div class="accordion-header">
+          <button {% accordion-button-props "ranking" "h2" %}>Ranking</button>
+        </div>
+        <ul {% accordion-body-props "ranking" "list-group-flush" %}>
+          {% for rank in season.ranks.all %}
+          <li class="list-group-item">{{ rank.rank }}. {{ rank.player }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+
     </div>
 
 </div>

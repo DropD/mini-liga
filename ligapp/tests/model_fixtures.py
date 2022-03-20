@@ -34,32 +34,38 @@ def season(player):
     """Provide a season object."""
     season = models.Season(name="Test Season", start_date=timezone.now())
     season.save()
-    season.participants.add(player)
     yield season
 
 
 @pytest.fixture
-def timed_match(season, player, other_player):
+def two_player_season(season, player, other_player):
+    season.add_player(player)
+    season.add_player(other_player)
+    yield season
+
+
+@pytest.fixture
+def timed_match(two_player_season, player, other_player):
     """Provide a TimedMatch object."""
     match = models.TimedMatch(
         date_played=timezone.make_aware(datetime(2000, 1, 2)),
         minutes_played=10,
         first_player=player,
         second_player=other_player,
-        season=season,
+        season=two_player_season,
     )
     match.save()
     yield match
 
 
 @pytest.fixture
-def sets_match(season, player, other_player):
+def sets_match(two_player_season, player, other_player):
     """Provide a MultiSetMatch object."""
     match = models.MultiSetMatch(
         date_played=timezone.make_aware(datetime(2000, 1, 2)),
         first_player=player,
         second_player=other_player,
-        season=season,
+        season=two_player_season,
     )
     match.save()
     yield match

@@ -67,6 +67,54 @@
     - 7
     admins:
     - 1
+- model: ligapp.rank
+  pk: 1
+  fields:
+    season: 1
+    player: 1
+    rank: 1
+- model: ligapp.rank
+  pk: 2
+  fields:
+    season: 1
+    player: 2
+    rank: 2
+- model: ligapp.rank
+  pk: 3
+  fields:
+    season: 1
+    player: 3
+    rank: 3
+- model: ligapp.rank
+  pk: 4
+  fields:
+    season: 1
+    player: 5
+    rank: 4
+- model: ligapp.rank
+  pk: 5
+  fields:
+    season: 2
+    player: 2
+    rank: 1
+- model: ligapp.rank
+  pk: 6
+  fields:
+    season: 2
+    player: 5
+    rank: 2
+- model: ligapp.rank
+  pk: 7
+  fields:
+    season: 2
+    player: 6
+    rank: 3
+- model: ligapp.rank
+  pk: 8
+  fields:
+    season: 2
+    player: 7
+    rank: 4
 - model: ligapp.match
   pk: 1
   fields:

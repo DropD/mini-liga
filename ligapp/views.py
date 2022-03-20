@@ -117,6 +117,14 @@ class NewMatchView(UserPassesTestMixin, SingleObjectMixin, FormView):
                     match=match,
                     order=3,
                 ).save()
+        match.refresh_from_db()
+        if match.winner:
+            first_rank = match.first_player.ranks.get(season=match.season).rank
+            second_rank = match.second_player.ranks.get(season=match.season).rank
+            if match.winner.pk == match.first_player.pk and first_rank > second_rank:
+                match.season.update_rank(match.first_player, second_rank)
+            elif match.winner == match.second_player and second_rank > first_rank:
+                match.season.update_rank(match.second_player, first_rank)
         return super().form_valid(form)
 
     def get_success_url(self):

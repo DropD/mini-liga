@@ -159,8 +159,8 @@ def test_nonseason_player(season, player, other_player):
 @pytest.mark.django_db
 def test_view_valid(season, season_admin, player, other_player):
     """Test after submitting valid data all the models are there."""
-    season.participants.add(player)
-    season.participants.add(other_player)
+    season.add_player(player)
+    season.add_player(other_player)
     client = Client()
     client.force_login(season_admin)
     response = client.get(reverse("ligapp:new-match", kwargs={"season": season.pk}))
@@ -174,8 +174,8 @@ def test_view_valid(season, season_admin, player, other_player):
             "second_player": other_player,
             "match_type": MatchType.SETS,
             "date_played": str(timezone.now().date()),
-            "first_score_1": 30,
-            "second_score_1": 29,
+            "first_score_1": 29,
+            "second_score_1": 30,
         },
     )
     form.full_clean()
@@ -183,4 +183,6 @@ def test_view_valid(season, season_admin, player, other_player):
     view.form_valid(form)
     match = season.matches.get(first_player=player, second_player=other_player)
     assert match
-    assert match.sets.first().first_score == 30
+    assert match.sets.first().first_score == 29
+    assert player.ranks.get(season=season).rank == 2
+    assert other_player.ranks.get(season=season).rank == 1

@@ -3,8 +3,9 @@ from typing import Optional, Union
 
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator
-from django.db import models
+from django.db import models, transaction
 from django.urls import reverse
+from django.utils import timezone
 
 
 class Player(models.Model):
@@ -39,9 +40,106 @@ class Season(models.Model):
     def get_absolute_url(self):
         return reverse("ligapp:season-detail", kwargs={"pk": self.pk})
 
+    def add_player(self, player: Player):
+        """Add a player, starting at the bottom of the ranking."""
+        with transaction.atomic():
+            self.participants.add(player)
+            self.ranks.create(season=self, player=player, rank=self.next_free_rank)
+
+    def create_player(self, **kwargs) -> Player:
+        """Create a new player, adding them to the season."""
+        player = None
+        with transaction.atomic():
+            player = self.participants.create(**kwargs)
+            self.ranks.create(season=self, player=player, rank=self.next_free_rank)
+
+        return player
+
+    def update_rank(self, player: Player, new_position: int):
+        """Update a player's rank and everything that follows."""
+        current_rank, _ = self.ranks.get_or_create(
+            player=player, defaults={"season": self, "rank": self.next_free_rank}
+        )
+        old_position = current_rank.rank
+        if old_position == new_position:
+            return None
+        step = 1 if old_position < new_position else -1
+        affected_ranks = self.ranks.filter(
+            rank__in=range(old_position + step, new_position + step, step)
+        )
+        with transaction.atomic():
+            for rank in affected_ranks:
+                rank.update(rank.rank - step)
+            current_rank.update(new_position)
+
+    @property
+    def next_free_rank(self):
+        """Calculate what rank the next added player would start at."""
+        return self.ranks.last().rank + 1 if self.ranks.last() else 1
+
     @property
     def end_date_str(self):
+        """Stringify the end date."""
         return str(self.end_date or "open")
+
+
+class Rank(models.Model):
+    """A rank of a player in a season."""
+
+    season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name="ranks")
+    player = models.ForeignKey(Player, on_delete=models.RESTRICT, related_name="ranks")
+    rank = models.PositiveSmallIntegerField()
+
+    class Meta:
+        """Rank settings."""
+
+        unique_together = [["season", "player"]]
+        ordering = ["season", "rank"]
+
+    def __str__(self) -> str:
+        """Stringify rank object."""
+        return f"{self.season.name} | {self.rank}. {self.player.name}"
+
+    def save(self, *args, **kwargs):
+        """Update the ranking history when saving."""
+        with transaction.atomic():
+            history, created = self.season.histories.get_or_create(
+                player=self.player,
+                defaults={
+                    "season": self.season,
+                    "history": ranking_history_entry(self.rank),
+                },
+            )
+            if not created:
+                history.history.extend(ranking_history_entry(self.rank))
+                history.save()
+            return super().save(*args, **kwargs)
+
+    def update(self, new_position):
+        """Update the ranking position."""
+        self.rank = new_position
+        self.save()
+
+
+def ranking_history_entry(rank: int = -1):
+    """Build a ranking history entry."""
+    return [{"timestamp": str(timezone.now()), "rank": rank}]
+
+
+class RankingHistory(models.Model):
+    """History of a player's rank in a season."""
+
+    season = models.ForeignKey(
+        Season, on_delete=models.CASCADE, related_name="histories"
+    )
+    player = models.ForeignKey(
+        Player, on_delete=models.RESTRICT, related_name="histories"
+    )
+    history = models.JSONField(default=ranking_history_entry)
+
+    def __str__(self) -> str:
+        """Stringify ranking history object."""
+        return f"Ranking History | {self.season.name} | {self.player.name}"
 
 
 class Match(models.Model):
@@ -55,7 +153,11 @@ class Match(models.Model):
         Player, on_delete=models.PROTECT, related_name="matches_second"
     )
     season = models.ForeignKey(
-        Season, on_delete=models.CASCADE, related_name="matches", null=True
+        Season,
+        on_delete=models.CASCADE,
+        related_name="matches",
+        null=True,
+        blank=True,
     )
 
     class Meta:
@@ -63,6 +165,12 @@ class Match(models.Model):
 
         verbose_name_plural = "Matches"
         ordering = ["date_played"]
+
+    class NotInSeasonError(Exception):
+        """Error for trying to save a match with one or more players not in the season."""
+
+    class NoScoresError(Exception):
+        """Error for trying to save a match with a season but no scores."""
 
     def __str__(self) -> str:
         """Represent match as a string."""

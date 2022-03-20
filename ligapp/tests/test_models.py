@@ -34,6 +34,55 @@ def test_season_end_date_str(season):
 
 
 @pytest.mark.django_db
+def test_season_add_player(season, player, other_player):
+    """Test that adding a player also adds a rank and history."""
+    season.add_player(player)
+    assert season.ranks.get(player=player).rank == 1
+    assert season.histories.get(player=player).history[0]["rank"] == 1
+    season.add_player(other_player)
+    assert season.ranks.get(player=other_player).rank == 2
+    assert season.histories.get(player=other_player).history[0]["rank"] == 2
+
+
+@pytest.mark.django_db
+def test_season_create_player(season):
+    """Test that creating a new player also adds rank and history."""
+    ananas = season.create_player(name="Anders Antonsen")
+    assert season.ranks.get(player=ananas).rank == 1
+    assert season.histories.get(player=ananas).history[0]["rank"] == 1
+
+
+@pytest.mark.django_db
+def test_season_rank_up_player(season, player):
+    """Test that promoting a player makes the right adjustments and only those."""
+    season.add_player(player)
+    ananas = season.create_player(name="Anders Antonsen")
+    lohky = season.create_player(name="Loh Kean Yew")
+    lasen = season.create_player(name="Lakshya Sen")
+    ctc = season.create_player(name="Chou Tien Chen")
+    assert list(season.ranks.values_list("rank", "player__name")) == [
+        (1, player.name),
+        (2, ananas.name),
+        (3, lohky.name),
+        (4, lasen.name),
+        (5, ctc.name),
+    ]
+    season.update_rank(lasen, 2)
+    assert list(season.ranks.values_list("rank", "player__name")) == [
+        (1, player.name),
+        (2, lasen.name),
+        (3, ananas.name),
+        (4, lohky.name),
+        (5, ctc.name),
+    ]
+    assert [i["rank"] for i in player.histories.get(season=season).history] == [1]
+    assert [i["rank"] for i in lasen.histories.get(season=season).history] == [4, 2]
+    assert [i["rank"] for i in ananas.histories.get(season=season).history] == [2, 3]
+    assert [i["rank"] for i in lohky.histories.get(season=season).history] == [3, 4]
+    assert [i["rank"] for i in ctc.histories.get(season=season).history] == [5]
+
+
+@pytest.mark.django_db
 def test_timed_match_str(timed_match, get_sets):
     """Test the string representation of a TimedMatch object."""
     assert str(timed_match) == "2000-01-02 (10 min): Test Player vs Other Player; --"
