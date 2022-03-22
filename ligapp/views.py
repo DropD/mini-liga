@@ -6,7 +6,8 @@ from django.views.generic import CreateView, DetailView, FormView, ListView
 from django.views.generic.detail import SingleObjectMixin
 
 from .forms import NewMatchForm, NewPlayerMatchForm
-from .models import Match, MultiSetMatch, Player, Season, Set
+from .match_builder import MatchBuilder
+from .models import Match, Player, Season
 
 
 class SeasonListView(LoginRequiredMixin, ListView):
@@ -90,41 +91,17 @@ class NewMatchView(UserPassesTestMixin, SingleObjectMixin, FormView):
     def form_valid(self, form):
         """Create and save the right objects if the form was submitted in a valid state."""
         data = form.cleaned_data
-        match = MultiSetMatch(
-            season=data["season"],
-            date_played=data["date_played"],
-            first_player=data["first_player"],
-            second_player=data["second_player"],
+        kwargs = {
+            k: v
+            for k, v in data.items()
+            if k in ["season", "date_played", "first_player", "second_player"]
+        }
+        match_builder = MatchBuilder(**kwargs).set_type_from_enum_value(
+            data["match_type"]
         )
-        match.save()
-        Set(
-            first_score=data["first_score_1"],
-            second_score=data["second_score_1"],
-            match=match,
-            order=1,
-        ).save()
-        if data["first_score_2"]:
-            Set(
-                first_score=data["first_score_2"],
-                second_score=data["second_score_2"],
-                match=match,
-                order=2,
-            ).save()
-            if data["first_score_3"]:
-                Set(
-                    first_score=data["first_score_3"],
-                    second_score=data["second_score_3"],
-                    match=match,
-                    order=3,
-                ).save()
-        match.refresh_from_db()
-        if match.winner:
-            first_rank = match.first_player.ranks.get(season=match.season).rank
-            second_rank = match.second_player.ranks.get(season=match.season).rank
-            if match.winner.pk == match.first_player.pk and first_rank > second_rank:
-                match.season.update_rank(match.first_player, second_rank)
-            elif match.winner == match.second_player and second_rank > first_rank:
-                match.season.update_rank(match.second_player, first_rank)
+        for i in range(1, 4):
+            match_builder.add_score(data[f"first_score_{i}"], data[f"second_score_{i}"])
+        match_builder.build()
         return super().form_valid(form)
 
     def get_success_url(self):
