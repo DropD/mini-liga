@@ -72,6 +72,8 @@ def browse_to_seasons_list(
     """Click on the season link and ensure we got to the details page."""
     authbrowser.links.find_by_text(season_name).click()
     assert authbrowser.find_by_tag("h1").first.text == season_name
+    assert authbrowser.find_by_text("1. Victor")
+    assert authbrowser.find_by_text("2. Kento")
 
 
 @when("I click to add a match")
@@ -125,3 +127,15 @@ def no_add_match(authbrowser):
 @then("I should not see any seasons")
 def season_not_in_list(authbrowser, season_name):
     assert not authbrowser.links.find_by_text(season_name)
+
+
+@then("The ranking should be updated")
+def ranking_updated(authbrowser):
+    assert authbrowser.find_by_text("1. Kento")
+    assert authbrowser.find_by_text("2. Victor")
+
+
+@then("The ranking should be unchanged")
+def ranking_unchanged(authbrowser):
+    assert authbrowser.find_by_text("1. Victor")
+    assert authbrowser.find_by_text("2. Kento")

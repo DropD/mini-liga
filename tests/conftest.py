@@ -44,8 +44,8 @@ def season(season_name):
     ]
     victor = Player.objects.get_or_create(name="Victor")[0]
     kento = Player.objects.get_or_create(name="Kento")[0]
-    season.participants.add(victor)
-    season.participants.add(kento)
+    season.add_player(victor)
+    season.add_player(kento)
     yield season
 
 
