@@ -12,6 +12,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import TextChoices
 from django.utils.formats import get_format
 from django.utils.translation import gettext as _
+from django_select2 import forms as s2forms
 from dominate import tags
 
 from .models import Player, Season
@@ -100,6 +101,33 @@ class DatePickerLayout(layout.Layout):
         ).render()
 
 
+class PlayerSelectorLayout(layout.Layout):
+    """Layout for a player select field with select2 autocompletion."""
+
+    def __init__(
+        self,
+        name: str,
+        *args,
+        css_class: str = "",
+        label: Optional[str] = None,
+        **kwargs,
+    ):
+        """Add a FloatingField and script combo."""
+        box_id = f"{name.replace('_', '-')}-box"
+        label = label if label is not None else name.replace("_", " ").capitalize()
+        super().__init__(
+            layout.Div(
+                layout.Div(
+                    name,
+                    css_class=" ".join(["form-control", css_class]),
+                    css_id=box_id,
+                ),
+                layout.HTML(f"<label for='{box_id}'>{label}</label>"),
+                css_class="form-floating mb-3",
+            ),
+        )
+
+
 class SetScoresLayout(layout.Layout):
     """Layout for scores of both players for a set of play."""
 
@@ -131,6 +159,12 @@ class SetScoresLayout(layout.Layout):
         )
 
 
+class PlayerWidget(s2forms.ModelSelect2Widget):
+    """Player widget with autocomplete for name, uses django-select2."""
+
+    search_fields = ["name__icontains"]
+
+
 class NewMatchForm(forms.Form):
     """Form for recording a match."""
 
@@ -138,10 +172,16 @@ class NewMatchForm(forms.Form):
         queryset=Season.objects, disabled=True, widget=forms.HiddenInput()
     )
     first_player = forms.ModelChoiceField(
-        queryset=Player.objects, empty_label="Select a Player"
+        queryset=Player.objects,
+        label="",
+        empty_label="Select",
+        widget=s2forms.Select2Widget(),
     )
     second_player = forms.ModelChoiceField(
-        queryset=Player.objects, empty_label="Select a Player"
+        queryset=Player.objects,
+        label="",
+        empty_label="Select",
+        widget=s2forms.Select2Widget(),
     )
     match_type = forms.ChoiceField(choices=MatchType.choices, initial=MatchType.SETS)
     date_played = DatePickerField(lang="de-ch", initial=datetime.now().date())
@@ -249,9 +289,9 @@ class NewMatchForm(forms.Form):
         helper.layout = layout.Layout(
             layout.Fieldset(
                 "",
-                FloatingField("first_player", css_class="match-input"),
+                PlayerSelectorLayout("first_player", css_class="match-input"),
                 layout.HTML("<div class='match-input player-vs'>vs.</div>"),
-                FloatingField("second_player", css_class="match-input"),
+                PlayerSelectorLayout("second_player", css_class="match-input"),
             ),
             layout.Fieldset(
                 "",

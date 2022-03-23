@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     "fontawesomefree",
+    "django_select2",
 ]
 
 MIDDLEWARE = [
@@ -88,6 +89,18 @@ DATABASES = {
 }
 
 
+# Caching
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+    },
+    "select2": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "select2_cache",
+    },
+}
+
+
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
@@ -129,8 +142,14 @@ STATIC_URL = "/static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# Crispy forms settings
+
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+# Select2 settings
+
+SELECT2_CACHE_BACKEND = "select2"
 
 django_heroku.settings(locals())
