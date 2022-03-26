@@ -86,3 +86,8 @@ form.player-item{
 .form-control .select2-container--default .select2-selection--single {
   border: none;
 }
+
+@keyframes hide {
+  from {display: "";}
+  to {display: "none";}
+}

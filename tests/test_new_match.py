@@ -11,7 +11,19 @@ def test_new_match(
     client,
     live_server,
     transactional_db,
-    #  django_db_serialized_rollback,
+):
+    """Auto-collect steps and test scenario."""
+
+
+@scenario("new_match.feature", "Add a new fixed duration match to an existing season")
+def test_new_timed_match(
+    user_is_seasonadmin,
+    season,
+    user,
+    authbrowser,
+    client,
+    live_server,
+    transactional_db,
 ):
     """Auto-collect steps and test scenario."""
 
@@ -92,6 +104,20 @@ def enter_valid_match_data(season, authbrowser):
     authbrowser.fill("date_played", "1.3.2020")
     authbrowser.fill("first_score_1", 21)
     authbrowser.fill("second_score_1", 19)
+    authbrowser.fill("first_score_2", 21)
+    authbrowser.fill("second_score_2", 11)
+    authbrowser.find_by_name("submit").first.click()
+
+
+@when("I enter valid data for a fixed duration match and submit")
+def enter_valid_timed_match_data(season, authbrowser):
+    authbrowser.find_by_name("first_player").type("ke")
+    authbrowser.find_by_name("second_player").type("vi")
+    authbrowser.select("match_type", "Time")
+    authbrowser.fill("minutes_played", "10")
+    authbrowser.fill("date_played", "1.4.2020")
+    authbrowser.fill("first_score_1", 25)
+    authbrowser.fill("second_score_1", 24)
     authbrowser.find_by_name("submit").first.click()
 
 
@@ -112,11 +138,25 @@ def redirected_to_season(
 def new_match_in_list(
     authbrowser,
 ):
-    new_match = authbrowser.find_by_text("March 1, 2020").first
+    new_match = authbrowser.find_by_css(".match-item").first
     assert new_match
-    assert new_match.parent.find_by_text("Kento")
-    assert new_match.parent.find_by_text("Victor")
-    assert new_match.parent.find_by_text("21 : 19")
+    assert new_match.find_by_text("March 1, 2020")
+    assert new_match.find_by_text("Kento")
+    assert new_match.find_by_text("Victor")
+    assert new_match.find_by_text("21 : 19, 21 : 11")
+
+
+@then("The new fixed duration match should be in the list")
+def new_timed_match_in_list(
+    authbrowser,
+):
+    new_match = authbrowser.find_by_css(".match-item").first
+    assert new_match
+    assert new_match.find_by_text("April 1, 2020")
+    assert new_match.find_by_text("Kento")
+    assert new_match.find_by_text("Victor")
+    assert new_match.find_by_css(".match-duration").text == "10 minutes"
+    assert new_match.find_by_text("25 : 24")
 
 
 @then("I should not see the add match button")
