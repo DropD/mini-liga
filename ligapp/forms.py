@@ -29,7 +29,7 @@ class ScoreField(forms.IntegerField):
     """Integer field type with validators for max and min values."""
 
     default_validators = [
-        validators.MaxValueValidator(30, message="Can not be larger than 30."),
+        validators.MaxValueValidator(90, message="Can not be larger than 90."),
         validators.MinValueValidator(0, message="Can not be below 0."),
     ]
 

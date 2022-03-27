@@ -128,7 +128,7 @@ def test_set_str(sets_match, get_sets):
 
 @pytest.mark.django_db
 def test_set_winner(sets_match, get_sets, player, other_player):
-    "Test the ``winner`` property of a objects in different cases."
+    """Test the ``winner`` property of a objects in different cases."""
     sets = get_sets(sets_match)
     assert sets[0].winner == player
     assert sets[1].winner == other_player

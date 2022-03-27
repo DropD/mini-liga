@@ -63,12 +63,12 @@ def test_invalid_scores(season, player, other_player):
             "second_player": other_player,
             "match_type": MatchType.SETS,
             "date_played": str(timezone.now()),
-            "first_score_1": 31,
+            "first_score_1": 91,
             "second_score_1": -11,
         },
     )
     assert not form.is_valid()
-    assert form.errors["first_score_1"] == ["Can not be larger than 30."]
+    assert form.errors["first_score_1"] == ["Can not be larger than 90."]
     assert form.errors["second_score_1"] == ["Can not be below 0."]
 
 

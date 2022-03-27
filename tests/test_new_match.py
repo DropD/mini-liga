@@ -116,8 +116,8 @@ def enter_valid_timed_match_data(season, authbrowser):
     authbrowser.select("match_type", "Time")
     authbrowser.fill("minutes_played", "10")
     authbrowser.fill("date_played", "1.4.2020")
-    authbrowser.fill("first_score_1", 25)
-    authbrowser.fill("second_score_1", 24)
+    authbrowser.fill("first_score_1", 54)
+    authbrowser.fill("second_score_1", 32)
     authbrowser.find_by_name("submit").first.click()
 
 
@@ -156,7 +156,7 @@ def new_timed_match_in_list(
     assert new_match.find_by_text("Kento")
     assert new_match.find_by_text("Victor")
     assert new_match.find_by_css(".match-duration").text == "10 minutes"
-    assert new_match.find_by_text("25 : 24")
+    assert new_match.find_by_text("54 : 32")
 
 
 @then("I should not see the add match button")
