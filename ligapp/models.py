@@ -217,7 +217,7 @@ class TimedMatch(Match):
     @property
     def minutes_played_str(self) -> str:
         """Represent the match duration."""
-        return f" ({self.minutes_played} min)"
+        return f" ({self.minutes_played} minutes)"
 
     @property
     def winner(self) -> Optional[Player]:

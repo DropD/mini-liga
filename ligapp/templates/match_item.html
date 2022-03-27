@@ -2,7 +2,15 @@
 
 <tr class="match-item">
   <td class="match-date">{{ match.date_played.date | localize }}</td>
-  {% if any_timed_matches %}<td class="match-duration">{% if match.minutes_played_str %}({{ match.minutes_played_str }}){% endif %}</td>{% endif %}
+  {% if any_timed_matches %}
+    <td class="match-duration">
+    {% if match.child.minutes_played_str %}
+      {{ match.child.minutes_played }} minutes
+    {% else %}
+      ----
+    {% endif %}
+    </td>
+  {% endif %}
   <td class="match-player"><span {% if match.child.winner.pk == match.first_player.pk %}class="winner"{% endif %} >{{ match.first_player }}</span></td>
   <td class="match-vs">vs.</td>
   <td class="match-player"><span {% if match.child.winner.pk == match.second_player.pk %}class="winner"{% endif %}>{{ match.second_player }}</span></td>

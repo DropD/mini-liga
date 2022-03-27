@@ -1,5 +1,4 @@
 """Forms for the ligapp."""
-import json
 from datetime import date, datetime
 from typing import Any, Optional
 
@@ -11,10 +10,11 @@ from django.core import validators
 from django.core.exceptions import ValidationError
 from django.db.models import TextChoices
 from django.utils.formats import get_format
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 from django_select2 import forms as s2forms
-from dominate import tags
 
+from .layouts import ConditionalScoresLayout, DatePickerLayout, SetScoresLayout
 from .models import Player, Season
 
 
@@ -29,7 +29,7 @@ class ScoreField(forms.IntegerField):
     """Integer field type with validators for max and min values."""
 
     default_validators = [
-        validators.MaxValueValidator(30, message="Can not be larger than 30."),
+        validators.MaxValueValidator(90, message="Can not be larger than 90."),
         validators.MinValueValidator(0, message="Can not be below 0."),
     ]
 
@@ -53,116 +53,80 @@ class DatePickerField(forms.DateField):
         raise ValidationError(_("Invalid date."), code="invalid")
 
 
-class DatePickerLayout(layout.Layout):
-    """Layout for a date input with js for date picker widget."""
+class BootstrapSelect2(s2forms.Select2Widget):
+    """Bootstrap 5 themed version of the light Select2 widget."""
 
-    def __init__(
-        self,
-        name: str,
-        *args,
-        css_class: str = None,
-        date_lang: str = "de-ch",
-        **kwargs,
-    ):
-        """Add a floating field and a script html tag."""
-        self.name = name
-        self.date_lang = date_lang
-        super().__init__(
-            FloatingField(name, css_class=css_class, id=f"{name}_picker"),
-            layout.HTML(self._gen_script()),
-            *args,
-            **kwargs,
-        )
+    theme = "bootstrap-5"
 
-    def _gen_config(self) -> str:
-        return json.dumps(
-            {
-                "localization": {"locale": f"'{self.date_lang}'"},
-                "display": {
-                    "components": {
-                        "date": True,
-                        "decades": True,
-                        "month": True,
-                        "year": True,
-                        "hours": False,
-                        "minutes": False,
-                        "seconds": False,
-                    }
-                },
+    def build_attrs(self, *args, **kwargs):
+        """Fix the placeholder behaviour by passing the label manually."""
+        attrs = super().build_attrs(*args, **kwargs)
+        attrs["data-placeholder"] = self.label
+        return attrs
+
+    def __init__(self, label="", *args, **kwargs):
+        """Take in the label attribute for the placeholder."""
+        self.label = label
+        super().__init__(*args, **kwargs)
+
+    @property
+    def media(self):
+        """Dynamically update the media to include select2 bootstrap-5 theme."""
+        return super().media + forms.Media(
+            css={
+                "screen": [
+                    (
+                        "//cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.2.0"
+                        "/dist/select2-bootstrap-5-theme.min.css"
+                    )
+                ]
             }
-        ).replace('"', "")
-
-    def _gen_script(self) -> str:
-        element = f"document.getElementById('div_id_{self.name}')"
-        config = self._gen_config()
-        return tags.script(
-            f"const datepicker = new tempusDominus.TempusDominus({element}, {config})",
-            type="text/javascript",
-        ).render()
+        )
 
 
-class PlayerSelectorLayout(layout.Layout):
-    """Layout for a player select field with select2 autocompletion."""
+class ConditionalMixin:
+    """Mixin for conditionally visible / required form field widgets."""
 
     def __init__(
         self,
-        name: str,
-        *args,
-        css_class: str = "",
-        label: Optional[str] = None,
-        **kwargs,
+        *,
+        switch_field: str,
+        switch_value: str,
+        switch_show: bool = True,
+        switch_required: bool = True,
     ):
-        """Add a FloatingField and script combo."""
-        box_id = f"{name.replace('_', '-')}-box"
-        label = label if label is not None else name.replace("_", " ").capitalize()
-        super().__init__(
-            layout.Div(
-                layout.Div(
-                    name,
-                    css_class=" ".join(["form-control", css_class]),
-                    css_id=box_id,
-                ),
-                layout.HTML(f"<label for='{box_id}'>{label}</label>"),
-                css_class="form-floating mb-3",
-            ),
+        """Take in the required values for the switcher js class."""
+        self.switch_field = switch_field
+        self.switch_value = switch_value
+        self.switch_show = switch_show
+        self.switch_required = switch_required
+        super().__init__()
+
+    @property
+    def media(self):
+        """Add the local conditional switcher script."""
+        return super().media + forms.Media(js=["ligapp/conditional.js"])
+
+    def render(self, name, value, attrs=None, renderer=None):
+        """Append the switcher setup script to the field widget html."""
+        widget_html = super().render(name, value, attrs, renderer)
+        switch_element = f"'id_{self.switch_field}'"
+        conditional_element = f"'id_{name}'"
+        return widget_html + mark_safe(
+            "<script type='text/javascript'>"
+            f"const {name}_switcher = new ConditionalFieldSwitcher("
+            f"{conditional_element}, {switch_element}, '{self.switch_value}'"
+            f", {str(self.switch_show).lower()}, {str(self.switch_required).lower()}"
+            ");\n"
+            f"register_switcher({name}_switcher);"
+            "</script>"
         )
 
 
-class SetScoresLayout(layout.Layout):
-    """Layout for scores of both players for a set of play."""
+class ConditionalNumberInput(ConditionalMixin, forms.NumberInput):
+    """Conditionally visible / required number input widget."""
 
-    def __init__(self, name_left: str, name_right: str, *args, **kwargs):
-        """Create a bootstrap 5 row / col layout with <score> : <score>."""
-        super().__init__(
-            layout.Row(
-                layout.Div(
-                    FloatingField(
-                        name_left,
-                        label="Score",
-                        css_class="match-input score-input",
-                    ),
-                    css_class="col",
-                ),
-                layout.HTML("<div class='col score-vs'>:</div>"),
-                layout.Div(
-                    FloatingField(
-                        name_right,
-                        label="Score",
-                        css_class="match-input score-input",
-                    ),
-                    css_class="col",
-                ),
-                css_class="row g-0 match-input",
-            ),
-            *args,
-            **kwargs,
-        )
-
-
-class PlayerWidget(s2forms.ModelSelect2Widget):
-    """Player widget with autocomplete for name, uses django-select2."""
-
-    search_fields = ["name__icontains"]
+    ...
 
 
 class NewMatchForm(forms.Form):
@@ -174,16 +138,19 @@ class NewMatchForm(forms.Form):
     first_player = forms.ModelChoiceField(
         queryset=Player.objects,
         label="",
-        empty_label="Select",
-        widget=s2forms.Select2Widget(),
+        widget=BootstrapSelect2(label="First Player"),
     )
     second_player = forms.ModelChoiceField(
         queryset=Player.objects,
         label="",
-        empty_label="Select",
-        widget=s2forms.Select2Widget(),
+        widget=BootstrapSelect2(label="Second Player"),
     )
     match_type = forms.ChoiceField(choices=MatchType.choices, initial=MatchType.SETS)
+    minutes_played = forms.IntegerField(
+        validators=[validators.MaxValueValidator(60)],
+        required=False,
+        widget=ConditionalNumberInput(switch_field="match_type", switch_value="Time"),
+    )
     date_played = DatePickerField(lang="de-ch", initial=datetime.now().date())
     first_score_1 = ScoreField(label="Score")
     second_score_1 = ScoreField(label="Score")
@@ -199,6 +166,53 @@ class NewMatchForm(forms.Form):
         self.fields["first_player"].queryset = Player.objects.filter(season=season)
         self.fields["second_player"].queryset = Player.objects.filter(season=season)
         self.helper = self.get_helper()
+
+    def get_helper(self) -> FormHelper:
+        season = Season.objects.get(pk=self.season)
+        helper = FormHelper()
+        date_lang = self.fields["date_played"].lang
+        helper.layout = layout.Layout(
+            layout.Fieldset(
+                "",
+                FloatingField("first_player", css_class="match-input"),
+                layout.HTML("<div class='match-input player-vs'>vs.</div>"),
+                FloatingField("second_player", css_class="match-input"),
+            ),
+            layout.Fieldset(
+                "",
+                FloatingField("match_type", css_class="match-input"),
+                FloatingField("minutes_played", css_class="match-input"),
+                DatePickerLayout(
+                    "date_played", css_class="match-input", date_lang=date_lang
+                ),
+            ),
+            layout.Fieldset(
+                "",
+                SetScoresLayout("first_score_1", "second_score_1"),
+                ConditionalScoresLayout(
+                    "first_score_2",
+                    "second_score_2",
+                    css_id="set-2",
+                    switch_name="match_type",
+                    switch_value="Points",
+                ),
+                ConditionalScoresLayout(
+                    "first_score_3",
+                    "second_score_3",
+                    css_id="set-3",
+                    switch_name="match_type",
+                    switch_value="Points",
+                ),
+            ),
+            layout.Div(
+                layout.Submit("submit", "Save", css_class="btn btn-success"),
+                layout.HTML(
+                    f"<a href={season.get_absolute_url()} class='btn btn-danger'>Cancel</a>"
+                ),
+                css_class="mb-3",
+            ),
+        )
+        return helper
 
     def clean(self) -> dict[str, Any]:
         cleaned_data = super().clean()
@@ -281,40 +295,6 @@ class NewMatchForm(forms.Form):
                 self.add_error(
                     f"second_score_{set_nr}", ValidationError(message, code="invalid")
                 )
-
-    def get_helper(self) -> FormHelper:
-        season = Season.objects.get(pk=self.season)
-        helper = FormHelper()
-        date_lang = self.fields["date_played"].lang
-        helper.layout = layout.Layout(
-            layout.Fieldset(
-                "",
-                PlayerSelectorLayout("first_player", css_class="match-input"),
-                layout.HTML("<div class='match-input player-vs'>vs.</div>"),
-                PlayerSelectorLayout("second_player", css_class="match-input"),
-            ),
-            layout.Fieldset(
-                "",
-                FloatingField("match_type", css_class="match-input"),
-                DatePickerLayout(
-                    "date_played", css_class="match-input", date_lang=date_lang
-                ),
-            ),
-            layout.Fieldset(
-                "",
-                SetScoresLayout("first_score_1", "second_score_1"),
-                SetScoresLayout("first_score_2", "second_score_2"),
-                SetScoresLayout("first_score_3", "second_score_3"),
-            ),
-            layout.Div(
-                layout.Submit("submit", "Save", css_class="btn btn-success"),
-                layout.HTML(
-                    f"<a href={season.get_absolute_url()} class='btn btn-danger'>Cancel</a>"
-                ),
-                css_class="mb-3",
-            ),
-        )
-        return helper
 
 
 class NewPlayerMatchForm(NewMatchForm):

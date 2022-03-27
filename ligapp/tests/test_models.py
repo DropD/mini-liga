@@ -85,10 +85,13 @@ def test_season_rank_up_player(season, player):
 @pytest.mark.django_db
 def test_timed_match_str(timed_match, get_sets):
     """Test the string representation of a TimedMatch object."""
-    assert str(timed_match) == "2000-01-02 (10 min): Test Player vs Other Player; --"
+    assert (
+        str(timed_match) == "2000-01-02 (10 minutes): Test Player vs Other Player; --"
+    )
     get_sets(timed_match)[0].save()
     assert (
-        str(timed_match) == "2000-01-02 (10 min): Test Player vs Other Player; 17 : 9"
+        str(timed_match)
+        == "2000-01-02 (10 minutes): Test Player vs Other Player; 17 : 9"
     )
 
 
@@ -125,7 +128,7 @@ def test_set_str(sets_match, get_sets):
 
 @pytest.mark.django_db
 def test_set_winner(sets_match, get_sets, player, other_player):
-    "Test the ``winner`` property of a objects in different cases."
+    """Test the ``winner`` property of a objects in different cases."""
     sets = get_sets(sets_match)
     assert sets[0].winner == player
     assert sets[1].winner == other_player

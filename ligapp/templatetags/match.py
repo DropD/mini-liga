@@ -21,7 +21,7 @@ def match_list(
     matches: Manager, tag_id: str = "matches", classes: str = ""
 ) -> Dict[str, Any]:
     """Render a list of matches."""
-    any_timed_matches = any(m.minutes_played_str for m in matches.all())
+    any_timed_matches = any(m.child.minutes_played_str for m in matches.all())
     return {
         "any_timed_matches": any_timed_matches,
         "matches": matches.all(),

@@ -94,7 +94,14 @@ class NewMatchView(UserPassesTestMixin, SingleObjectMixin, FormView):
         kwargs = {
             k: v
             for k, v in data.items()
-            if k in ["season", "date_played", "first_player", "second_player"]
+            if k
+            in [
+                "season",
+                "date_played",
+                "first_player",
+                "second_player",
+                "minutes_played",
+            ]
         }
         match_builder = MatchBuilder(**kwargs).set_type_from_enum_value(
             data["match_type"]

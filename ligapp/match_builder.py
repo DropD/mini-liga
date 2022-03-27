@@ -20,6 +20,7 @@ class MatchBuilder:
     match_type: Union[
         Type[models.MultiSetMatch], Type[models.TimedMatch]
     ] = models.MultiSetMatch
+    minutes_played: Optional[int] = None
     scores: list[models.Set] = field(default_factory=list)
 
     def set_season(self, season: models.Season) -> "MatchBuilder":
@@ -49,6 +50,10 @@ class MatchBuilder:
             self.make_timed()
         return self
 
+    def set_minutes_played(self, duration: int) -> "MatchBuilder":
+        self.minutes_played = duration
+        return self
+
     def add_set(self, score_set: models.Set) -> "MatchBuilder":
         self.scores.append(score_set)
         return self
@@ -67,12 +72,15 @@ class MatchBuilder:
             self._save_if_necessary(self.season, allowed=create_related)
             self._save_if_necessary(self.first_player, allowed=create_related)
             self._save_if_necessary(self.second_player, allowed=create_related)
-            match = models.MultiSetMatch.objects.create(
+            match = self.match_type(
                 season=self.season,
                 date_played=self.date_played,
                 first_player=self.first_player,
                 second_player=self.second_player,
             )
+            if self.match_type is models.TimedMatch:
+                match.minutes_played = self.minutes_played
+            match.save()
             for index, score_set in enumerate(self.scores):
                 score_set.match = match
                 score_set.order = index + 1
