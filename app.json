@@ -17,7 +17,7 @@
     },
     "test": {
       "scripts": {
-        "test": "python manage.py test",
+        "test": "pytest",
         "test-setup": "python manage.py collectstatic --noinput"
       }
     }
