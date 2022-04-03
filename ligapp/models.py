@@ -1,5 +1,5 @@
 """Ligapp models."""
-from typing import Optional, Union
+from typing import Any, Optional
 
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator
@@ -197,7 +197,7 @@ class Match(models.Model):
         return ""
 
     @property
-    def child(self) -> Union["TimedMatch", "MultiSetMatch"]:
+    def child(self) -> Any:
         """Handle to the derived database record if accessed through ``Match``."""
         return getattr(self, "multisetmatch", getattr(self, "timedmatch", self))
 
