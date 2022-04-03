@@ -3,12 +3,12 @@ from pytest_bdd import scenario, then, when  # noqa: I900 # dev requirement
 
 
 @scenario("login.feature", "Try to access without logging in")
-def test_nologin(django_db_serialized_rollback):
+def test_nologin():
     ...
 
 
 @scenario("login.feature", "Login and access")
-def test_login(django_db_serialized_rollback, user, client, live_server):
+def test_login():
     ...
 
 

@@ -1,79 +1,35 @@
 """Test steps for adding a new match."""
-from pytest_bdd import given, scenario, then, when  # noqa: I900 # dev requirements
+from pytest_bdd import scenario, then, when  # noqa: I900  # dev requirements
+from selenium.webdriver.common.keys import Keys  # noqa: I900  # dev requirements
 
 
 @scenario("new_match.feature", "Add a new match to an existing season")
 def test_new_match(
-    user_is_seasonadmin,
-    season,
-    user,
     authbrowser,
-    client,
-    live_server,
-    transactional_db,
 ):
     """Auto-collect steps and test scenario."""
 
 
 @scenario("new_match.feature", "Add a new fixed duration match to an existing season")
 def test_new_timed_match(
-    user_is_seasonadmin,
-    season,
-    user,
     authbrowser,
-    client,
-    live_server,
-    transactional_db,
 ):
     """Auto-collect steps and test scenario."""
 
 
 @scenario("new_match.feature", "Cancel adding a new match")
-def test_cancel_match(
-    user_is_seasonadmin,
-    season,
-    user,
-    authbrowser,
-    client,
-    live_server,
-    transactional_db,
-    django_db_serialized_rollback,
-):
+def test_cancel_match(authbrowser):
     """Auto-collect steps and test scenario."""
 
 
 @scenario("new_match.feature", "Season only shows up for admin")
-def test_non_admin_list(
-    season, user, authbrowser, transactional_db, django_db_serialized_rollback
-):
+def test_non_admin_list(nonadmin_authbrowser):
     """Auto-collect steps and test scenario."""
 
 
 @scenario("new_match.feature", "Nonadmin unable to add new match")
-def test_non_admin_no_add(
-    season, user, authbrowser, transactional_db, django_db_serialized_rollback
-):
+def test_non_admin_no_add(nonadmin_authbrowser):
     """Auto-collect steps and test scenario."""
-
-
-@given("I am logged in on the season list")
-def logged_in(
-    authbrowser,
-    index_page,
-):
-    """Ensure logged in and on seasons list."""
-    authbrowser.visit(index_page)
-    assert authbrowser.find_by_text("Running Seasons")
-
-
-@given("I am season admin for the test season")
-def am_season_admin(user, season):
-    season.admins.add(user)
-
-
-@given("I am logged in on the season detail view")
-def on_season_detail(authbrowser, live_server, season):
-    authbrowser.visit(live_server + season.get_absolute_url())
 
 
 @when("I browse to the first season in the list")
@@ -84,8 +40,6 @@ def browse_to_seasons_list(
     """Click on the season link and ensure we got to the details page."""
     authbrowser.links.find_by_text(season_name).click()
     assert authbrowser.find_by_tag("h1").first.text == season_name
-    assert authbrowser.find_by_text("1. Victor")
-    assert authbrowser.find_by_text("2. Kento")
 
 
 @when("I click to add a match")
@@ -95,11 +49,11 @@ def click_add_match(authbrowser):
 
 
 @when("I enter valid data and submit")
-def enter_valid_match_data(season, authbrowser):
-    kento_pk = season.participants.get(name="Kento").pk
-    victor_pk = season.participants.get(name="Victor").pk
-    authbrowser.select("first_player", kento_pk)
-    authbrowser.select("second_player", victor_pk)
+def enter_valid_match_data(authbrowser):
+    authbrowser.find_by_id("select2-id_first_player-container").first.click()
+    authbrowser.find_by_css(".select2-search__field").type("Ken" + Keys.RETURN)
+    authbrowser.find_by_id("select2-id_second_player-container").first.click()
+    authbrowser.find_by_css(".select2-search__field").type("Vic" + Keys.RETURN)
     authbrowser.select("match_type", "Points")
     authbrowser.fill("date_played", "1.3.2020")
     authbrowser.fill("first_score_1", 21)
@@ -110,9 +64,11 @@ def enter_valid_match_data(season, authbrowser):
 
 
 @when("I enter valid data for a fixed duration match and submit")
-def enter_valid_timed_match_data(season, authbrowser):
-    authbrowser.find_by_name("first_player").type("ke")
-    authbrowser.find_by_name("second_player").type("vi")
+def enter_valid_timed_match_data(authbrowser):
+    authbrowser.find_by_id("select2-id_first_player-container").first.click()
+    authbrowser.find_by_css(".select2-search__field").type("Ken" + Keys.RETURN)
+    authbrowser.find_by_id("select2-id_second_player-container").first.click()
+    authbrowser.find_by_css(".select2-search__field").type("Vic" + Keys.RETURN)
     authbrowser.select("match_type", "Time")
     authbrowser.fill("minutes_played", "10")
     authbrowser.fill("date_played", "1.4.2020")
@@ -124,14 +80,6 @@ def enter_valid_timed_match_data(season, authbrowser):
 @when("I click cancel")
 def cancel_new_match(authbrowser):
     authbrowser.find_link_by_text("Cancel").click()
-
-
-@then("I should be redirected to the season detail page")
-def redirected_to_season(
-    season_name,
-    authbrowser,
-):
-    assert authbrowser.find_by_tag("h1").first.text == season_name
 
 
 @then("The new match should be in the list")
@@ -150,7 +98,7 @@ def new_match_in_list(
 def new_timed_match_in_list(
     authbrowser,
 ):
-    new_match = authbrowser.find_by_css(".match-item").first
+    new_match = authbrowser.find_by_css(".match-item").last
     assert new_match
     assert new_match.find_by_text("April 1, 2020")
     assert new_match.find_by_text("Kento")
@@ -160,13 +108,13 @@ def new_timed_match_in_list(
 
 
 @then("I should not see the add match button")
-def no_add_match(authbrowser):
-    assert not authbrowser.find_link_by_partial_text("new match")
+def no_add_match(nonadmin_authbrowser):
+    assert not nonadmin_authbrowser.find_link_by_partial_text("new match")
 
 
 @then("I should not see any seasons")
-def season_not_in_list(authbrowser, season_name):
-    assert not authbrowser.links.find_by_text(season_name)
+def season_not_in_list(nonadmin_authbrowser, season_name):
+    assert not nonadmin_authbrowser.links.find_by_text(season_name)
 
 
 @then("The ranking should be updated")

@@ -23,4 +23,9 @@ urlpatterns = [
         views.NewPlayerMatchView.as_view(),
         name="new-match-as-player",
     ),
+    path(
+        "season/<int:season>/add-player",
+        views.AddPlayerView.as_view(),
+        name="add-player",
+    ),
 ]

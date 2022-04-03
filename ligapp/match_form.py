@@ -43,6 +43,7 @@ class DatePickerField(forms.DateField):
         self.lang = lang
 
     def to_python(self, value: Optional[str]) -> Optional[date]:
+        """Allow non-existent players to pass through."""
         if not isinstance(value, str):
             return value
         for format in get_format("DATE_INPUT_FORMATS", self.lang):
@@ -62,11 +63,13 @@ class BootstrapSelect2(s2forms.Select2Widget):
         """Fix the placeholder behaviour by passing the label manually."""
         attrs = super().build_attrs(*args, **kwargs)
         attrs["data-placeholder"] = self.label
+        attrs["data-tags"] = str(self.tags).lower()
         return attrs
 
-    def __init__(self, label="", *args, **kwargs):
+    def __init__(self, label="", *args, new_allowed=False, **kwargs):
         """Take in the label attribute for the placeholder."""
         self.label = label
+        self.tags = new_allowed
         super().__init__(*args, **kwargs)
 
     @property

@@ -74,6 +74,10 @@ jobs:
           python manage.py collectstatic
 
       - name: Run Tests
-        run: pytest -s -vv --cov
+        run: |
+          python manage.py migrate --settings=miniliga.test_settings
+          python manage.py loaddata --settings=miniliga.test_settings --app=ligapp tests
+          python manage.py runserver 8001 --settings=miniliga.test_settings&
+          pytest -s -vv --cov
         env:
           DISPLAY: :99

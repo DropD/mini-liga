@@ -1,5 +1,5 @@
 - model: auth.user
-  pk: 2
+  pk: 1
   fields:
     password: pbkdf2_sha256$320000$D7HHFWMnN6U0uSk6Ko2p1y$oSs7ha5VjejVeJQHvUPkv22JKuLj5kn3ImwVKt0a1TQ=
     is_superuser: false
@@ -10,164 +10,62 @@
     is_staff: false
     is_active: true
     date_joined: 2022-02-23 08:06:59.782142+00:00
-- model: ligapp.player
-  pk: 1
-  fields:
-    name: Kento
-- model: ligapp.player
+- model: auth.user
   pk: 2
   fields:
-    name: Akane
+    password: pbkdf2_sha256$320000$D7HHFWMnN6U0uSk6Ko2p1y$oSs7ha5VjejVeJQHvUPkv22JKuLj5kn3ImwVKt0a1TQ=
+    is_superuser: false
+    username: testuser2
+    first_name: 'Test'
+    last_name: 'User'
+    email: 'test@u.ser'
+    is_staff: false
+    is_active: true
+    date_joined: 2022-02-23 08:06:59.782142+00:00
 - model: ligapp.player
-  pk: 3
+  pk: 1
   fields:
     name: Victor
 - model: ligapp.player
-  pk: 5
+  pk: 2
   fields:
-    name: Ananas
+    name: Christo
 - model: ligapp.player
-  pk: 6
+  pk: 3
   fields:
-    name: Line
-- model: ligapp.player
-  pk: 7
-  fields:
-    name: Tai
-- model: ligapp.player
-  pk: 8
-  fields:
-    name: Gill
+    name: Kento
 - model: ligapp.season
   pk: 1
   fields:
-    name: BCZA Junioren 2019/2020
+    name: "Test Season"
     start_date: 2019-08-01 00:00:00+00:00
     end_date: 2020-07-31 00:00:00+00:00
     participants:
     - 1
-    - 2
     - 3
-    - 5
-- model: ligapp.season
+    admins:
+    - 1
+- model: ligapp.rank
+  pk: 1
+  fields:
+    season: 1
+    player: 1
+    rank: 1
+- model: ligapp.rank
   pk: 2
   fields:
-    name: BCZA Junioren 2020/2021
-    start_date: 2020-08-01 00:00:00+00:00
-    end_date: 2021-07-31 00:00:00+00:00
-    participants:
-    - 2
-    - 5
-    - 6
-    - 7
-- model: ligapp.match
+    season: 1
+    player: 3
+    rank: 2
+- model: ligapp.rankinghistory
   pk: 1
   fields:
-    date_played: 2019-09-04 09:50:31+00:00
-    first_player: 1
-    second_player: 2
     season: 1
-- model: ligapp.match
-  pk: 3
-  fields:
-    date_played: 2019-12-06 19:45:00+00:00
-    first_player: 3
-    second_player: 5
-    season: 1
-- model: ligapp.match
-  pk: 4
-  fields:
-    date_played: 2020-01-07 20:10:00+00:00
-    first_player: 2
-    second_player: 5
-    season: 1
-- model: ligapp.match
-  pk: 5
-  fields:
-    date_played: 2020-10-09 20:07:00+00:00
-    first_player: 6
-    second_player: 7
-    season: 2
-- model: ligapp.match
-  pk: 6
-  fields:
-    date_played: 2020-11-24 20:13:00+00:00
-    first_player: 7
-    second_player: 2
-    season: 2
-- model: ligapp.timedmatch
-  pk: 1
-  fields:
-    minutes_played: 8
-- model: ligapp.timedmatch
-  pk: 3
-  fields:
-    minutes_played: 12
-- model: ligapp.timedmatch
-  pk: 4
-  fields:
-    minutes_played: 9
-- model: ligapp.multisetmatch
-  pk: 5
-  fields:
-    season: 2
-- model: ligapp.multisetmatch
-  pk: 6
-  fields:
-    season: 2
-- model: ligapp.set
-  pk: 1
-  fields:
-    first_score: 7
-    second_score: 18
-    match: 1
-    order: 1
-- model: ligapp.set
+    player: 1
+    history: [{"timestamp": "2019-08-02 00:00:00+00:00", "rank": 1}]
+- model: ligapp.rankinghistory
   pk: 2
   fields:
-    first_score: 30
-    second_score: 14
-    match: 3
-    order: 1
-- model: ligapp.set
-  pk: 5
-  fields:
-    first_score: 20
-    second_score: 23
-    match: 4
-    order: 1
-- model: ligapp.set
-  pk: 6
-  fields:
-    first_score: 21
-    second_score: 19
-    match: 5
-    order: 1
-- model: ligapp.set
-  pk: 7
-  fields:
-    first_score: 21
-    second_score: 3
-    match: 5
-    order: 2
-- model: ligapp.set
-  pk: 8
-  fields:
-    first_score: 21
-    second_score: 19
-    match: 6
-    order: 1
-- model: ligapp.set
-  pk: 10
-  fields:
-    first_score: 24
-    second_score: 26
-    match: 6
-    order: 2
-- model: ligapp.set
-  pk: 9
-  fields:
-    first_score: 21
-    second_score: 16
-    match: 6
-    order: 3
+    season: 1
+    player: 3
+    history: [{"timestamp": "2019-08-02 00:00:00+00:00", "rank": 2}]

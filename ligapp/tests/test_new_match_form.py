@@ -4,7 +4,7 @@ from django.test.client import Client
 from django.urls import reverse
 from django.utils import timezone
 
-from ligapp.forms import MatchType, NewMatchForm
+from ligapp.match_form import MatchType, NewMatchForm
 from ligapp.views import NewMatchView
 
 

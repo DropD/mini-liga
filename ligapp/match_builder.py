@@ -6,7 +6,7 @@ from typing import Optional, Type, Union
 from django.db import transaction
 from django.utils import timezone
 
-from . import forms, models
+from . import match_form, models
 
 
 @dataclass
@@ -44,9 +44,9 @@ class MatchBuilder:
         return self
 
     def set_type_from_enum_value(self, choice) -> "MatchBuilder":
-        if choice == forms.MatchType.SETS:
+        if choice == match_form.MatchType.SETS:
             self.make_multiset()
-        elif choice == forms.MatchType.TIME:
+        elif choice == match_form.MatchType.TIME:
             self.make_timed()
         return self
 
