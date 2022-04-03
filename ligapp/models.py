@@ -1,15 +1,18 @@
 """Ligapp models."""
-from typing import Optional, Union
+from typing import Any, Optional
 
+from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator
-from django.db import models
+from django.db import models, transaction
 from django.urls import reverse
+from django.utils import timezone
 
 
 class Player(models.Model):
     """A participant in the league."""
 
-    name = models.CharField(max_length=80)
+    name = models.CharField(max_length=80, unique=True)
+    user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True)
 
     class Meta:
         """Options for the player model."""
@@ -28,6 +31,7 @@ class Season(models.Model):
     start_date = models.DateTimeField("start date")
     end_date = models.DateTimeField("end date", null=True)
     participants = models.ManyToManyField(Player)
+    admins = models.ManyToManyField(User, related_name="season_admin_for")
 
     def __str__(self) -> str:
         """Represent seaon as a string."""
@@ -36,9 +40,106 @@ class Season(models.Model):
     def get_absolute_url(self):
         return reverse("ligapp:season-detail", kwargs={"pk": self.pk})
 
+    def add_player(self, player: Player):
+        """Add a player, starting at the bottom of the ranking."""
+        with transaction.atomic():
+            self.participants.add(player)
+            self.ranks.create(season=self, player=player, rank=self.next_free_rank)
+
+    def create_player(self, **kwargs) -> Player:
+        """Create a new player, adding them to the season."""
+        player = None
+        with transaction.atomic():
+            player = self.participants.create(**kwargs)
+            self.ranks.create(season=self, player=player, rank=self.next_free_rank)
+
+        return player
+
+    def update_rank(self, player: Player, new_position: int):
+        """Update a player's rank and everything that follows."""
+        current_rank, _ = self.ranks.get_or_create(
+            player=player, defaults={"season": self, "rank": self.next_free_rank}
+        )
+        old_position = current_rank.rank
+        if old_position == new_position:
+            return None
+        step = 1 if old_position < new_position else -1
+        affected_ranks = self.ranks.filter(
+            rank__in=range(old_position + step, new_position + step, step)
+        )
+        with transaction.atomic():
+            for rank in affected_ranks:
+                rank.update(rank.rank - step)
+            current_rank.update(new_position)
+
+    @property
+    def next_free_rank(self):
+        """Calculate what rank the next added player would start at."""
+        return self.ranks.last().rank + 1 if self.ranks.last() else 1
+
     @property
     def end_date_str(self):
-        return self.end_date or "open"
+        """Stringify the end date."""
+        return str(self.end_date or "open")
+
+
+class Rank(models.Model):
+    """A rank of a player in a season."""
+
+    season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name="ranks")
+    player = models.ForeignKey(Player, on_delete=models.RESTRICT, related_name="ranks")
+    rank = models.PositiveSmallIntegerField()
+
+    class Meta:
+        """Rank settings."""
+
+        unique_together = [["season", "player"]]
+        ordering = ["season", "rank"]
+
+    def __str__(self) -> str:
+        """Stringify rank object."""
+        return f"{self.season.name} | {self.rank}. {self.player.name}"
+
+    def save(self, *args, **kwargs):
+        """Update the ranking history when saving."""
+        with transaction.atomic():
+            history, created = self.season.histories.get_or_create(
+                player=self.player,
+                defaults={
+                    "season": self.season,
+                    "history": ranking_history_entry(self.rank),
+                },
+            )
+            if not created:
+                history.history.extend(ranking_history_entry(self.rank))
+                history.save()
+            return super().save(*args, **kwargs)
+
+    def update(self, new_position):
+        """Update the ranking position."""
+        self.rank = new_position
+        self.save()
+
+
+def ranking_history_entry(rank: int = -1):
+    """Build a ranking history entry."""
+    return [{"timestamp": str(timezone.now()), "rank": rank}]
+
+
+class RankingHistory(models.Model):
+    """History of a player's rank in a season."""
+
+    season = models.ForeignKey(
+        Season, on_delete=models.CASCADE, related_name="histories"
+    )
+    player = models.ForeignKey(
+        Player, on_delete=models.RESTRICT, related_name="histories"
+    )
+    history = models.JSONField(default=ranking_history_entry)
+
+    def __str__(self) -> str:
+        """Stringify ranking history object."""
+        return f"Ranking History | {self.season.name} | {self.player.name}"
 
 
 class Match(models.Model):
@@ -52,7 +153,11 @@ class Match(models.Model):
         Player, on_delete=models.PROTECT, related_name="matches_second"
     )
     season = models.ForeignKey(
-        Season, on_delete=models.CASCADE, related_name="matches", null=True
+        Season,
+        on_delete=models.CASCADE,
+        related_name="matches",
+        null=True,
+        blank=True,
     )
 
     class Meta:
@@ -61,26 +166,39 @@ class Match(models.Model):
         verbose_name_plural = "Matches"
         ordering = ["date_played"]
 
+    class NotInSeasonError(Exception):
+        """Error for trying to save a match with one or more players not in the season."""
+
+    class NoScoresError(Exception):
+        """Error for trying to save a match with a season but no scores."""
+
     def __str__(self) -> str:
         """Represent match as a string."""
-        return f"{self.date_played}: {self.first_player} vs {self.second_player}; {self.score_str}"
+        return "{date}{minutes}: {first} vs {second}; {score}".format(
+            date=self.date_played.date(),
+            minutes=self.minutes_played_str,
+            first=self.first_player,
+            second=self.second_player,
+            score=self.score_str,
+        )
 
     def get_absolute_url(self):
+        """Get url to view this match."""
         return reverse("ligapp:match-detail", kwargs={"pk": self.pk})
 
     @property
     def score_str(self) -> str:
-        return ", ".join(str(set) for set in self.sets.all())
+        """Represent all possible score states (including no scores)."""
+        return ", ".join(str(set) for set in self.sets.all()) or "--"
 
     @property
     def minutes_played_str(self) -> str:
-        timedmatch = getattr(self, "timedmatch", None)
-        if timedmatch:
-            return timedmatch.minutes_played_str
+        """Represent duration of the match (empty except for ``TimedMatch``)."""
         return ""
 
     @property
-    def child(self) -> Union["TimedMatch", "MultiSetMatch"]:
+    def child(self) -> Any:
+        """Handle to the derived database record if accessed through ``Match``."""
         return getattr(self, "multisetmatch", getattr(self, "timedmatch", self))
 
 
@@ -96,23 +214,18 @@ class TimedMatch(Match):
 
         verbose_name_plural = "TimedMatches"
 
-    def __str__(self) -> str:
-        """Represent a timed match as a string."""
-        return (
-            f"{self.date_played} ({self.minutes_played_str}): "
-            f"{self.first_player} vs {self.second_player}; "
-            f"{self.sets.first()}"
-        )
-
     @property
     def minutes_played_str(self) -> str:
-        return f"{self.minutes_played} min"
+        """Represent the match duration."""
+        return f" ({self.minutes_played} minutes)"
 
     @property
     def winner(self) -> Optional[Player]:
         """Find the player who won more points or None in case of a draw."""
         score = self.sets.first()
-        return score.winner
+        if score:
+            return score.winner
+        return None
 
 
 class MultiSetMatch(Match):
@@ -134,6 +247,11 @@ class MultiSetMatch(Match):
         elif first_sets_won < second_sets_won:
             return self.second_player
         return None
+
+    @property
+    def minutes_played_str(self) -> str:
+        """Represent the match duration (always empty)."""
+        return ""
 
 
 class Set(models.Model):

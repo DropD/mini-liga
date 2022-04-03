@@ -34,16 +34,9 @@
           {% for participant in season.participants.all %}
           <div class="player-item">{{ participant.name }}</div>
           {% endfor %}
-          <button id="button-show-add-player" class="player-item btn btn-sm btn-outline-primary" data-bs-toggle="collapse" data-bs-target=".add-player-inputs" role="button">
+          <a id="button-show-add-player" class="player-item btn btn-sm btn-outline-primary" href={% url "ligapp:add-player" season=season.pk %}>
             <i class="bi bi-person-plus"></i>
-          </button>
-          <form class="player-item input-group add-player-inputs collapse collapse-horizontal" action="{% url 'ligapp:add-player' %}" method="post">
-            {% csrf_token %}
-            <fieldset>
-              <input type="text" class="form-control" placeholder="Name" aria-label="New participant name" aria-describedby="button-show-add-player">
-            </fieldset>
-            <button type="submit" id="button-add-player" class="btn btn-sm btn-success"><i class="bi bi-plus"></i></button>
-          </form>
+          </a>
         </div>
       </div>
 
@@ -54,11 +47,28 @@
           </button>
         </div>
         <div {% accordion-body-props "matches"%}>
-          <a id="button-add-match" class="btn btn-sm btn-outline-primary" href={% url "ligapp:add-match" season=season.pk %}>
+          {% if user in season.admins.all or user.is_staff %}
+          <a id="button-add-match" class="btn btn-sm btn-outline-primary" href={% url "ligapp:new-match" season=season.pk %}>
             <i class="bi bi-plus"></i> Add new match
           </a>
+          {% elif user.player in season.participants.all %}
+          <a id="button-add-match" class="btn btn-sm btn-outline-primary" href={% url "ligapp:new-match-as-player" season=season.pk player=user.player.pk %}>
+            <i class="bi bi-plus"></i> Add new match
+          </a>
+          {% endif %}
           {% match_list season.matches "matchlist"%}
         </div>
+      </div>
+
+      <div class="accordion-item">
+        <div class="accordion-header">
+          <button {% accordion-button-props "ranking" "h2" %}>Ranking</button>
+        </div>
+        <ul {% accordion-body-props "ranking" "list-group-flush" %}>
+          {% for rank in season.ranks.all %}
+          <li class="list-group-item">{{ rank.rank }}. {{ rank.player }}</li>
+          {% endfor %}
+        </ul>
       </div>
 
     </div>

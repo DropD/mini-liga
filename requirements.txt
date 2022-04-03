@@ -1,3 +1,9 @@
+crispy-bootstrap5
 django
+django-crispy-forms
 django-heroku
+django-select2
+dominate
+fontawesomefree
 gunicorn
+pyyaml

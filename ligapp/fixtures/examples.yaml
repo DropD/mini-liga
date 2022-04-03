@@ -1,3 +1,18 @@
+- model: auth.user
+  pk: 1
+  fields:
+    password: pbkdf2_sha256$320000$alFntP4eqVnePO4CoomJy6$WbpiDReD4pzhjsYK88sCB9PC1Te9gMAO/a950uM0wGE=
+    last_login: null
+    is_superuser: false
+    username: exampleuser
+    first_name: 'Example'
+    last_name: 'User'
+    email: 'example@u.ser'
+    is_staff: false
+    is_active: true
+    date_joined: 2022-03-03 12:27:18.243235+00:00
+    groups: []
+    user_permissions: []
 - model: ligapp.player
   pk: 1
   fields:
@@ -37,6 +52,8 @@
     - 2
     - 3
     - 5
+    admins:
+    - 1
 - model: ligapp.season
   pk: 2
   fields:
@@ -48,6 +65,56 @@
     - 5
     - 6
     - 7
+    admins:
+    - 1
+- model: ligapp.rank
+  pk: 1
+  fields:
+    season: 1
+    player: 1
+    rank: 1
+- model: ligapp.rank
+  pk: 2
+  fields:
+    season: 1
+    player: 2
+    rank: 2
+- model: ligapp.rank
+  pk: 3
+  fields:
+    season: 1
+    player: 3
+    rank: 3
+- model: ligapp.rank
+  pk: 4
+  fields:
+    season: 1
+    player: 5
+    rank: 4
+- model: ligapp.rank
+  pk: 5
+  fields:
+    season: 2
+    player: 2
+    rank: 1
+- model: ligapp.rank
+  pk: 6
+  fields:
+    season: 2
+    player: 5
+    rank: 2
+- model: ligapp.rank
+  pk: 7
+  fields:
+    season: 2
+    player: 6
+    rank: 3
+- model: ligapp.rank
+  pk: 8
+  fields:
+    season: 2
+    player: 7
+    rank: 4
 - model: ligapp.match
   pk: 1
   fields:

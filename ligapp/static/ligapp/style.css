@@ -1,3 +1,7 @@
+.invalid-feedback {
+  display: block;
+}
+
 .winner {
   font-weight: bold;
 }
@@ -52,30 +56,38 @@ form.player-item{
   margin-left: 20px;
 }
 
-.match-type { grid-area: match-type }
-.match-date { grid-area: match-date }
-.player-1 { grid-area: player-1; }
-.player-2 { grid-area: player-2; }
-.score-1-1 { grid-area: score-1-1; }
-.score-2-1 { grid-area: score-2-1; }
-.score-3-1 { grid-area: score-3-1; }
-.score-1-2 { grid-area: score-1-2; }
-.score-2-2 { grid-area: score-2-2; }
-.score-3-2 { grid-area: score-3-2; }
-.match-vs { grid-area: match-vs; }
-.sep-1 {grid-area: sep-1; }
-.sep-2 {grid-area: sep-2; }
-.sep-3 {grid-area: sep-3; }
+.match-input {
+  max-width: 280px;
+}
 
-.match-grid {
-  display: grid;
-  grid-template-areas:
-    "match-type . match-date match-date"
-    "player-1 match-vs player-2 . "
-    "score-1-1 sep-1 score-1-2 . "
-    "score-2-1 sep-2 score-2-2 . "
-    "score-3-1 sep-3 score-3-2 . ";
-  grid-template-columns: 250px 30px 250px auto;
-  margin-bottom: 20px;
-  grid-row-gap: 10px;
+.score-input {
+  max-width: 130px;
+  min-width: 80px;
+}
+
+.score-vs {
+  max-width: 20px;
+  text-align: center;
+  padding-top: 15px;
+}
+
+.player-vs{
+  text-align: center;
+}
+
+.asteriskField {
+  display: none;
+}
+
+.form-control .select2-container .select2-selection--single .select2-selection__rendered {
+  padding-left: 0px;
+}
+
+.form-control .select2-container--default .select2-selection--single {
+  border: none;
+}
+
+@keyframes hide {
+  from {display: "";}
+  to {display: "none";}
 }
