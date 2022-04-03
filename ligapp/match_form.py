@@ -1,4 +1,4 @@
-"""Ligapp form for creating a match."""
+"""Forms for the ligapp."""
 from datetime import date, datetime
 from typing import Any, Optional
 
@@ -43,6 +43,7 @@ class DatePickerField(forms.DateField):
         self.lang = lang
 
     def to_python(self, value: Optional[str]) -> Optional[date]:
+        """Allow non-existent players to pass through."""
         if not isinstance(value, str):
             return value
         for format in get_format("DATE_INPUT_FORMATS", self.lang):
