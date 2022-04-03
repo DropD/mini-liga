@@ -12,7 +12,7 @@ class Player(models.Model):
     """A participant in the league."""
 
     name = models.CharField(max_length=80, unique=True)
-    user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True)
+    user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     class Meta:
         """Options for the player model."""
@@ -29,9 +29,9 @@ class Season(models.Model):
 
     name = models.CharField(max_length=80)
     start_date = models.DateTimeField("start date")
-    end_date = models.DateTimeField("end date", null=True)
-    participants = models.ManyToManyField(Player)
-    admins = models.ManyToManyField(User, related_name="season_admin_for")
+    end_date = models.DateTimeField("end date", null=True, blank=True)
+    participants = models.ManyToManyField(Player, blank=True)
+    admins = models.ManyToManyField(User, related_name="season_admin_for", blank=True)
 
     def __str__(self) -> str:
         """Represent seaon as a string."""
