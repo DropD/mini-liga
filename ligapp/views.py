@@ -155,7 +155,7 @@ class AddPlayerView(UserPassesTestMixin, SingleObjectMixin, FormView):
         player = data["name"]
         if player.pk is not None and not season.participants.contains(player):
             season.add_player(player)
-        else:
+        elif player.pk is None and not season.participants.filter(name=player.name):
             season.create_player(name=player.name)
         return super().form_valid(form)
 

@@ -5,39 +5,25 @@ from selenium.webdriver.common.keys import Keys  # noqa: I900  # dev requirement
 
 @scenario("add_player.feature", "Add a new player to a season")
 def test_new_player(
-    user_is_seasonadmin,
-    season,
-    user,
     authbrowser,
-    client,
-    live_server,
-    transactional_db,
 ):
     """Collect scenario steps."""
 
 
 @scenario("add_player.feature", "Add an existing player to a season")
 def test_existing_player(
-    user_is_seasonadmin,
-    season,
-    external_player,
-    user,
     authbrowser,
-    client,
-    live_server,
-    transactional_db,
 ):
     """Collect scenario steps."""
 
 
 @when("I click to add a player")
 def click_add_player(authbrowser):
-    breakpoint()
     authbrowser.find_by_css(".bi-person-plus").click()
 
 
 @when("I enter the name of a new player and submit")
-def type_new_name_submit(authbrowser, season):
+def type_new_name_submit(authbrowser):
     authbrowser.find_by_id("select2-id_name-container").first.click()
     search_field = authbrowser.find_by_css(".select2-search__field").first
     search_field.click()
@@ -46,8 +32,13 @@ def type_new_name_submit(authbrowser, season):
 
 
 @when("I enter the name of an existing player and submit")
-def type_existing_name_submit(authbrowser, season, external_player):
-    authbrowser.select("name", external_player.name)
+def type_existing_name_submit(authbrowser):
+    authbrowser.find_by_id("select2-id_name-container").first.click()
+    search_field = authbrowser.find_by_css(".select2-search__field").first
+    search_field.type("Chris")
+    options = authbrowser.find_by_css(".select2-results__option")
+    christo = [option for option in options if option.text == "Christo"][0]
+    christo.click()
     authbrowser.find_by_name("submit").first.click()
 
 
@@ -68,4 +59,4 @@ def new_player_ranked(authbrowser):
 
 @then("the ranking should be updated with the added existing player")
 def added_player_ranked(authbrowser):
-    assert authbrowser.find_by_text("3. Christo").first
+    assert authbrowser.find_by_text("4. Christo").first
