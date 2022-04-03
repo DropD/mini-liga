@@ -5,9 +5,10 @@ from django.utils import timezone
 from django.views.generic import CreateView, DetailView, FormView, ListView
 from django.views.generic.detail import SingleObjectMixin
 
-from .forms import NewMatchForm, NewPlayerMatchForm
 from .match_builder import MatchBuilder
+from .match_form import NewMatchForm, NewPlayerMatchForm
 from .models import Match, Player, Season
+from .player_form import AddPlayerForm
 
 
 class SeasonListView(LoginRequiredMixin, ListView):
@@ -136,3 +137,52 @@ class NewPlayerMatchView(NewMatchView):
         initial = super().get_initial()
         initial["first_player"] = self.request.user.player
         return initial
+
+
+class AddPlayerView(UserPassesTestMixin, SingleObjectMixin, FormView):
+    """View for adding a new or existing player to the season."""
+
+    form_class = AddPlayerForm
+    template_name = "ligapp/add_player_form.html"
+    model = Season
+    pk_url_kwarg = "season"
+    context_object_name = "season"
+
+    def form_valid(self, form):
+        """Create the player or simply add it to the season."""
+        data = form.cleaned_data
+        season = data["season"]
+        player = data["name"]
+        if player.pk is not None and not season.participants.contains(player):
+            season.add_player(player)
+        else:
+            season.create_player(name=player.name)
+        return super().form_valid(form)
+
+    def test_func(self):
+        """Make sure the user should be allowed to see this view."""
+        is_season_admin = self.request.user.season_admin_for.contains(self.get_object())
+        is_staff = self.request.user.is_staff
+        is_superuser = self.request.user.is_superuser
+        return is_season_admin or is_staff or is_superuser
+
+    def get_initial(self):
+        """Get initial data to prefill the form."""
+        initial = super().get_initial()
+        initial["date_played"] = timezone.now().date()
+        if "season" in self.kwargs:
+            initial["season"] = Season.objects.get(pk=self.kwargs["season"])
+        return initial
+
+    def get_context_data(self, **kwargs):
+        self.object = self.get_object()
+        return super().get_context_data(**kwargs)
+
+    def get_success_url(self):
+        return reverse("ligapp:season-detail", kwargs={"pk": self.kwargs["season"]})
+
+    def get_form_kwargs(self):
+        """Pass the season url parameter on to the form."""
+        form_kwargs = super().get_form_kwargs()
+        form_kwargs.update({"season": self.kwargs["season"]})
+        return form_kwargs

@@ -11,7 +11,7 @@ from django.utils import timezone
 class Player(models.Model):
     """A participant in the league."""
 
-    name = models.CharField(max_length=80)
+    name = models.CharField(max_length=80, unique=True)
     user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True)
 
     class Meta:

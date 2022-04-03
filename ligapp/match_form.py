@@ -1,4 +1,4 @@
-"""Forms for the ligapp."""
+"""Ligapp form for creating a match."""
 from datetime import date, datetime
 from typing import Any, Optional
 
@@ -62,11 +62,13 @@ class BootstrapSelect2(s2forms.Select2Widget):
         """Fix the placeholder behaviour by passing the label manually."""
         attrs = super().build_attrs(*args, **kwargs)
         attrs["data-placeholder"] = self.label
+        attrs["data-tags"] = str(self.tags).lower()
         return attrs
 
-    def __init__(self, label="", *args, **kwargs):
+    def __init__(self, label="", *args, new_allowed=False, **kwargs):
         """Take in the label attribute for the placeholder."""
         self.label = label
+        self.tags = new_allowed
         super().__init__(*args, **kwargs)
 
     @property
