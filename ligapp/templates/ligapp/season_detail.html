@@ -1,77 +1,42 @@
-{% extends "base.html" %}
+{% extends "ligapp/season_base.html" %}
 {% load l10n %}
 {% load match %}
 {% load bootstrap %}
 
-{% block title %}{{ season.name }}{% endblock %}
-{% block pagetitle %}{{ season.name }}{% endblock %}
+{% block season_content %}
 
-{% block content %}
-<div class="container">
+<div class="row row-cols-auto season-section" id="season-overview" style>
 
-    <div class="accordion">
-
-      <div class="accordion-item">
-        <div class="accordion-header">
-        <button {% accordion-button-props "info" "h2" %}>
-            Info
-          </button>
+  <div class="col season-panel flex-fill" id="season-latest-matches">
+    <h4 class="panel-title">Latest Matches</h4><hr>
+    <div class="matchlist">
+      {% for date, matches in season.latest_matches %}
+      <div class="match-date row">{{ date | localize }}</div>
+      {% for match in matches %}
+      <a class="match row" href={% url "ligapp:match-detail" pk=match.pk %}>
+        <div class="match-data col-3">
+          <div class="match-player{% if match.child.winner.pk == match.first_player.pk %} match-winner{% endif %}">{{ match.first_player }}</div>
+          <div class="match-player{% if match.child.winner.pk == match.second_player.pk %} match.winner{% endif %}">{{match.second_player}}</div>
         </div>
-
-        <ul {% accordion-body-props "info" "list-group-flush" %}>
-          <li class="list-group-item">{{ season.start_date.date | localize }} - {{ season.end_date_str.date | localize }}</li>
-        </ul>
-      </div>
-
-      <div class="accordion-item">
-        <div class="accordion-header">
-        <button {% accordion-button-props "participants" "h2" %}>
-            Participants
-          </button>
-        </div>
-
-        <div {% accordion-body-props "participants" "player-list-grid" %}>
-          {% for participant in season.participants.all %}
-          <div class="player-item">{{ participant.name }}</div>
-          {% endfor %}
-          <a id="button-show-add-player" class="player-item btn btn-sm btn-outline-primary" href={% url "ligapp:add-player" season=season.pk %}>
-            <i class="bi bi-person-plus"></i>
-          </a>
-        </div>
-      </div>
-
-      <div class="accordion-item">
-        <div class="accordion-header">
-          <button {% accordion-button-props "matches" "h2" %}>
-            Matches
-          </button>
-        </div>
-        <div {% accordion-body-props "matches"%}>
-          {% if user in season.admins.all or user.is_staff %}
-          <a id="button-add-match" class="btn btn-sm btn-outline-primary" href={% url "ligapp:new-match" season=season.pk %}>
-            <i class="bi bi-plus"></i> Add new match
-          </a>
-          {% elif user.player in season.participants.all %}
-          <a id="button-add-match" class="btn btn-sm btn-outline-primary" href={% url "ligapp:new-match-as-player" season=season.pk player=user.player.pk %}>
-            <i class="bi bi-plus"></i> Add new match
-          </a>
-          {% endif %}
-          {% match_list season.matches "matchlist"%}
-        </div>
-      </div>
-
-      <div class="accordion-item">
-        <div class="accordion-header">
-          <button {% accordion-button-props "ranking" "h2" %}>Ranking</button>
-        </div>
-        <ul {% accordion-body-props "ranking" "list-group-flush" %}>
-          {% for rank in season.ranks.all %}
-          <li class="list-group-item">{{ rank.rank }}. {{ rank.player }}</li>
-          {% endfor %}
-        </ul>
-      </div>
-
+        <div class="match-data flex-fill col-1">{% if match.child.minutes_played %}{{ match.child.minutes_played }}'{% endif %}</div>
+        {% for set in match.sets.all %}
+        <div class="match-data match-score col-1">{{ set.first_score }}<br>{{ set.second_score }}</div>
+        {% endfor %}
+      </a>
+      {% endfor %}
+      {% endfor %}
     </div>
+  </div>
+
+  <div class="col season-panel flex-fill" id="season-ranking">
+    <h4 class="panel-title">Ranking Top 16</h4><hr>
+    <ul class="list-group-flush">
+        {% for rank in season.top_16 %}
+        <li class="list-group-item">{{ rank.rank }}. {{ rank.player }}</li>
+        {% endfor %}
+    </ul>
+  </div>
 
 </div>
+
 {% endblock %}

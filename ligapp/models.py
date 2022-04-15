@@ -1,4 +1,5 @@
 """Ligapp models."""
+import datetime
 from typing import Any, Optional
 
 from django.contrib.auth.models import User
@@ -73,14 +74,42 @@ class Season(models.Model):
             current_rank.update(new_position)
 
     @property
-    def next_free_rank(self):
+    def next_free_rank(self) -> int:
         """Calculate what rank the next added player would start at."""
         return self.ranks.last().rank + 1 if self.ranks.last() else 1
 
     @property
-    def end_date_str(self):
+    def end_date_str(self) -> str:
         """Stringify the end date."""
         return str(self.end_date or "open")
+
+    def matches_by_date(
+        self, n_matches: Optional[int] = None
+    ) -> tuple[datetime.date, list["Match"]]:
+        last_n_matches = self.matches.order_by("-date_played")[:n_matches]
+
+        def add_match(matches_by_date, match):
+            matches_by_date.setdefault(match.date_played.date(), []).append(match)
+
+        def group_matches(matches):
+            result = {}
+            for match in matches:
+                add_match(result, match)
+            return result
+
+        return group_matches(last_n_matches).items()
+
+    @property
+    def latest_matches(self) -> tuple[datetime.date, list["Match"]]:
+        return self.matches_by_date(10)
+
+    @property
+    def match_history(self) -> tuple[datetime.date, list["Match"]]:
+        return self.matches_by_date()
+
+    @property
+    def top_16(self):
+        return self.ranks.all()[:16]
 
 
 class Rank(models.Model):

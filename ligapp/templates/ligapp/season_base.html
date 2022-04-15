@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load l10n %}
+{% load match %}
+{% load bootstrap %}
+
+{% block title %}{{ season.name }}{% endblock %}
+{% block pagetitle %}{{ season.name }}{% endblock %}
+
+{% block content %}
+
+  <div class="row" id="season-header">
+    Started: {{ season.start_date.date | localize }};
+    {% if season.end_date %}
+      Closed: {{ season.end_date.date | localize }}
+    {% else %}
+      Still running
+    {% endif %}
+  </div>
+
+  {% block season_actions_section %}
+  <div class="row season-section" id="season-actions">
+    <h4 class="section-title">Season Actions</h4> <hr>
+
+    <div class="action-grid">
+      {% block season_actions %}
+      <a id="button-add-player" class="btn btn-sm btn-outline-primary" href={% url "ligapp:add-player" season=season.pk %}>
+        <i class="bi bi-person-plus"></i><p>Add Player</p>
+      </a>
+
+      <a id="button-view-players" class="btn btn-sm btn-outline-primary" href={% url "ligapp:season-ranking" pk=season.pk %}>
+        <i class="bi bi-file-person"></i><p>Full Ranking</p>
+      </a>
+
+      <a id="button-new-match" class="btn btn-sm btn-outline-primary" href={% url "ligapp:new-match" season=season.pk %}>
+        <i class="bi bi-clipboard-plus" ></i><p >New Match</p>
+      </a>
+
+      <a id="button-view-matches" class="btn btn-sm btn-outline-primary" href={% url "ligapp:season-match-history" pk=season.pk %}>
+        <i class="bi bi-clipboard-data" ></i><p >Match History</p>
+      </a>
+      {% endblock %}
+
+      {% block local_actions %}{% endblock %}
+    </div>
+  </div>
+  {% endblock %}
+
+  {% block season_content %}{% endblock %}
+
+{% endblock %}
+
+{% block sidebarlinks %}
+<li class="nav-item text-white">{{ season.name }}<li>
+<ul>
+  <li class="nav-item">
+    <a class="nav-link" href={% url "ligapp:season-detail" pk=season.pk %}><i class="bi bi-grid"></i> Season Overview</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href={% url "ligapp:add-player" season=season.pk %}><i class="bi bi-person-plus"></i> Add Player</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href={% url "ligapp:season-ranking" pk=season.pk %}><i class="bi bi-file-person"></i> Full Ranking</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href={% url "ligapp:new-match" season=season.pk %}><i class="bi bi-clipboard-plus"></i> New Match</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href={% url "ligapp:season-match-history" pk=season.pk %}><i class="bi bi-clipboard-data"></i> Match History</a>
+  </li>
+</ul>
+{% endblock %}

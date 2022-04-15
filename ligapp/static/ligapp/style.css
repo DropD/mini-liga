@@ -10,6 +10,39 @@
   background-color: #ddd;
 }
 
+.matchlist {
+  min-width: 220px;
+  padding-left: inherit;
+}
+
+.match {
+  background-color: #dfeeff;
+  border-color: #fff;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 4px;
+  padding-right: 10px;
+  text-decoration: inherit;
+  color: inherit;
+}
+
+.match-player {
+}
+
+.match-winner {
+  font-weight: bold;
+}
+
+.match-data {
+}
+
+.match-score {
+  min-width: 2rem;
+  text-align: right;
+  padding-left: .5rem;
+  padding-right: .5rem;
+}
+
 .match-list {
   display: block;
   overflow-x: auto;
@@ -87,7 +120,69 @@ form.player-item{
   border: none;
 }
 
-@keyframes hide {
-  from {display: "";}
-  to {display: "none";}
+.action-grid {
+  display: grid;
+  gap: 1rem 1rem;
+  padding: 0rem 0rem 1rem 0rem;
+  grid-auto-flow: row;
+  grid-template-columns: 100px 100px 100px 100px 100px 100px 100px 100px;
+  grid-template-rows: 100px;
+}
+
+.action-grid .btn i {
+  font-size: 24pt;
+}
+
+.action-grid .btn p {
+  font-size: 10pt;
+  line-height: normal;
+}
+
+.section-title, .panel-title {
+  padding-left: 0px;
+}
+
+.season-panel {
+  padding-top: 10px;
+  padding-left: calc(var(--bs-gutter-x) * .5);
+  margin-left: calc(-.5 * var(--bs-gutter-x));
+  margin-right: calc(.5 * var(--bs-gutter-x));
+}
+
+.season-panel ul.list-group-flush {
+  padding-left: 0px;
+}
+
+@media only screen and (max-width: 991px) {
+  [class="action-grid"] {
+    grid-template-columns: 100px 100px 100px 100px 100px 100px;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  [class="action-grid"] {
+    grid-template-columns: 100px 100px 100px 100px;
+  }
+}
+
+@media only screen and (max-width: 512px) {
+  [class="action-grid"] {
+    grid-template-columns: 100px 100px 100px;
+  }
+}
+
+@media only screen and (max-width: 370px) {
+  [class="action-grid"] {
+    grid-template-columns: 100px 100px;
+  }
+}
+
+.season-section {
+  margin-left: calc(-.5 * var(--bs-gutter-x));
+}
+
+@media only screen and (max-width: 568px) {
+  .season-section, #season-header {
+    margin-left: 0px;
+  }
 }
