@@ -129,11 +129,11 @@ form.player-item{
   grid-template-rows: 100px;
 }
 
-.action-grid .btn i {
+.action-grid .btn.action i {
   font-size: 24pt;
 }
 
-.action-grid .btn p {
+.action-grid .btn.action {
   font-size: 10pt;
   line-height: normal;
 }
