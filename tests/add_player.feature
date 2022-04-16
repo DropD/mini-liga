@@ -8,7 +8,6 @@ Feature: Add Player
     And I enter the name of a new player and submit
 
     Then I should be redirected to the season detail page
-    And the new player should be listed
     And the ranking should be updated with the new player
 
   Scenario: Add an existing player to a season
@@ -19,5 +18,4 @@ Feature: Add Player
     And I enter the name of an existing player and submit
 
     Then I should be redirected to the season detail page
-    And the added existing player should be listed
     And the ranking should be updated with the added existing player

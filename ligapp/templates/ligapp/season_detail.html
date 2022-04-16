@@ -14,11 +14,11 @@
       <div class="match-date row">{{ date | localize }}</div>
       {% for match in matches %}
       <a class="match row" href={% url "ligapp:match-detail" pk=match.pk %}>
-        <div class="match-data col-3">
+        <div class="match-data match-players col-3">
           <div class="match-player{% if match.child.winner.pk == match.first_player.pk %} match-winner{% endif %}">{{ match.first_player }}</div>
           <div class="match-player{% if match.child.winner.pk == match.second_player.pk %} match.winner{% endif %}">{{match.second_player}}</div>
         </div>
-        <div class="match-data flex-fill col-1">{% if match.child.minutes_played %}{{ match.child.minutes_played }}'{% endif %}</div>
+        <div class="match-data match-duration flex-fill col-1">{% if match.child.minutes_played %}{{ match.child.minutes_played }}'{% endif %}</div>
         {% for set in match.sets.all %}
         <div class="match-data match-score col-1">{{ set.first_score }}<br>{{ set.second_score }}</div>
         {% endfor %}

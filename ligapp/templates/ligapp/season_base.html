@@ -23,17 +23,25 @@
 
     <div class="action-grid">
       {% block season_actions %}
+      {% if user in season.admins.all or user.is_staff %}
       <a id="button-add-player" class="btn btn-sm btn-outline-primary" href={% url "ligapp:add-player" season=season.pk %}>
         <i class="bi bi-person-plus"></i><p>Add Player</p>
       </a>
+      {% endif %}
 
       <a id="button-view-players" class="btn btn-sm btn-outline-primary" href={% url "ligapp:season-ranking" pk=season.pk %}>
         <i class="bi bi-file-person"></i><p>Full Ranking</p>
       </a>
 
+      {% if user in season.admins.all or user.is_staff %}
       <a id="button-new-match" class="btn btn-sm btn-outline-primary" href={% url "ligapp:new-match" season=season.pk %}>
         <i class="bi bi-clipboard-plus" ></i><p >New Match</p>
       </a>
+      {% elif user.player in season.participants.all %}
+      <a id="button-new-match" class="btn btn-sm btn-outline-primary" href={% url "ligapp:new-match-as-player" player=user.player.pk season=season.pk %}>
+        <i class="bi bi-clipboard-plus" ></i><p >New Match</p>
+      </a>
+      {% endif %}
 
       <a id="button-view-matches" class="btn btn-sm btn-outline-primary" href={% url "ligapp:season-match-history" pk=season.pk %}>
         <i class="bi bi-clipboard-data" ></i><p >Match History</p>
