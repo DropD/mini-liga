@@ -19,7 +19,7 @@ def test_existing_player(
 
 @when("I click to add a player")
 def click_add_player(authbrowser):
-    authbrowser.find_by_css(".bi-person-plus").click()
+    authbrowser.find_by_id("button-add-player").click()
 
 
 @when("I enter the name of a new player and submit")
@@ -40,16 +40,6 @@ def type_existing_name_submit(authbrowser):
     christo = [option for option in options if option.text == "Christo"][0]
     christo.click()
     authbrowser.find_by_name("submit").first.click()
-
-
-@then("the new player should be listed")
-def new_player_listed(authbrowser):
-    assert authbrowser.find_by_text("Toma")
-
-
-@then("the added existing player should be listed")
-def added_player_listed(authbrowser):
-    assert authbrowser.find_by_text("Christo")
 
 
 @then("the ranking should be updated with the new player")

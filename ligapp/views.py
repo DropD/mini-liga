@@ -26,6 +26,22 @@ class SeasonDetailView(LoginRequiredMixin, DetailView):
     context_object_name = "season"
 
 
+class SeasonRankingView(LoginRequiredMixin, DetailView):
+    """Display the full ranking of the season."""
+
+    model = Season
+    template_name = "ligapp/season_ranking.html"
+    context_object_name = "season"
+
+
+class SeasonMatchHistoryView(LoginRequiredMixin, DetailView):
+    """Display the full match history of the season."""
+
+    model = Season
+    template_name = "ligapp/season_match_history.html"
+    context_object_name = "season"
+
+
 class MatchDetailView(LoginRequiredMixin, DetailView):
     """Display a match."""
 

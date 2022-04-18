@@ -1,9 +1,11 @@
-{% extends "base.html" %}
+{% extends "ligapp/season_base.html" %}
 {% load crispy_forms_tags %}
 
-{% block title %} Ligapp - Create new match {% endblock %}
-{% block pagetitle %} Create new match {% endblock %}
+{% block season_actions_section %}{% endblock %}
 
-{% block content %}
-{% crispy form %}
+{% block season_content %}
+<div class="row season-section" id="season-new-match" style>
+  <h4 class="section-title">Create New Match</h4><hr>
+  {% crispy form %}
+</div>
 {% endblock %}

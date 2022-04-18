@@ -45,7 +45,7 @@ def browse_to_seasons_list(
 @when("I click to add a match")
 def click_add_match(authbrowser):
     assert not authbrowser.find_by_text("Kento vs. Victor")
-    authbrowser.find_link_by_partial_text("new match").click()
+    authbrowser.find_by_id("button-new-match").click()
 
 
 @when("I enter valid data and submit")
@@ -66,9 +66,9 @@ def enter_valid_match_data(authbrowser):
 @when("I enter valid data for a fixed duration match and submit")
 def enter_valid_timed_match_data(authbrowser):
     authbrowser.find_by_id("select2-id_first_player-container").first.click()
-    authbrowser.find_by_css(".select2-search__field").type("Ken" + Keys.RETURN)
-    authbrowser.find_by_id("select2-id_second_player-container").first.click()
     authbrowser.find_by_css(".select2-search__field").type("Vic" + Keys.RETURN)
+    authbrowser.find_by_id("select2-id_second_player-container").first.click()
+    authbrowser.find_by_css(".select2-search__field").type("Ken" + Keys.RETURN)
     authbrowser.select("match_type", "Time")
     authbrowser.fill("minutes_played", "10")
     authbrowser.fill("date_played", "1.4.2020")
@@ -86,44 +86,41 @@ def cancel_new_match(authbrowser):
 def new_match_in_list(
     authbrowser,
 ):
-    new_match = authbrowser.find_by_css(".match-item").first
+    matches = authbrowser.find_by_css(".match")
+    new_match = None
+    for match in matches:
+        players = match.find_by_css(".match-players")
+        if players.text == "Kento\nVictor":
+            new_match = match
+            break
     assert new_match
-    assert new_match.find_by_text("March 1, 2020")
-    assert new_match.find_by_text("Kento")
-    assert new_match.find_by_text("Victor")
-    assert new_match.find_by_text("21 : 19, 21 : 11")
+    scores = [i.text for i in new_match.find_by_css(".match-score")]
+    assert scores == ["21\n19", "21\n11"]
 
 
 @then("The new fixed duration match should be in the list")
 def new_timed_match_in_list(
     authbrowser,
 ):
-    new_match = authbrowser.find_by_css(".match-item").last
+    matches = authbrowser.find_by_css(".match")
+    new_match = None
+    for match in matches:
+        players = match.find_by_css(".match-players")
+        if players.text == "Victor\nKento":
+            new_match = match
+            break
     assert new_match
-    assert new_match.find_by_text("April 1, 2020")
-    assert new_match.find_by_text("Kento")
-    assert new_match.find_by_text("Victor")
-    assert new_match.find_by_css(".match-duration").text == "10 minutes"
-    assert new_match.find_by_text("54 : 32")
+    assert new_match.find_by_css(".match-duration").first.text == "10'"
+    scores = [i.text for i in new_match.find_by_css(".match-score")]
+    assert scores == ["54\n32"]
 
 
 @then("I should not see the add match button")
 def no_add_match(nonadmin_authbrowser):
-    assert not nonadmin_authbrowser.find_link_by_partial_text("new match")
+    assert not nonadmin_authbrowser.find_by_id("button-new-match")
+    assert not nonadmin_authbrowser.find_link_by_text("New Match")
 
 
 @then("I should not see any seasons")
 def season_not_in_list(nonadmin_authbrowser, season_name):
     assert not nonadmin_authbrowser.links.find_by_text(season_name)
-
-
-@then("The ranking should be updated")
-def ranking_updated(authbrowser):
-    assert authbrowser.find_by_text("1. Kento")
-    assert authbrowser.find_by_text("2. Victor")
-
-
-@then("The ranking should be unchanged")
-def ranking_unchanged(authbrowser):
-    assert authbrowser.find_by_text("1. Victor")
-    assert authbrowser.find_by_text("2. Kento")

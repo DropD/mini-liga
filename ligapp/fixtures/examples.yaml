@@ -5,9 +5,9 @@
     last_login: null
     is_superuser: false
     username: exampleuser
-    first_name: 'Example'
-    last_name: 'User'
-    email: 'example@u.ser'
+    first_name: Example
+    last_name: User
+    email: example@u.ser
     is_staff: false
     is_active: true
     date_joined: 2022-03-03 12:27:18.243235+00:00
@@ -17,30 +17,92 @@
   pk: 1
   fields:
     name: Kento
+    user: null
 - model: ligapp.player
   pk: 2
   fields:
     name: Akane
+    user: null
 - model: ligapp.player
   pk: 3
   fields:
     name: Victor
+    user: null
+- model: ligapp.player
+  pk: 4
+  fields:
+    name: Toma
+    user: null
 - model: ligapp.player
   pk: 5
   fields:
     name: Ananas
+    user: null
 - model: ligapp.player
   pk: 6
   fields:
     name: Line
+    user: null
 - model: ligapp.player
   pk: 7
   fields:
     name: Tai
+    user: null
 - model: ligapp.player
   pk: 8
   fields:
     name: Gill
+    user: null
+- model: ligapp.player
+  pk: 9
+  fields:
+    name: Morten
+    user: null
+- model: ligapp.player
+  pk: 10
+  fields:
+    name: Marvin
+    user: null
+- model: ligapp.player
+  pk: 11
+  fields:
+    name: LohKY
+    user: null
+- model: ligapp.player
+  pk: 12
+  fields:
+    name: Pusarla
+    user: null
+- model: ligapp.player
+  pk: 13
+  fields:
+    name: Ragnarok
+    user: null
+- model: ligapp.player
+  pk: 14
+  fields:
+    name: Jenny
+    user: null
+- model: ligapp.player
+  pk: 15
+  fields:
+    name: Sabrina
+    user: null
+- model: ligapp.player
+  pk: 16
+  fields:
+    name: Pieter
+    user: null
+- model: ligapp.player
+  pk: 17
+  fields:
+    name: Lin
+    user: null
+- model: ligapp.player
+  pk: 18
+  fields:
+    name: Chen
+    user: null
 - model: ligapp.season
   pk: 1
   fields:
@@ -48,10 +110,10 @@
     start_date: 2019-08-01 00:00:00+00:00
     end_date: 2020-07-31 00:00:00+00:00
     participants:
-    - 1
     - 2
-    - 3
     - 5
+    - 1
+    - 3
     admins:
     - 1
 - model: ligapp.season
@@ -63,8 +125,22 @@
     participants:
     - 2
     - 5
+    - 18
+    - 8
+    - 14
+    - 1
+    - 17
     - 6
+    - 11
+    - 10
+    - 9
+    - 16
+    - 12
+    - 13
+    - 15
     - 7
+    - 4
+    - 3
     admins:
     - 1
 - model: ligapp.rank
@@ -96,25 +172,231 @@
   fields:
     season: 2
     player: 2
-    rank: 1
+    rank: 2
 - model: ligapp.rank
   pk: 6
   fields:
     season: 2
     player: 5
-    rank: 2
+    rank: 1
 - model: ligapp.rank
   pk: 7
   fields:
     season: 2
     player: 6
-    rank: 3
+    rank: 4
 - model: ligapp.rank
   pk: 8
   fields:
     season: 2
     player: 7
-    rank: 4
+    rank: 3
+- model: ligapp.rank
+  pk: 9
+  fields:
+    season: 2
+    player: 1
+    rank: 5
+- model: ligapp.rank
+  pk: 10
+  fields:
+    season: 2
+    player: 3
+    rank: 6
+- model: ligapp.rank
+  pk: 11
+  fields:
+    season: 2
+    player: 4
+    rank: 8
+- model: ligapp.rank
+  pk: 12
+  fields:
+    season: 2
+    player: 8
+    rank: 10
+- model: ligapp.rank
+  pk: 13
+  fields:
+    season: 2
+    player: 9
+    rank: 11
+- model: ligapp.rank
+  pk: 14
+  fields:
+    season: 2
+    player: 10
+    rank: 12
+- model: ligapp.rank
+  pk: 15
+  fields:
+    season: 2
+    player: 11
+    rank: 7
+- model: ligapp.rank
+  pk: 16
+  fields:
+    season: 2
+    player: 12
+    rank: 9
+- model: ligapp.rank
+  pk: 17
+  fields:
+    season: 2
+    player: 13
+    rank: 14
+- model: ligapp.rank
+  pk: 18
+  fields:
+    season: 2
+    player: 14
+    rank: 15
+- model: ligapp.rank
+  pk: 19
+  fields:
+    season: 2
+    player: 15
+    rank: 16
+- model: ligapp.rank
+  pk: 20
+  fields:
+    season: 2
+    player: 16
+    rank: 13
+- model: ligapp.rank
+  pk: 21
+  fields:
+    season: 2
+    player: 17
+    rank: 17
+- model: ligapp.rank
+  pk: 22
+  fields:
+    season: 2
+    player: 18
+    rank: 18
+- model: ligapp.rankinghistory
+  pk: 13
+  fields:
+    season: 2
+    player: 13
+    history:
+    - timestamp: '2022-04-16 22:11:29.551465+00:00'
+      rank: 14
+- model: ligapp.rankinghistory
+  pk: 14
+  fields:
+    season: 2
+    player: 14
+    history:
+    - timestamp: '2022-04-16 22:11:29.558147+00:00'
+      rank: 15
+- model: ligapp.rankinghistory
+  pk: 15
+  fields:
+    season: 2
+    player: 15
+    history:
+    - timestamp: '2022-04-16 22:11:29.561563+00:00'
+      rank: 16
+- model: ligapp.rankinghistory
+  pk: 16
+  fields:
+    season: 2
+    player: 16
+    history:
+    - timestamp: '2022-04-16 22:11:29.564223+00:00'
+      rank: 13
+- model: ligapp.rankinghistory
+  pk: 17
+  fields:
+    season: 2
+    player: 8
+    history:
+    - timestamp: '2022-04-16 22:15:02.017822+00:00'
+      rank: 9
+    - timestamp: '2022-04-16 22:15:59.019560+00:00'
+      rank: 10
+- model: ligapp.rankinghistory
+  pk: 18
+  fields:
+    season: 2
+    player: 9
+    history:
+    - timestamp: '2022-04-16 22:15:02.020658+00:00'
+      rank: 10
+    - timestamp: '2022-04-16 22:15:59.022001+00:00'
+      rank: 11
+- model: ligapp.rankinghistory
+  pk: 19
+  fields:
+    season: 2
+    player: 10
+    history:
+    - timestamp: '2022-04-16 22:15:02.023005+00:00'
+      rank: 11
+    - timestamp: '2022-04-16 22:15:59.024521+00:00'
+      rank: 12
+- model: ligapp.rankinghistory
+  pk: 20
+  fields:
+    season: 2
+    player: 11
+    history:
+    - timestamp: '2022-04-16 22:15:02.025432+00:00'
+      rank: 12
+    - timestamp: '2022-04-16 22:15:59.027920+00:00'
+      rank: 7
+- model: ligapp.rankinghistory
+  pk: 21
+  fields:
+    season: 2
+    player: 12
+    history:
+    - timestamp: '2022-04-16 22:15:02.028817+00:00'
+      rank: 8
+    - timestamp: '2022-04-16 22:15:59.016709+00:00'
+      rank: 9
+- model: ligapp.rankinghistory
+  pk: 22
+  fields:
+    season: 2
+    player: 4
+    history:
+    - timestamp: '2022-04-16 22:15:59.010759+00:00'
+      rank: 8
+- model: ligapp.rankinghistory
+  pk: 23
+  fields:
+    season: 2
+    player: 6
+    history:
+    - timestamp: '2022-04-16 22:18:07.714891+00:00'
+      rank: 4
+- model: ligapp.rankinghistory
+  pk: 24
+  fields:
+    season: 2
+    player: 7
+    history:
+    - timestamp: '2022-04-16 22:18:07.717820+00:00'
+      rank: 3
+- model: ligapp.rankinghistory
+  pk: 25
+  fields:
+    season: 2
+    player: 2
+    history:
+    - timestamp: '2022-04-16 22:18:42.902017+00:00'
+      rank: 2
+- model: ligapp.rankinghistory
+  pk: 26
+  fields:
+    season: 2
+    player: 5
+    history:
+    - timestamp: '2022-04-16 22:18:42.904938+00:00'
+      rank: 1
 - model: ligapp.match
   pk: 1
   fields:
@@ -150,6 +432,62 @@
     first_player: 7
     second_player: 2
     season: 2
+- model: ligapp.match
+  pk: 29
+  fields:
+    date_played: 2020-12-18 00:00:00+00:00
+    first_player: 16
+    second_player: 13
+    season: 2
+- model: ligapp.match
+  pk: 30
+  fields:
+    date_played: 2020-12-18 00:00:00+00:00
+    first_player: 15
+    second_player: 14
+    season: 2
+- model: ligapp.match
+  pk: 31
+  fields:
+    date_played: 2020-12-18 00:00:00+00:00
+    first_player: 12
+    second_player: 8
+    season: 2
+- model: ligapp.match
+  pk: 32
+  fields:
+    date_played: 2020-12-18 00:00:00+00:00
+    first_player: 11
+    second_player: 4
+    season: 2
+- model: ligapp.match
+  pk: 33
+  fields:
+    date_played: 2020-12-18 00:00:00+00:00
+    first_player: 10
+    second_player: 3
+    season: 2
+- model: ligapp.match
+  pk: 34
+  fields:
+    date_played: 2020-12-18 00:00:00+00:00
+    first_player: 9
+    second_player: 1
+    season: 2
+- model: ligapp.match
+  pk: 35
+  fields:
+    date_played: 2020-12-18 00:00:00+00:00
+    first_player: 7
+    second_player: 6
+    season: 2
+- model: ligapp.match
+  pk: 36
+  fields:
+    date_played: 2020-12-18 00:00:00+00:00
+    first_player: 5
+    second_player: 2
+    season: 2
 - model: ligapp.timedmatch
   pk: 1
   fields:
@@ -164,12 +502,34 @@
     minutes_played: 9
 - model: ligapp.multisetmatch
   pk: 5
-  fields:
-    season: 2
+  fields: {}
 - model: ligapp.multisetmatch
   pk: 6
-  fields:
-    season: 2
+  fields: {}
+- model: ligapp.multisetmatch
+  pk: 29
+  fields: {}
+- model: ligapp.multisetmatch
+  pk: 30
+  fields: {}
+- model: ligapp.multisetmatch
+  pk: 31
+  fields: {}
+- model: ligapp.multisetmatch
+  pk: 32
+  fields: {}
+- model: ligapp.multisetmatch
+  pk: 33
+  fields: {}
+- model: ligapp.multisetmatch
+  pk: 34
+  fields: {}
+- model: ligapp.multisetmatch
+  pk: 35
+  fields: {}
+- model: ligapp.multisetmatch
+  pk: 36
+  fields: {}
 - model: ligapp.set
   pk: 1
   fields:
@@ -213,6 +573,13 @@
     match: 6
     order: 1
 - model: ligapp.set
+  pk: 9
+  fields:
+    first_score: 21
+    second_score: 16
+    match: 6
+    order: 3
+- model: ligapp.set
   pk: 10
   fields:
     first_score: 24
@@ -220,9 +587,135 @@
     match: 6
     order: 2
 - model: ligapp.set
-  pk: 9
+  pk: 33
+  fields:
+    first_score: 21
+    second_score: 13
+    match: 29
+    order: 1
+- model: ligapp.set
+  pk: 34
+  fields:
+    first_score: 21
+    second_score: 18
+    match: 29
+    order: 2
+- model: ligapp.set
+  pk: 35
+  fields:
+    first_score: 15
+    second_score: 21
+    match: 30
+    order: 1
+- model: ligapp.set
+  pk: 36
+  fields:
+    first_score: 21
+    second_score: 12
+    match: 30
+    order: 2
+- model: ligapp.set
+  pk: 37
+  fields:
+    first_score: 19
+    second_score: 21
+    match: 30
+    order: 3
+- model: ligapp.set
+  pk: 38
+  fields:
+    first_score: 21
+    second_score: 11
+    match: 31
+    order: 1
+- model: ligapp.set
+  pk: 39
+  fields:
+    first_score: 21
+    second_score: 2
+    match: 31
+    order: 2
+- model: ligapp.set
+  pk: 40
+  fields:
+    first_score: 21
+    second_score: 19
+    match: 32
+    order: 1
+- model: ligapp.set
+  pk: 41
+  fields:
+    first_score: 19
+    second_score: 21
+    match: 32
+    order: 2
+- model: ligapp.set
+  pk: 42
+  fields:
+    first_score: 25
+    second_score: 23
+    match: 32
+    order: 3
+- model: ligapp.set
+  pk: 43
+  fields:
+    first_score: 5
+    second_score: 21
+    match: 33
+    order: 1
+- model: ligapp.set
+  pk: 44
+  fields:
+    first_score: 7
+    second_score: 21
+    match: 33
+    order: 2
+- model: ligapp.set
+  pk: 45
+  fields:
+    first_score: 17
+    second_score: 21
+    match: 34
+    order: 1
+- model: ligapp.set
+  pk: 46
+  fields:
+    first_score: 13
+    second_score: 21
+    match: 34
+    order: 2
+- model: ligapp.set
+  pk: 47
   fields:
     first_score: 21
     second_score: 16
-    match: 6
+    match: 35
+    order: 1
+- model: ligapp.set
+  pk: 48
+  fields:
+    first_score: 21
+    second_score: 19
+    match: 35
+    order: 2
+- model: ligapp.set
+  pk: 49
+  fields:
+    first_score: 19
+    second_score: 21
+    match: 36
+    order: 1
+- model: ligapp.set
+  pk: 50
+  fields:
+    first_score: 21
+    second_score: 14
+    match: 36
+    order: 2
+- model: ligapp.set
+  pk: 51
+  fields:
+    first_score: 21
+    second_score: 16
+    match: 36
     order: 3
