@@ -7,6 +7,16 @@ app_name = "ligapp"
 urlpatterns = [
     path("", views.SeasonListView.as_view(), name="index"),
     path("season/<int:pk>/", views.SeasonDetailView.as_view(), name="season-detail"),
+    path(
+        "season/<int:pk>/ranking",
+        views.SeasonRankingView.as_view(),
+        name="season-ranking",
+    ),
+    path(
+        "season/<int:pk>/match-history",
+        views.SeasonMatchHistoryView.as_view(),
+        name="season-match-history",
+    ),
     path("add-season/", views.CreateSeasonView.as_view(), name="add-season"),
     path("match/<int:pk>/", views.MatchDetailView.as_view(), name="match-detail"),
     path("add-player/", views.SeasonListView.as_view(), name="add-player"),
