@@ -195,7 +195,7 @@ class AddPlayerView(UserPassesTestMixin, SingleObjectMixin, FormView):
         return super().get_context_data(**kwargs)
 
     def get_success_url(self):
-        return reverse("ligapp:season-detail", kwargs={"pk": self.kwargs["season"]})
+        return reverse("ligapp:add-player", kwargs={"season": self.kwargs["season"]})
 
     def get_form_kwargs(self):
         """Pass the season url parameter on to the form."""
