@@ -4,7 +4,7 @@
   {% for date, match_group in matches_by_date %}
   <div class="match-date row">{{ date | localize }}</div>
   {% for match in match_group %}
-  <a class="match row {% cycle "even" "odd" %}" href={% url "ligapp:match-detail" pk=match.pk %}>
+  <a class="match row {% cycle "even" "odd" %}" href={% if match.completed %}{% url "ligapp:match-detail" pk=match.pk %}{% else %}{% url "ligapp:match-complete" match=match.pk %}{% endif %}>
     <div class="match-data match-players col-3">
       <div class="match-player{% if match.child.winner.pk == match.first_player.pk %} match-winner{% endif %}">{{ match.first_player }}</div>
       <div class="match-player{% if match.child.winner.pk == match.second_player.pk %} match-winner{% endif %}">{{match.second_player}}</div>

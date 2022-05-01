@@ -6,7 +6,7 @@ from django.views.generic import CreateView, DetailView, FormView, ListView
 from django.views.generic.detail import SingleObjectMixin
 
 from .match_builder import MatchBuilder
-from .match_form import NewMatchForm, NewPlayerMatchForm
+from .match_form import NewMatchForm, NewPlannedMatchForm, NewPlayerMatchForm
 from .models import Match, Player, Season
 from .player_form import AddPlayerForm
 
@@ -94,6 +94,7 @@ class NewMatchView(UserPassesTestMixin, SingleObjectMixin, FormView):
         return form_kwargs
 
     def get_context_data(self, **kwargs):
+        """Inject the season object into the template context."""
         self.object = self.get_object()
         return super().get_context_data(**kwargs)
 
@@ -129,7 +130,128 @@ class NewMatchView(UserPassesTestMixin, SingleObjectMixin, FormView):
         return super().form_valid(form)
 
     def get_success_url(self):
+        """URL to redirect to on success."""
         return reverse("ligapp:season-detail", kwargs={"pk": self.kwargs["season"]})
+
+
+class NewPlannedMatchView(UserPassesTestMixin, SingleObjectMixin, FormView):
+    """View for planning a match."""
+
+    form_class = NewPlannedMatchForm
+    template_name = "ligapp/new_match_form.html"
+    model = Season
+    pk_url_kwarg = "season"
+    context_object_name = "season"
+
+    def test_func(self):
+        """Make sure the user should be allowed to see this view."""
+        is_season_admin = self.request.user.season_admin_for.contains(self.get_object())
+        is_staff = self.request.user.is_staff
+        is_superuser = self.request.user.is_superuser
+        return is_season_admin or is_staff or is_superuser
+
+    def get_form_kwargs(self):
+        """Pass the season url parameter on to the form."""
+        form_kwargs = super().get_form_kwargs()
+        form_kwargs.update({"season": self.kwargs["season"]})
+        return form_kwargs
+
+    def get_context_data(self, **kwargs):
+        """Inject the season object into the template context."""
+        self.object = self.get_object()
+        return super().get_context_data(**kwargs)
+
+    def get_initial(self):
+        """Get initial data to prefill the form."""
+        initial = super().get_initial()
+        initial["date_planned"] = timezone.now().date()
+        if "season" in self.kwargs:
+            initial["season"] = Season.objects.get(pk=self.kwargs["season"])
+        return initial
+
+    def form_valid(self, form):
+        """Create and save the right objects if the form was submitted in a valid state."""
+        data = form.cleaned_data
+        kwargs = {k: v for k, v in data.items()}
+        match_type = kwargs.pop("match_type")
+        match_builder = MatchBuilder(**kwargs).set_type_from_enum_value(match_type)
+        match_builder.plan()
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        """URL to redirect to on success."""
+        return reverse("ligapp:season-detail", kwargs={"pk": self.kwargs["season"]})
+
+
+class CompletePlannedMatchView(UserPassesTestMixin, SingleObjectMixin, FormView):
+    """View for recording the result of a planned match."""
+
+    form_class = NewMatchForm
+    template_name = "ligapp/new_match_form.html"
+    model = Match
+    pk_url_kwarg = "match"
+    context_object_name = "Match"
+
+    def test_func(self):
+        """Make sure the user should be allowed to see this view."""
+        is_season_admin = self.request.user.season_admin_for.contains(self.get_object())
+        is_staff = self.request.user.is_staff
+        is_superuser = self.request.user.is_superuser
+        return is_season_admin or is_staff or is_superuser
+
+    def get_form_kwargs(self):
+        """Pass the season from the match url parameter on to the form."""
+        self.object = self.get_object()
+        form_kwargs = super().get_form_kwargs()
+        form_kwargs.update({"season": self.object.season.pk})
+        return form_kwargs
+
+    def get_context_data(self, **kwargs):
+        """Inject the match object into the template context."""
+        self.object = self.get_object()
+        context_data = super().get_context_data(**kwargs)
+        context_data["season"] = self.object.season
+        print("CompletePlannedMatchView.get_context_data")
+        return context_data
+
+    def get_initial(self):
+        """Get initial data to prefill the form."""
+        initial = super().get_initial()
+        initial["season"] = self.object.season
+        initial["first_player"] = self.object.first_player
+        initial["second_player"] = self.object.second_player
+        initial["match_type"] = self.object.match_type
+        initial["date_played"] = self.object.date_planned
+        print("CompletePlannedMatchView.get_initial")
+        return initial
+
+    def form_valid(self, form):
+        """Create the scores and update the ranking, setting the match to completed."""
+        print("CompletePlannedMatchView.form_valid")
+        data = form.cleaned_data
+        match_builder = (
+            MatchBuilder()
+            .set_completed(False)
+            .set_first_player(data["first_player"])
+            .set_second_player(data["second_player"])
+            .set_date_played(data["date_played"])
+            .set_type_from_enum_value(data["match_type"])
+            .set_minutes_played(data["minutes_played"])
+            .add_score(data["first_score_1"], data["second_score_1"])
+            .add_score(data["first_score_2"], data["second_score_2"])
+            .add_score(data["first_score_3"], data["second_score_3"])
+        )
+        match_builder.complete(self.object)
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        print("CompletePlannedMatchView.form_invalid")
+        print(form.errors)
+        return super().form_invalid(form)
+
+    def get_success_url(self):
+        """URL to redirect to on success."""
+        return reverse("ligapp:season-detail", kwargs={"pk": self.object.season.pk})
 
 
 class NewPlayerMatchView(NewMatchView):

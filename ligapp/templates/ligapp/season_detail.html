@@ -3,7 +3,18 @@
 
 {% block season_content %}
 
-<div class="row row-cols-auto season-section" id="season-overview" style>
+{% if season.planned_matches %}
+<div class="row row-cols-auto season-section" id="season-pending">
+  <div class="col season-panel flex-fill" id="season-planned-matches">
+  <h4 class="panel-title">Planned Matches</h4><hr>
+    {% with matches_by_date=season.planned_matches %}
+    {% include "ligapp/season/matches.html" %}
+    {% endwith %}
+  </div>
+</div>
+{% endif %}
+
+<div class="row row-cols-auto season-section" id="season-overview">
 
   <div class="col season-panel flex-fill" id="season-latest-matches">
     <h4 class="panel-title">Latest Matches</h4><hr>

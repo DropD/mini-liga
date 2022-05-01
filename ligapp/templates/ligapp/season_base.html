@@ -32,17 +32,20 @@
       </a>
 
       {% if user in season.admins.all or user.is_staff %}
+      <a id="button-plan-match" class="action btn btn-sm btn-outline-primary" href='{% url "ligapp:plan-match" season=season.pk %}'>
+        <i class="bi bi-calendar-plus"></i><br>Plan Match
+      </a>
       <a id="button-new-match" class="action btn btn-sm btn-outline-primary" href='{% url "ligapp:new-match" season=season.pk %}'>
-        <i class="bi bi-clipboard-plus" ></i><br>New Match
+        <i class="bi bi-clipboard-plus"></i><br>New Match
       </a>
       {% elif user.player in season.participants.all %}
       <a id="button-new-match" class="action btn btn-sm btn-outline-primary" href='{% url "ligapp:new-match-as-player" player=user.player.pk season=season.pk %}'>
-        <i class="bi bi-clipboard-plus" ></i><br>New Match
+        <i class="bi bi-clipboard-plus"></i><br>New Match
       </a>
       {% endif %}
 
       <a id="button-view-matches" class="action btn btn-sm btn-outline-primary" href='{% url "ligapp:season-match-history" pk=season.pk %}'>
-        <i class="bi bi-clipboard-data" ></i><br>Match History
+        <i class="bi bi-clipboard-data"></i><br>Match History
       </a>
       {% endblock %}
 
