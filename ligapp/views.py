@@ -211,7 +211,6 @@ class CompletePlannedMatchView(UserPassesTestMixin, SingleObjectMixin, FormView)
         self.object = self.get_object()
         context_data = super().get_context_data(**kwargs)
         context_data["season"] = self.object.season
-        print("CompletePlannedMatchView.get_context_data")
         return context_data
 
     def get_initial(self):
@@ -222,12 +221,10 @@ class CompletePlannedMatchView(UserPassesTestMixin, SingleObjectMixin, FormView)
         initial["second_player"] = self.object.second_player
         initial["match_type"] = self.object.match_type
         initial["date_played"] = self.object.date_planned
-        print("CompletePlannedMatchView.get_initial")
         return initial
 
     def form_valid(self, form):
         """Create the scores and update the ranking, setting the match to completed."""
-        print("CompletePlannedMatchView.form_valid")
         data = form.cleaned_data
         match_builder = (
             MatchBuilder()
@@ -244,11 +241,6 @@ class CompletePlannedMatchView(UserPassesTestMixin, SingleObjectMixin, FormView)
         match_builder.complete(self.object)
         return super().form_valid(form)
 
-    def form_invalid(self, form):
-        print("CompletePlannedMatchView.form_invalid")
-        print(form.errors)
-        return super().form_invalid(form)
-
     def get_success_url(self):
         """URL to redirect to on success."""
         return reverse("ligapp:season-detail", kwargs={"pk": self.object.season.pk})
@@ -263,11 +255,7 @@ class NewPlayerMatchView(NewMatchView):
         """Make sure the user is a player in the season."""
         season = self.get_object()
         player = Player.objects.get(pk=self.kwargs["player"])
-        print(str(player))
         user_player = self.request.user.player
-        print(str(user_player))
-        print(season.participants.all())
-        print(season.participants.contains(user_player))
         return season.participants.contains(user_player) and user_player == player
 
     def get_initial(self):

@@ -129,7 +129,6 @@ class MatchBuilder:
 
     def complete(self, match) -> models.Match:
         """Add missing information to a planned match instance and set it to completed."""
-        print(self.match_type)
         if self.match_type is not type(match):
             self.season = match.season
             self.date_planned = match.date_planned
