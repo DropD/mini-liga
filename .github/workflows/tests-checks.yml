@@ -93,3 +93,4 @@ jobs:
         run: tox -e browsertests
         env:
           DISPLAY: :99
+          CI_MODE: true
