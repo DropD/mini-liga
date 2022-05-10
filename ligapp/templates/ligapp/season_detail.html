@@ -1,42 +1,34 @@
 {% extends "ligapp/season_base.html" %}
 {% load l10n %}
-{% load match %}
-{% load bootstrap %}
 
 {% block season_content %}
 
-<div class="row row-cols-auto season-section" id="season-overview" style>
+{% if season.planned_matches %}
+<div class="row row-cols-auto season-section" id="season-pending">
+  <div class="col season-panel flex-fill" id="season-planned-matches">
+  <h4 class="panel-title">Planned Matches</h4><hr>
+    {% with matches_by_date=season.planned_matches %}
+    {% include "ligapp/season/matches.html" %}
+    {% endwith %}
+  </div>
+</div>
+{% endif %}
+
+<div class="row row-cols-auto season-section" id="season-overview">
 
   <div class="col season-panel flex-fill" id="season-latest-matches">
     <h4 class="panel-title">Latest Matches</h4><hr>
-    <div class="matchlist">
-      {% for date, matches in season.latest_matches %}
-      <div class="match-date row">{{ date | localize }}</div>
-      {% for match in matches %}
-      <a class="match row" href={% url "ligapp:match-detail" pk=match.pk %}>
-        <div class="match-data match-players col-3">
-          <div class="match-player{% if match.child.winner.pk == match.first_player.pk %} match-winner{% endif %}">{{ match.first_player }}</div>
-          <div class="match-player{% if match.child.winner.pk == match.second_player.pk %} match-winner{% endif %}">{{match.second_player}}</div>
-        </div>
-        <div class="match-data match-duration flex-fill col-1">{% if match.child.minutes_played %}{{ match.child.minutes_played }}'{% endif %}</div>
-        {% for set in match.sets.all %}
-        <div class="match-data match-score col-1">{{ set.first_score }}<br>{{ set.second_score }}</div>
-        {% endfor %}
-      </a>
-      {% endfor %}
-      {% endfor %}
-    </div>
+    {% with matches_by_date=season.latest_matches %}
+    {% include "ligapp/season/matches.html" %}
+    {% endwith %}
   </div>
 
   <div class="col season-panel flex-fill" id="season-ranking">
     <h4 class="panel-title">Ranking Top 16</h4><hr>
-    <ul class="list-group-flush">
-        {% for rank in season.top_16 %}
-        <li class="list-group-item">{{ rank.rank }}. {{ rank.player }}</li>
-        {% endfor %}
-    </ul>
+    {% with ranking=season.top_16 %}
+    {% include "ligapp/season/ranking.html" %}
+    {% endwith %}
   </div>
-
 </div>
 
 {% endblock %}

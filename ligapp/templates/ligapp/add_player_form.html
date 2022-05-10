@@ -4,8 +4,17 @@
 {% block season_actions_section %}{% endblock %}
 
 {% block season_content %}
+
 <div class="row season-section" id="season-add-player" style>
   <h4 class="section-title">Add a Player</h4><hr>
   {% crispy form %}
 </div>
+
+<div class="row season-section" id="season-ranking" style>
+  <h4 class="section-title">Current Ranking</h4><hr>
+  {% with ranking=season.ranks.all %}
+  {% include "ligapp/season/ranking.html" %}
+  {% endwith %}
+</div>
+
 {% endblock %}

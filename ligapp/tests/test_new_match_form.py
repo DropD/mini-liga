@@ -4,7 +4,8 @@ from django.test.client import Client
 from django.urls import reverse
 from django.utils import timezone
 
-from ligapp.match_form import MatchType, NewMatchForm
+from ligapp.match_form import NewMatchForm
+from ligapp.models import Match
 from ligapp.views import NewMatchView
 
 
@@ -26,7 +27,7 @@ def test_valid(season, player, other_player):
             "season": season.pk,
             "first_player": player,
             "second_player": other_player,
-            "match_type": MatchType.SETS,
+            "match_type": Match.MatchType.SETS,
             "date_played": str(timezone.now().date()),
             "first_score_1": 30,
             "second_score_1": 29,
@@ -61,7 +62,7 @@ def test_invalid_scores(season, player, other_player):
             "season": season,
             "first_player": player,
             "second_player": other_player,
-            "match_type": MatchType.SETS,
+            "match_type": Match.MatchType.SETS,
             "date_played": str(timezone.now()),
             "first_score_1": 91,
             "second_score_1": -11,
@@ -82,7 +83,7 @@ def test_invalid_draw(season, player, other_player):
             "season": season,
             "first_player": player,
             "second_player": other_player,
-            "match_type": MatchType.SETS,
+            "match_type": Match.MatchType.SETS,
             "date_played": str(timezone.now()),
             "first_score_1": 11,
             "second_score_1": 11,
@@ -103,7 +104,7 @@ def test_incomplete_set(season, player, other_player):
             "season": season,
             "first_player": player,
             "second_player": other_player,
-            "match_type": MatchType.SETS,
+            "match_type": Match.MatchType.SETS,
             "date_played": str(timezone.now()),
             "first_score_1": 11,
             "second_score_1": 11,
@@ -125,7 +126,7 @@ def test_player_vs_self(season, player):
             "season": season,
             "first_player": player,
             "second_player": player,
-            "match_type": MatchType.SETS,
+            "match_type": Match.MatchType.SETS,
             "date_played": timezone.now(),
             "first_score_1": 21,
             "second_score_1": 11,
@@ -146,7 +147,7 @@ def test_nonseason_player(season, player, other_player):
             "season": season,
             "first_player": player,
             "second_player": other_player,
-            "match_type": MatchType.SETS,
+            "match_type": Match.MatchType.SETS,
             "date_played": timezone.now(),
             "first_score_1": 21,
             "second_score_1": 11,
@@ -172,7 +173,7 @@ def test_view_valid(season, season_admin, player, other_player):
             "season": season.pk,
             "first_player": player,
             "second_player": other_player,
-            "match_type": MatchType.SETS,
+            "match_type": Match.MatchType.SETS,
             "date_played": str(timezone.now().date()),
             "first_score_1": 29,
             "second_score_1": 30,

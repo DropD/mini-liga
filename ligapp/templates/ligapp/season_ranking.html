@@ -1,17 +1,13 @@
 {% extends "ligapp/season_base.html" %}
 {% load l10n %}
-{% load match %}
-{% load bootstrap %}
 
 {% block season_actions_section %}{% endblock %}
 
 {% block season_content %}
 <div class="row season-section" id="season-full-ranking" style>
   <h4 class="section-title">Full Ranking</h4><hr>
-  <ul class="list-group-flush">
-      {% for rank in season.ranks.all %}
-      <li class="list-group-item">{{ rank.rank }}. {{ rank.player }}</li>
-      {% endfor %}
-  </ul>
+  {% with ranking=season.ranks.all %}
+  {% include "ligapp/season/ranking.html" %}
+  {% endwith %}
 </div>
 {% endblock %}

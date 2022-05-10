@@ -1,0 +1,5 @@
+<ul class="list-group-flush">
+    {% for rank in ranking %}
+    <li class="list-group-item {% cycle "even" "odd" %}">{{ rank.rank }}. {{ rank.player }}</li>
+    {% endfor %}
+</ul>

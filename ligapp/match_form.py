@@ -8,21 +8,13 @@ from crispy_forms.helper import FormHelper  # noqa: I900
 from django import forms
 from django.core import validators
 from django.core.exceptions import ValidationError
-from django.db.models import TextChoices
 from django.utils.formats import get_format
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 from django_select2 import forms as s2forms
 
 from .layouts import ConditionalScoresLayout, DatePickerLayout, SetScoresLayout
-from .models import Player, Season
-
-
-class MatchType(TextChoices):
-    """Enum for match type choices."""
-
-    SETS = "Points"
-    TIME = "Time"
+from .models import Match, Player, Season
 
 
 class ScoreField(forms.IntegerField):
@@ -148,7 +140,9 @@ class NewMatchForm(forms.Form):
         label="",
         widget=BootstrapSelect2(label="Second Player"),
     )
-    match_type = forms.ChoiceField(choices=MatchType.choices, initial=MatchType.SETS)
+    match_type = forms.ChoiceField(
+        choices=Match.MatchType.choices, initial=Match.MatchType.SETS
+    )
     minutes_played = forms.IntegerField(
         validators=[validators.MaxValueValidator(60)],
         required=False,
@@ -171,6 +165,7 @@ class NewMatchForm(forms.Form):
         self.helper = self.get_helper()
 
     def get_helper(self) -> FormHelper:
+        """Get the form helper."""
         season = Season.objects.get(pk=self.season)
         helper = FormHelper()
         date_lang = self.fields["date_played"].lang
@@ -259,7 +254,7 @@ class NewMatchForm(forms.Form):
             for i in range(1, 4)
         ]
         match_type = cleaned_data.get("match_type")
-        if match_type == MatchType.SETS:
+        if match_type == Match.MatchType.SETS:
             for i, score_set in enumerate(scores):
                 self._validate_set_complete(score_set, i + 1)
                 self._validate_set_is_regulation(score_set, i + 1)
@@ -307,3 +302,68 @@ class NewPlayerMatchForm(NewMatchForm):
         """Add the helper instance attr."""
         super().__init__(*args, **kwargs)
         self.fields["first_player"].disabled = True
+
+
+class NewPlannedMatchForm(forms.Form):
+    """Create a new planned match."""
+
+    season = forms.ModelChoiceField(
+        queryset=Season.objects, disabled=True, widget=forms.HiddenInput()
+    )
+    first_player = forms.ModelChoiceField(
+        queryset=Player.objects,
+        label="",
+        widget=BootstrapSelect2(label="First Player"),
+    )
+    second_player = forms.ModelChoiceField(
+        queryset=Player.objects,
+        label="",
+        widget=BootstrapSelect2(label="Second Player"),
+    )
+    match_type = forms.ChoiceField(
+        choices=Match.MatchType.choices, initial=Match.MatchType.SETS
+    )
+    minutes_played = forms.IntegerField(
+        validators=[validators.MaxValueValidator(60)],
+        required=False,
+        widget=ConditionalNumberInput(switch_field="match_type", switch_value="Time"),
+    )
+    date_planned = DatePickerField(lang="de-ch", initial=datetime.now().date())
+
+    def __init__(self, *args, season, **kwargs):
+        """Add the helper instance attr."""
+        super().__init__(*args, **kwargs)
+        self.season = season
+        self.fields["first_player"].queryset = Player.objects.filter(season=season)
+        self.fields["second_player"].queryset = Player.objects.filter(season=season)
+        self.helper = self.get_helper()
+
+    def get_helper(self) -> FormHelper:
+        """Get the form helper."""
+        season = Season.objects.get(pk=self.season)
+        helper = FormHelper()
+        date_lang = self.fields["date_planned"].lang
+        helper.layout = layout.Layout(
+            layout.Fieldset(
+                "",
+                FloatingField("first_player", css_class="match-input"),
+                layout.HTML("<div class='match-input player-vs'>vs.</div>"),
+                FloatingField("second_player", css_class="match-input"),
+            ),
+            layout.Fieldset(
+                "",
+                FloatingField("match_type", css_class="match-input"),
+                FloatingField("minutes_played", css_class="match-input"),
+                DatePickerLayout(
+                    "date_planned", css_class="match-input", date_lang=date_lang
+                ),
+            ),
+            layout.Div(
+                layout.Submit("submit", "Save", css_class="btn btn-success"),
+                layout.HTML(
+                    f"<a href={season.get_absolute_url()} class='btn btn-danger'>Cancel</a>"
+                ),
+                css_class="mb-3",
+            ),
+        )
+        return helper
