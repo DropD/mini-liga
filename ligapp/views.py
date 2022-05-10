@@ -194,7 +194,9 @@ class CompletePlannedMatchView(UserPassesTestMixin, SingleObjectMixin, FormView)
 
     def test_func(self):
         """Make sure the user should be allowed to see this view."""
-        is_season_admin = self.request.user.season_admin_for.contains(self.get_object())
+        is_season_admin = self.request.user.season_admin_for.contains(
+            self.get_object().season
+        )
         is_staff = self.request.user.is_staff
         is_superuser = self.request.user.is_superuser
         return is_season_admin or is_staff or is_superuser
