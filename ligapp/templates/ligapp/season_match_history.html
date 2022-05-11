@@ -1,35 +1,13 @@
 {% extends "ligapp/season_base.html" %}
 {% load l10n %}
-{% load match %}
-{% load bootstrap %}
 
 {% block season_actions_section %}{% endblock %}
 
 {% block season_content %}
 <div class="row season-section" id="season-full-ranking" style>
   <h4 class="section-title">Full Match History</h4><hr>
-  <div class="matchlist">
-    {% for date, matches in season.match_history %}
-    <div class="match-date row">{{ date | localize }}</div>
-    {% for match in matches %}
-    <a class="match row" href={% url "ligapp:match-detail" pk=match.pk %}>
-      <div class="match-data col-3">
-        <div class="match-player{% if match.child.winner.pk == match.first_player.pk %} match-winner{% endif %}">{{ match.first_player }}</div>
-        <div class="match-player{% if match.child.winner.pk == match.second_player.pk %} match.winner{% endif %}">{{match.second_player}}</div>
-      </div>
-      <div class="match-data flex-fill col-1">{% if match.child.minutes_played %}{{ match.child.minutes_played }}'{% endif %}</div>
-      {% for set in match.sets.all %}
-      <div class="match-data match-score col-1">{{ set.first_score }}<br>{{ set.second_score }}</div>
-      {% endfor %}
-    </a>
-    {% endfor %}
-    {% endfor %}
-  </div>
+  {% with matches_by_date=season.match_history %}
+  {% include "ligapp/season/matches.html" %}
+  {% endwith %}
 </div>
-{% endblock %}
-
-{% block sidebarlinks %}
-<li class="nav-item">
-  <a class="nav-link" href={% url "ligapp:season-detail" pk=season.pk %}><i class="bi bi-grid"></i> Season Overview</a>
-</li>
 {% endblock %}

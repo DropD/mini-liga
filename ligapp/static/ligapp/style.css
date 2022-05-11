@@ -1,124 +1,35 @@
-.invalid-feedback {
-  display: block;
-}
+/*
+ * ## General purpose layout
+ */
 
-.winner {
-  font-weight: bold;
-}
-
-.accordion-button {
-  background-color: #ddd;
-}
-
-.matchlist {
-  min-width: 220px;
-  padding-left: inherit;
-}
-
-.match {
-  background-color: #dfeeff;
-  border-color: #fff;
-  border-style: solid;
-  border-width: 1px;
-  border-radius: 4px;
-  padding-right: 10px;
-  text-decoration: inherit;
-  color: inherit;
-}
-
-.match-player {
-}
-
-.match-winner {
-  font-weight: bold;
-}
-
-.match-data {
-}
-
-.match-score {
-  min-width: 2rem;
-  text-align: right;
-  padding-left: .5rem;
-  padding-right: .5rem;
-}
-
-.match-list {
-  display: block;
-  overflow-x: auto;
-  white-space: nowrap;
-}
-
-.match-list th {
-  padding-right: 10px;
-}
-
-.match-list td {
-  padding-right: 10px;
-}
-
-.player-list-grid {
-  display: flex;
-  flex-flow: row wrap;
-  gap: 10px;
-}
-
-.player-item {
-  order: 1;
-}
-
-.player-item.btn {
-  order: 0;
-}
-
-form.player-item{
-  order: 0;
-  max-height: 30px;
-}
-
-.add-player-inputs {
-  width: auto;
-}
-
-.add-player-inputs form input {
-  min-width: 80px;
-  max-width: 100px;
-}
-
-.accordion-header button .btn {
-  margin-left: 20px;
-}
-
-.match-input {
-  max-width: 280px;
-}
-
-.score-input {
-  max-width: 130px;
-  min-width: 80px;
-}
-
-.score-vs {
-  max-width: 20px;
-  text-align: center;
-  padding-top: 15px;
-}
-
-.player-vs{
-  text-align: center;
-}
-
-.asteriskField {
-  display: none;
-}
-
-.form-control .select2-container .select2-selection--single .select2-selection__rendered {
+.section-title, .panel-title {
   padding-left: 0px;
 }
 
-.form-control .select2-container--default .select2-selection--single {
-  border: none;
+.season-panel {
+  padding-top: 10px;
+  padding-left: calc(var(--bs-gutter-x) * .5);
+  margin-left: calc(-.5 * var(--bs-gutter-x));
+  margin-right: calc(.5 * var(--bs-gutter-x));
 }
+
+.season-panel ul.list-group-flush {
+  padding-left: 0px;
+}
+
+.season-section {
+  margin-left: calc(-.5 * var(--bs-gutter-x));
+}
+
+@media only screen and (max-width: 568px) {
+  .season-section, #season-header {
+    margin-left: 0px;
+  }
+}
+
+/*
+ * ## Displaying Action Buttons
+ */
 
 .action-grid {
   display: grid;
@@ -136,21 +47,6 @@ form.player-item{
 .action-grid .btn.action {
   font-size: 10pt;
   line-height: normal;
-}
-
-.section-title, .panel-title {
-  padding-left: 0px;
-}
-
-.season-panel {
-  padding-top: 10px;
-  padding-left: calc(var(--bs-gutter-x) * .5);
-  margin-left: calc(-.5 * var(--bs-gutter-x));
-  margin-right: calc(.5 * var(--bs-gutter-x));
-}
-
-.season-panel ul.list-group-flush {
-  padding-left: 0px;
 }
 
 @media only screen and (max-width: 991px) {
@@ -177,12 +73,90 @@ form.player-item{
   }
 }
 
-.season-section {
-  margin-left: calc(-.5 * var(--bs-gutter-x));
+.even {
+  background-color: #dfeeff;
 }
 
-@media only screen and (max-width: 568px) {
-  .season-section, #season-header {
-    margin-left: 0px;
-  }
+.odd {
+  background-color: #f0f5ff;
+}
+
+/*
+ * ## Displaying Matches
+ */
+
+.matchlist {
+  min-width: 220px;
+  padding-left: inherit;
+}
+
+.match {
+  border-color: #fff;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 4px;
+  padding-right: 10px;
+  text-decoration: inherit;
+  color: inherit;
+}
+
+.match-player {
+}
+
+.match-winner {
+  font-weight: bold;
+}
+
+.match-data {
+}
+
+.match-score {
+  min-width: 2rem;
+  text-align: right;
+  padding-left: .5rem;
+  padding-right: .5rem;
+}
+
+/*
+ * ## Form helper layouts
+ */
+
+.invalid-feedback {
+  display: block;
+}
+
+.asteriskField {
+  display: none;
+}
+
+.form-control .select2-container .select2-selection--single .select2-selection__rendered {
+  padding-left: 0px;
+}
+
+.form-control .select2-container--default .select2-selection--single {
+  border: none;
+}
+
+/*
+ * ### Match forms
+ */
+
+
+.match-input {
+  max-width: 280px;
+}
+
+.score-input {
+  max-width: 130px;
+  min-width: 80px;
+}
+
+.score-vs {
+  max-width: 20px;
+  text-align: center;
+  padding-top: 15px;
+}
+
+.player-vs{
+  text-align: center;
 }

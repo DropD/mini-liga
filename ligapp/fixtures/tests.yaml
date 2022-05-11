@@ -34,6 +34,22 @@
   pk: 3
   fields:
     name: Kento
+- model: ligapp.player
+  pk: 4
+  fields:
+    name: Lee
+- model: ligapp.player
+  pk: 5
+  fields:
+    name: Mark
+- model: ligapp.player
+  pk: 6
+  fields:
+    name: Dan
+- model: ligapp.player
+  pk: 7
+  fields:
+    name: Steve
 - model: ligapp.season
   pk: 1
   fields:
@@ -43,6 +59,19 @@
     participants:
     - 1
     - 3
+    admins:
+    - 1
+- model: ligapp.season
+  pk: 2
+  fields:
+    name: "Plan Matches Season"
+    start_date: 2022-01-01 00:00:00+00:00
+    end_date: 2022-12-31 00:00:00+00:00
+    participants:
+    - 4
+    - 5
+    - 6
+    - 7
     admins:
     - 1
 - model: ligapp.rank
@@ -57,6 +86,30 @@
     season: 1
     player: 3
     rank: 2
+- model: ligapp.rank
+  pk: 3
+  fields:
+    season: 2
+    player: 4
+    rank: 1
+- model: ligapp.rank
+  pk: 4
+  fields:
+    season: 2
+    player: 5
+    rank: 2
+- model: ligapp.rank
+  pk: 5
+  fields:
+    season: 2
+    player: 6
+    rank: 3
+- model: ligapp.rank
+  pk: 6
+  fields:
+    season: 2
+    player: 7
+    rank: 4
 - model: ligapp.rankinghistory
   pk: 1
   fields:

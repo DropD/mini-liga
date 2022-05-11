@@ -3,10 +3,12 @@ import datetime
 from typing import Any, Optional
 
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator
 from django.db import models, transaction
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.translation import gettext as _
 
 
 class Player(models.Model):
@@ -39,6 +41,7 @@ class Season(models.Model):
         return self.name
 
     def get_absolute_url(self):
+        """Absolute URL for the model object."""
         return reverse("ligapp:season-detail", kwargs={"pk": self.pk})
 
     def add_player(self, player: Player):
@@ -84,12 +87,17 @@ class Season(models.Model):
         return str(self.end_date or "open")
 
     def matches_by_date(
-        self, n_matches: Optional[int] = None
-    ) -> tuple[datetime.date, list["Match"]]:
-        last_n_matches = self.matches.order_by("-date_played")[:n_matches]
+        self, queryset=None, n_matches: Optional[int] = None
+    ) -> list[tuple[datetime.date, list["Match"]]]:
+        if queryset is None:
+            queryset = self.matches
+        if not queryset:
+            return []
+        last_n_matches = queryset.order_by("-date_played")[:n_matches]
 
         def add_match(matches_by_date, match):
-            matches_by_date.setdefault(match.date_played.date(), []).append(match)
+            display_date = match.date_played or match.date_planned or timezone.now()
+            matches_by_date.setdefault(display_date.date(), []).append(match)
 
         def group_matches(matches):
             result = {}
@@ -100,16 +108,21 @@ class Season(models.Model):
         return group_matches(last_n_matches).items()
 
     @property
-    def latest_matches(self) -> tuple[datetime.date, list["Match"]]:
-        return self.matches_by_date(10)
+    def latest_matches(self) -> list[tuple[datetime.date, list["Match"]]]:
+        return self.matches_by_date(self.matches.filter(completed=True), 10)
 
     @property
-    def match_history(self) -> tuple[datetime.date, list["Match"]]:
-        return self.matches_by_date()
+    def match_history(self) -> list[tuple[datetime.date, list["Match"]]]:
+        return self.matches_by_date(self.matches.filter(completed=True))
 
     @property
-    def top_16(self):
+    def top_16(self) -> list[tuple[datetime.date, list["Match"]]]:
         return self.ranks.all()[:16]
+
+    @property
+    def planned_matches(self) -> list[tuple[datetime.date, list["Match"]]]:
+        planned_matches = self.matches.filter(completed=False)
+        return self.matches_by_date(queryset=planned_matches)
 
 
 class Rank(models.Model):
@@ -174,7 +187,9 @@ class RankingHistory(models.Model):
 class Match(models.Model):
     """A match between two participants."""
 
-    date_played = models.DateTimeField("date played")
+    date_played = models.DateTimeField("date played", null=True, blank=True)
+    date_planned = models.DateTimeField("date planned", null=True, blank=True)
+    completed = models.BooleanField(default=True)
     first_player = models.ForeignKey(
         Player, on_delete=models.PROTECT, related_name="matches_first"
     )
@@ -195,6 +210,12 @@ class Match(models.Model):
         verbose_name_plural = "Matches"
         ordering = ["date_played"]
 
+    class MatchType(models.TextChoices):
+        """Enum for match type choices."""
+
+        SETS = "Points"
+        TIME = "Time"
+
     class NotInSeasonError(Exception):
         """Error for trying to save a match with one or more players not in the season."""
 
@@ -204,7 +225,7 @@ class Match(models.Model):
     def __str__(self) -> str:
         """Represent match as a string."""
         return "{date}{minutes}: {first} vs {second}; {score}".format(
-            date=self.date_played.date(),
+            date=self.date_played.date() if self.date_played else "pending",
             minutes=self.minutes_played_str,
             first=self.first_player,
             second=self.second_player,
@@ -214,6 +235,26 @@ class Match(models.Model):
     def get_absolute_url(self):
         """Get url to view this match."""
         return reverse("ligapp:match-detail", kwargs={"pk": self.pk})
+
+    def clean(self) -> None:
+        super().clean()
+        if self.completed and self.date_played is None:
+            raise ValidationError(
+                _(
+                    "The date when the match was played must be set for complete matches!"
+                )
+            )
+        if self.completed and not self.scores.all():
+            raise ValidationError(_("A completed match must have scores."))
+        if self.date_played and not self.completed:
+            raise ValidationError(
+                _(
+                    "To record the time when a match was played,"
+                    " it must also be set to completed state!"
+                )
+            )
+        if self.first_player == self.second_player:
+            raise ValidationError(_("Must have two different players!"))
 
     @property
     def score_str(self) -> str:
@@ -229,6 +270,14 @@ class Match(models.Model):
     def child(self) -> Any:
         """Handle to the derived database record if accessed through ``Match``."""
         return getattr(self, "multisetmatch", getattr(self, "timedmatch", self))
+
+    @property
+    def match_type(self) -> str:
+        if isinstance(self.child, TimedMatch):
+            return self.MatchType.TIME
+        elif isinstance(self.child, MultiSetMatch):
+            return self.MatchType.SETS
+        raise TypeError("Invalid match type!")
 
 
 class TimedMatch(Match):

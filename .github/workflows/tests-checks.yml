@@ -37,7 +37,30 @@ jobs:
       - name: Run Checks
         run: pre-commit run --hook-stage manual --all-files
 
-  run-tests:
+  run-unittests:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.10.2]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: "*requirements.txt"
+
+      - name: Install Tox
+        run: python -m pip install --upgrade pip setuptools wheel tox
+
+      - name: Run Unittests
+        run: tox
+
+  run-browsertests:
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
@@ -61,23 +84,13 @@ jobs:
         uses: browser-actions/setup-geckodriver@latest
 
       - name: Install Dependencies
-        run: |
-          python -m pip install --upgrade pip setuptools wheel pre-commit
-          pip install -r requirements.txt
-          pip install -r dev-requirements.txt
+        run: python -m pip install --upgrade pip setuptools wheel tox
 
       - name: Start X Virtual Frame Buffer
         run: Xvfb :99 &
 
-      - name: Prepare static files for live_server
-        run: |
-          python manage.py collectstatic
-
-      - name: Run Tests
-        run: |
-          python manage.py migrate --settings=miniliga.test_settings
-          python manage.py loaddata --settings=miniliga.test_settings --app=ligapp tests
-          python manage.py runserver 8001 --settings=miniliga.test_settings&
-          pytest -s -vv --cov
+      - name: Run Browser Tests
+        run: tox -e browsertests
         env:
           DISPLAY: :99
+          CI_MODE: true
