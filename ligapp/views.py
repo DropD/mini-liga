@@ -333,5 +333,4 @@ class Head2HeadView(LoginRequiredMixin, TemplateView):
         first = Player.objects.get(pk=kwargs["first"])
         second = Player.objects.get(pk=kwargs["second"])
         context["h2hstats"] = Head2Head(first, second, self.request.user)
-        print(context["h2hstats"].stats)
         return context
