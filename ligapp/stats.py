@@ -28,21 +28,22 @@ class Head2Head:
     def count_wins(self, matches) -> collections.Counter[models.Player]:
         win_counter: collections.Counter[models.Player] = collections.Counter()
         for match in matches:
-            win_counter.update(match.winner)
+            win_counter.update([match.child.winner])
         return win_counter
 
     def count_sets(self, matches) -> collections.Counter[models.Player]:
         won_sets: collections.Counter[models.Player] = collections.Counter()
         for match in matches:
             for set in match.sets.all():
-                won_sets.update(set.winner)
+                won_sets.update([set.winner])
         return won_sets
 
     def count_points(self, matches) -> collections.Counter[models.Player]:
         won_points: collections.Counter[models.Player] = collections.Counter()
-        for set in models.Set.objects.all():
-            won_points.update({set.first_player: set.first_score})
-            won_points.update({set.second_player: set.second_score})
+        for match in matches:
+            for set in match.sets.all():
+                won_points.update({match.first_player: set.first_score})
+                won_points.update({match.second_player: set.second_score})
         return won_points
 
     @property
@@ -89,7 +90,6 @@ class Head2Head:
             make_stat_line("Sets", (sets[self.first], sets[self.second])),
             make_stat_line("Points", (points[self.first], points[self.second])),
         ]
-        print(stats)
         return stats
 
     def matches_by_date(self):

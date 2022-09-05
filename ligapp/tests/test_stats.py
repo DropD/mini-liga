@@ -11,7 +11,10 @@ def test_head2head(season, season_admin, player, other_player):
     season.add_player(player)
     season.add_player(other_player)
     MatchBuilder(
-        match_type=models.MultiSetMatch, first_player=player, second_player=other_player
+        season=season,
+        match_type=models.MultiSetMatch,
+        first_player=player,
+        second_player=other_player,
     ).add_score(21, 15).add_score(7, 21).add_score(21, 19).build()
 
     other_season = models.Season(name="Other Season", start_date=timezone.now())
@@ -23,8 +26,8 @@ def test_head2head(season, season_admin, player, other_player):
     assert head_to_head.season_stats == [(season, 1, 2)]
     assert head_to_head.stats == [
         ("Matches", [(1, 100), (0, 0)]),
-        ("Sets", [(2, 2.0 / 3.0), (1, 1.0 / 3.0)]),
-        ("Points", [(49, 49.0 / 104.0), (55, 55.0 / 104)]),
+        ("Sets", [(2, 2.0 / 3.0 * 100.0), (1, 1.0 / 3.0 * 100.0)]),
+        ("Points", [(49, 49.0 / 104.0 * 100.0), (55, 55.0 / 104 * 100.0)]),
     ]
 
 
