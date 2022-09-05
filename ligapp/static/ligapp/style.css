@@ -90,6 +90,11 @@
   padding-left: inherit;
 }
 
+.statlist {
+  min-width: 80px;
+  margin-left: calc(.5 * var(--bs-gutter-x));
+}
+
 .match {
   border-color: #fff;
   border-style: solid;
@@ -100,6 +105,21 @@
   color: inherit;
 }
 
+.stat {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.stat-player {
+  font-size: x-large;
+  font-weight: bold;
+}
+
+.stat-name {
+  text-decoration: none;
+  font-weight: bold;
+}
+
 .match-player {
 }
 
@@ -108,6 +128,19 @@
 }
 
 .match-data {
+  text-decoration: none;
+  color: black;
+}
+
+.match-h2h {
+  border-radius: 4px;
+  border-left: solid 1px;
+  border-color: white;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  writing-mode: vertical-lr;
+  text-orientation: sideways;
+  color: blue;
 }
 
 .match-score {

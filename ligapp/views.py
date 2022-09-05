@@ -2,13 +2,20 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse
 from django.utils import timezone
-from django.views.generic import CreateView, DetailView, FormView, ListView
+from django.views.generic import (
+    CreateView,
+    DetailView,
+    FormView,
+    ListView,
+    TemplateView,
+)
 from django.views.generic.detail import SingleObjectMixin
 
 from .match_builder import MatchBuilder
 from .match_form import NewMatchForm, NewPlannedMatchForm, NewPlayerMatchForm
 from .models import Match, Player, Season
 from .player_form import AddPlayerForm
+from .stats import Head2Head
 
 
 class SeasonListView(LoginRequiredMixin, ListView):
@@ -314,3 +321,17 @@ class AddPlayerView(UserPassesTestMixin, SingleObjectMixin, FormView):
         form_kwargs = super().get_form_kwargs()
         form_kwargs.update({"season": self.kwargs["season"]})
         return form_kwargs
+
+
+class Head2HeadView(LoginRequiredMixin, TemplateView):
+    """Head-to-Head view for two players."""
+
+    template_name = "ligapp/head_to_head.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        first = Player.objects.get(pk=kwargs["first"])
+        second = Player.objects.get(pk=kwargs["second"])
+        context["h2hstats"] = Head2Head(first, second, self.request.user)
+        print(context["h2hstats"].stats)
+        return context
