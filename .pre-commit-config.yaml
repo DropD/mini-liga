@@ -44,6 +44,7 @@ repos:
           (?x)^(
             ligapp/migrations/.*.py
           )$
+        entry: flake8 --requirements-file=dev-requirements.txt
 
   - repo: https://github.com/PyCQA/isort
     rev: 5.10.1
