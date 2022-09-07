@@ -6,5 +6,4 @@ pytest-bdd
 pytest-cases
 pytest-coverage
 pytest-django
-pytest-splinter
 selenium
