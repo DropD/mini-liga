@@ -31,11 +31,20 @@ repos:
     rev: 4.0.1
     hooks:
       - id: flake8
-        additional_dependencies: [flake8-django, flake8-eradicate, flake8-print, flake8-requirements, flake8-todos, flake8-cognitive-complexity, flake8-docstrings, flake8-rst]
+        additional_dependencies:
+          - flake8-django
+          - flake8-eradicate
+          - flake8-print
+          - flake8-requirements
+          - flake8-todos
+          - flake8-cognitive-complexity
+          - flake8-docstrings
+          - flake8-rst
         exclude: |
           (?x)^(
             ligapp/migrations/.*.py
           )$
+        entry: flake8 --requirements-file=dev-requirements.txt
 
   - repo: https://github.com/PyCQA/isort
     rev: 5.10.1

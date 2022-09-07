@@ -2,7 +2,10 @@
 {% load l10n %}
 
 {% block title %}{{ season.name }}{% endblock %}
-{% block pagetitle %}{{ season.name }}{% endblock %}
+{% block pagetitle %}
+  <a id="season-title-overview" href='{% url "ligapp:season-detail" pk=season.pk %}'><i class="bi bi-grid"></i></a>
+  {{ season.name }}
+{% endblock %}
 
 {% block content %}
 
@@ -69,6 +72,9 @@
   </li>
   <li class="nav-item">
     <a class="nav-link" id="nav-season-view-ranking" href='{% url "ligapp:season-ranking" pk=season.pk %}'><i class="bi bi-file-person"></i> Full Ranking</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="nav-season-plan-match" href='{% url "ligapp:plan-match" season=season.pk %}'><i class="bi bi-calendar-plus"></i> Plan Match</a>
   </li>
   <li class="nav-item">
     <a class="nav-link" id="nav-season-new-match" href='{% url "ligapp:new-match" season=season.pk %}'><i class="bi bi-clipboard-plus"></i> New Match</a>

@@ -1,3 +1,4 @@
+-r requirements.txt
 beautifulsoup4
 pre-commit
 pytest
@@ -5,4 +6,4 @@ pytest-bdd
 pytest-cases
 pytest-coverage
 pytest-django
-pytest-splinter
+selenium

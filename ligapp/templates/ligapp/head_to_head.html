@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load l10n %}
+
+{% block title %}{{ h2hstats.first.name }} vs. {{ h2hstats.second.name }}{% endblock %}
+{% block pagetitle %}{{ h2hstats.first.name }} vs. {{ h2hstats.second.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+<div class="statlist col-6">
+  <h4>Stats</h4>
+
+  <div class="row">
+    <div class="stat col"></div>
+    <div class="stat stat-player col">{{ h2hstats.first.name }}</div>
+    <div class="stat col"></div>
+    <div class="stat stat-player col">{{ h2hstats.second.name }}</div>
+  </div>
+
+  {% for season, firstrank, secondrank in h2hstats.season_stats %}
+  <div class="row {% cycle "even" "odd" %}">
+    <a class="stat stat-name col" href={% url "ligapp:season-detail" season.pk %}>{{ season.name }}</a>
+    <div class="stat col">{{ firstrank }}</div>
+    <div class="stat stat-bar col"></div>
+    <div class="stat col">{{ secondrank }}</div>
+  </div>
+  {% endfor %}
+
+  {% for stat in h2hstats.stats %}
+  <div class="row {% cycle "even" "odd" %}">
+    <div class="stat stat-name col">{{ stat.0 }}</div>
+    <div class="stat col">
+      {{ stat.1.0.0 | floatformat:0 }} {% if stat.1.0.1 != None %}({{ stat.1.0.1 | floatformat:0 }} %){% endif %}
+    </div>
+    <div class="stat stat-bar col">
+      {% if stat.1.0.1 != None %}
+      <div class="progress">
+        <div role="progressbar" style="width: {{ stat.1.0.1 }}%" class="progress-bar"></div>
+        <div role="progressbar" style="width: {{ stat.1.1.1 }}%" class="progress-bar bg-warning"></div>
+      </div>
+      {% endif %}
+    </div>
+    <div class="stat col">
+      {{ stat.1.1.0 | floatformat:0 }} {% if stat.1.1.1 != None %}({{ stat.1.1.1 | floatformat:0 }} %){% endif %}
+    </div>
+  </div>
+  {% endfor %}
+
+</div>
+</div>
+
+<div class="row">
+<div class="col-6">
+  <p></p>
+  <h4>Match History</h4>
+  {% with matches_by_date=h2hstats.matches_by_date %}
+  {% include "ligapp/season/matches.html" %}
+  {% endwith %}
+</div>
+</div>
+{% endblock %}

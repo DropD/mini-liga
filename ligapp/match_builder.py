@@ -155,11 +155,7 @@ class MatchBuilder:
 
     def _save_if_necessary(self, instance, allowed: bool = False):
         """Save a related model instance if necessary and allowed."""
-        if (
-            instance
-            and not instance.__class__.objects.contains(self.season)
-            and allowed
-        ):
+        if instance and not instance.__class__.objects.contains(instance) and allowed:
             instance.save()
 
     def _update_ranking_if_necessary(self, match):

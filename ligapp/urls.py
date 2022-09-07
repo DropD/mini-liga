@@ -42,4 +42,9 @@ urlpatterns = [
         views.AddPlayerView.as_view(),
         name="add-player",
     ),
+    path(
+        "head2head/<int:first>/<int:second>",
+        views.Head2HeadView.as_view(),
+        name="head2head",
+    ),
 ]
