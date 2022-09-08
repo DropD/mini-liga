@@ -19,3 +19,12 @@ Feature: Add Player
 
     Then I should be redirected to the season detail page
     And the ranking should be updated with the added existing player
+
+  Scenario: Try to add an existing player from inaccessible season
+    Given I am logged in on the season detail view
+    And Another season which I do not manage contains separate players
+
+    When I click to add a player
+    And I click the player name input
+
+    Then No players from the other season should be suggested

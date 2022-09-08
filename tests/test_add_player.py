@@ -18,6 +18,13 @@ def test_existing_player(
     """Collect scenario steps."""
 
 
+@scenario(
+    "add_player.feature", "Try to add an existing player from inaccessible season"
+)
+def test_no_crossadmin_suggestions(authbrowser, hidden_player_names):
+    """Collect scenario steps."""
+
+
 @when("I click to add a player")
 def click_add_player(authbrowser):
     authbrowser.find_element(By.ID, "button-add-player").click()
@@ -42,6 +49,11 @@ def type_existing_name_submit(authbrowser):
     authbrowser.find_element(By.NAME, "submit").click()
 
 
+@when("I click the player name input")
+def click_player_name_input(authbrowser):
+    authbrowser.find_element(By.ID, "select2-id_name-container").click()
+
+
 @then("the ranking should be updated with the new player")
 def new_player_ranked(authbrowser):
     assert (
@@ -56,3 +68,12 @@ def added_player_ranked(authbrowser):
         authbrowser.find_elements(By.CSS_SELECTOR, "#season-ranking li")[3].text
         == "4. Christo"
     )
+
+
+@then("No players from the other season should be suggested")
+def no_cross_admin_players(authbrowser, hidden_player_names):
+    option_elements = authbrowser.find_elements(
+        By.CSS_SELECTOR, ".select2-results__option"
+    )
+    suggested_names = [o.text for o in option_elements]
+    assert not set(hidden_player_names).issubset(set(suggested_names))

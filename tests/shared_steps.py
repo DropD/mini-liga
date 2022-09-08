@@ -46,6 +46,12 @@ def am_season_admin():
     ...
 
 
+@given("Another season which I do not manage contains separate players")
+def other_season_exists():
+    """Guaranteed by tests fixtures."""
+    ...
+
+
 @then("I should be redirected to the season detail page")
 def redirected_to_season(
     season_name,

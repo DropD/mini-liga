@@ -63,3 +63,8 @@ def nonadmin_authbrowser(browser, index_page, nonadmin_credentials):
         lambda b: b.find_element(By.TAG_NAME, "h2").text == "Running Seasons"
     )
     yield browser
+
+
+@pytest.fixture
+def hidden_player_names():
+    yield "Strax", "Jenny"
