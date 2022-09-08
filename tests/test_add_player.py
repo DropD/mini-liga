@@ -76,6 +76,4 @@ def no_cross_admin_players(authbrowser, hidden_player_names):
         By.CSS_SELECTOR, ".select2-results__option"
     )
     suggested_names = [o.text for o in option_elements]
-    print(hidden_player_names)
-    print(suggested_names)
     assert not set(hidden_player_names).issubset(set(suggested_names))
