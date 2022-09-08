@@ -307,6 +307,7 @@ class AddPlayerView(UserPassesTestMixin, SingleObjectMixin, FormView):
         initial["date_played"] = timezone.now().date()
         if "season" in self.kwargs:
             initial["season"] = Season.objects.get(pk=self.kwargs["season"])
+
         return initial
 
     def get_context_data(self, **kwargs):
@@ -319,7 +320,7 @@ class AddPlayerView(UserPassesTestMixin, SingleObjectMixin, FormView):
     def get_form_kwargs(self):
         """Pass the season url parameter on to the form."""
         form_kwargs = super().get_form_kwargs()
-        form_kwargs.update({"season": self.kwargs["season"]})
+        form_kwargs.update({"season": self.kwargs["season"], "user": self.request.user})
         return form_kwargs
 
 
