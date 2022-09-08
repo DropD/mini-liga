@@ -22,6 +22,18 @@
     is_staff: false
     is_active: true
     date_joined: 2022-02-23 08:06:59.782142+00:00
+- model: auth.user
+  pk: 3
+  fields:
+    password: pbkdf2_sha256$320000$D7HHFWMnN6U0uSk6Ko2p1y$oSs7ha5VjejVeJQHvUPkv22JKuLj5kn3ImwVKt0a1TQ=
+    is_superuser: false
+    username: other_season_runner
+    first_name: 'Other'
+    last_name: 'SeasonRunner'
+    email: 'other@season.runner'
+    is_staff: false
+    is_active: true
+    date_joined: 2022-02-23 09:00:00.0+00:00
 - model: ligapp.player
   pk: 1
   fields:
@@ -50,6 +62,14 @@
   pk: 7
   fields:
     name: Steve
+- model: ligapp.player
+  pk: 8
+  fields:
+    name: Strax
+- model: ligapp.player
+  pk: 9
+  fields:
+    name: Jenny
 - model: ligapp.season
   pk: 1
   fields:
@@ -74,6 +94,16 @@
     - 7
     admins:
     - 1
+- model: ligapp.season
+  pk: 3
+  fields:
+    name: "Other Season"
+    start_date: 2021-09-06 09:17:00+00:00
+    participants:
+    - 8
+    - 9
+    admins:
+    - 2
 - model: ligapp.rank
   pk: 1
   fields:
@@ -110,6 +140,18 @@
     season: 2
     player: 7
     rank: 4
+- model: ligapp.rank
+  pk: 7
+  fields:
+    season: 3
+    player: 8
+    rank: 1
+- model: ligapp.rank
+  pk: 8
+  fields:
+    season: 3
+    player: 9
+    rank: 2
 - model: ligapp.rankinghistory
   pk: 1
   fields:
