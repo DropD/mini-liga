@@ -12,6 +12,8 @@ from .shared_steps import *  # noqa: F401,F403 # this is required for shared ste
 @pytest.fixture()
 def browser():
     options = webdriver.FirefoxOptions()
+    options.set_preference("browser.send_to_device_locales", "de,en-GB,en-US")
+    options.set_preference("intl.accept_languages", "de,en-us,en")
     driver = webdriver.Firefox(options=options)
     yield driver
     driver.close()
