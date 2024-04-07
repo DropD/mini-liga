@@ -1,4 +1,5 @@
 """Fixtures & stuff for behavioral tests."""
+
 import pytest  # noqa: I900
 from selenium import webdriver
 from selenium.webdriver.common.by import By

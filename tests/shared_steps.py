@@ -1,4 +1,5 @@
 """Shared steps for behavioral tests."""
+
 from pytest_bdd import given, then  # noqa: I900  # dev requirements
 from selenium.webdriver.common.by import By
 

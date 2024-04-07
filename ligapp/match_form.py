@@ -1,4 +1,5 @@
 """Forms for the ligapp."""
+
 from datetime import date, datetime
 from typing import Any, Optional
 

@@ -1,4 +1,5 @@
 """Test steps for adding a new match."""
+
 from pytest_bdd import scenario, then, when
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys

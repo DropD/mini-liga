@@ -1,5 +1,7 @@
 """Custom form layouts."""
+
 import json
+from typing import Optional
 
 from crispy_bootstrap5.bootstrap5 import FloatingField
 from crispy_forms import layout  # noqa: I900 # comes from django-crispy-forms
@@ -37,7 +39,7 @@ class DatePickerLayout(layout.Layout):
         self,
         name: str,
         *args,
-        css_class: str = None,
+        css_class: Optional[str] = None,
         date_lang: str = "de-ch",
         **kwargs,
     ):

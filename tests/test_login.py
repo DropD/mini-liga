@@ -1,4 +1,5 @@
 """Test steps for logging in after requesting the index page."""
+
 from pytest_bdd import scenario, then, when  # noqa: I900 # dev requirement
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -6,13 +7,11 @@ from selenium.webdriver.support import wait
 
 
 @scenario("login.feature", "Try to access without logging in")
-def test_nologin():
-    ...
+def test_nologin(): ...
 
 
 @scenario("login.feature", "Login and access")
-def test_login():
-    ...
+def test_login(): ...
 
 
 @when("I try to access the index page")

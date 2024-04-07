@@ -1,4 +1,5 @@
 """Ligapp url configuration."""
+
 from django.urls import path
 
 from . import views

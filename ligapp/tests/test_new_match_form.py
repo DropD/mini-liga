@@ -1,4 +1,5 @@
 """Test NewMatchForm and it's view class."""
+
 import pytest
 from django.test.client import Client
 from django.urls import reverse

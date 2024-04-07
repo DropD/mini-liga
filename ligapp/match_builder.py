@@ -1,4 +1,5 @@
 """Builder for a match with all the additional tasks."""
+
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional, Type, Union
@@ -19,9 +20,9 @@ class MatchBuilder:
     completed = True
     first_player: Optional[models.Player] = None
     second_player: Optional[models.Player] = None
-    match_type: Union[
-        Type[models.MultiSetMatch], Type[models.TimedMatch]
-    ] = models.MultiSetMatch
+    match_type: Union[Type[models.MultiSetMatch], Type[models.TimedMatch]] = (
+        models.MultiSetMatch
+    )
     minutes_played: Optional[int] = None
     scores: list[models.Set] = field(default_factory=list)
 

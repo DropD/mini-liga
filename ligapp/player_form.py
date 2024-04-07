@@ -1,4 +1,5 @@
 """Ligapp form for adding an existing or new player to a season."""
+
 from crispy_forms import layout  # noqa: I900 # comes from django-crispy-forms
 from crispy_forms.helper import FormHelper  # noqa: I900
 from django import forms
