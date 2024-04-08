@@ -66,9 +66,16 @@ jobs:
       max-parallel: 4
       matrix:
         python-version: [3.10.14]
+    env:
+      LANG: "de_CH.UTF-8"
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: set locale
+        run: |
+          sudo locale-gen de_CH.UTF-8
+          sudo update-locale LANG=de_CH.UTF-8
 
       - name: Setup Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
