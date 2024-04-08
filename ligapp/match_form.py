@@ -3,13 +3,13 @@
 from datetime import date, datetime
 from typing import Any, Optional
 
+import babel.dates
 from crispy_bootstrap5.bootstrap5 import FloatingField
 from crispy_forms import layout  # noqa: I900 # comes from django-crispy-forms
 from crispy_forms.helper import FormHelper  # noqa: I900
 from django import forms
 from django.core import validators
 from django.core.exceptions import ValidationError
-from django.utils.formats import get_format
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 from django_select2 import forms as s2forms
@@ -39,12 +39,11 @@ class DatePickerField(forms.DateField):
         """Allow non-existent players to pass through."""
         if not isinstance(value, str):
             return value
-        for format in get_format("DATE_INPUT_FORMATS", self.lang):
-            try:
-                return datetime.strptime(value, format).date()
-            except ValueError:
-                continue
-        raise ValidationError(_("Invalid date."), code="invalid")
+
+        try:
+            return babel.dates.parse_date(value, self.lang)
+        except (babel.dates.ParseError, IndexError):
+            raise ValidationError(_("Invalid date."), code="invalid")
 
 
 class BootstrapSelect2(s2forms.Select2Widget):
