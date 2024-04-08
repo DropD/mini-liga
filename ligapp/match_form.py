@@ -39,7 +39,6 @@ class DatePickerField(forms.DateField):
         """Allow non-existent players to pass through."""
         if not isinstance(value, str):
             return value
-
         try:
             return babel.dates.parse_date(value, self.lang)
         except (babel.dates.ParseError, IndexError):
