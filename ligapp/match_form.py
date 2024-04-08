@@ -41,8 +41,11 @@ class DatePickerField(forms.DateField):
             return value
         try:
             return babel.dates.parse_date(value, self.lang)
-        except (babel.dates.ParseError, IndexError):
-            raise ValidationError(_("Invalid date."), code="invalid")
+        except (babel.dates.ParseError, IndexError, ValueError):
+            try:
+                return datetime.fromisoformat(value)
+            except ValueError:
+                raise ValidationError(_("Invalid date."), code="invalid")
 
 
 class BootstrapSelect2(s2forms.Select2Widget):
