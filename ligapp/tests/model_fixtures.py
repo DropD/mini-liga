@@ -3,6 +3,7 @@ Provide fixtures for model objects.
 
 Tests using these need to request the database with pytest.mark.django_db.
 """
+
 from datetime import datetime
 
 import pytest

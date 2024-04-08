@@ -1,4 +1,5 @@
 """Test adding a player to a season."""
+
 from pytest_bdd import scenario, then, when  # noqa: I900  # dev requirement
 from selenium.webdriver.common.by import By  # noqa: I900  # dev requirement
 from selenium.webdriver.common.keys import Keys  # noqa: I900  # dev requirement

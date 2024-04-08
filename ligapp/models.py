@@ -1,4 +1,5 @@
 """Ligapp models."""
+
 import datetime
 from typing import Any, Optional
 

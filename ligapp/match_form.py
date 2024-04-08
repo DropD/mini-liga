@@ -1,14 +1,15 @@
 """Forms for the ligapp."""
+
 from datetime import date, datetime
 from typing import Any, Optional
 
+import babel.dates
 from crispy_bootstrap5.bootstrap5 import FloatingField
 from crispy_forms import layout  # noqa: I900 # comes from django-crispy-forms
 from crispy_forms.helper import FormHelper  # noqa: I900
 from django import forms
 from django.core import validators
 from django.core.exceptions import ValidationError
-from django.utils.formats import get_format
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 from django_select2 import forms as s2forms
@@ -38,12 +39,13 @@ class DatePickerField(forms.DateField):
         """Allow non-existent players to pass through."""
         if not isinstance(value, str):
             return value
-        for format in get_format("DATE_INPUT_FORMATS", self.lang):
+        try:
+            return babel.dates.parse_date(value, self.lang)
+        except (babel.dates.ParseError, IndexError, ValueError):
             try:
-                return datetime.strptime(value, format).date()
+                return datetime.fromisoformat(value)
             except ValueError:
-                continue
-        raise ValidationError(_("Invalid date."), code="invalid")
+                raise ValidationError(_("Invalid date."), code="invalid")
 
 
 class BootstrapSelect2(s2forms.Select2Widget):
@@ -148,7 +150,7 @@ class NewMatchForm(forms.Form):
         required=False,
         widget=ConditionalNumberInput(switch_field="match_type", switch_value="Time"),
     )
-    date_played = DatePickerField(lang="de-ch", initial=datetime.now().date())
+    date_played = DatePickerField(lang="de_CH", initial=datetime.now().date())
     first_score_1 = ScoreField(label="Score")
     second_score_1 = ScoreField(label="Score")
     first_score_2 = ScoreField(label="Score", required=False)
@@ -328,7 +330,7 @@ class NewPlannedMatchForm(forms.Form):
         required=False,
         widget=ConditionalNumberInput(switch_field="match_type", switch_value="Time"),
     )
-    date_planned = DatePickerField(lang="de-ch", initial=datetime.now().date())
+    date_planned = DatePickerField(lang="de_CH", initial=datetime.now().date())
 
     def __init__(self, *args, season, **kwargs):
         """Add the helper instance attr."""

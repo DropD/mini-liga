@@ -1,4 +1,5 @@
 """Player stats utilities."""
+
 import collections
 import dataclasses
 

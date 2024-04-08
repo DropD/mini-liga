@@ -1,4 +1,5 @@
 """Test settings."""
+
 import os
 
 from .settings import *  # noqa: F403  # we want all the settings
