@@ -148,7 +148,7 @@ class NewMatchForm(forms.Form):
         required=False,
         widget=ConditionalNumberInput(switch_field="match_type", switch_value="Time"),
     )
-    date_played = DatePickerField(lang="de-ch", initial=datetime.now().date())
+    date_played = DatePickerField(lang="de_CH", initial=datetime.now().date())
     first_score_1 = ScoreField(label="Score")
     second_score_1 = ScoreField(label="Score")
     first_score_2 = ScoreField(label="Score", required=False)
@@ -328,7 +328,7 @@ class NewPlannedMatchForm(forms.Form):
         required=False,
         widget=ConditionalNumberInput(switch_field="match_type", switch_value="Time"),
     )
-    date_planned = DatePickerField(lang="de-ch", initial=datetime.now().date())
+    date_planned = DatePickerField(lang="de_CH", initial=datetime.now().date())
 
     def __init__(self, *args, season, **kwargs):
         """Add the helper instance attr."""

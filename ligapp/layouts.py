@@ -40,12 +40,12 @@ class DatePickerLayout(layout.Layout):
         name: str,
         *args,
         css_class: Optional[str] = None,
-        date_lang: str = "de-ch",
+        date_lang: str = "de_CH",
         **kwargs,
     ):
         """Add a floating field and a script html tag."""
         self.name = name
-        self.date_lang = date_lang
+        self.date_lang = date_lang.replace("_", "-").lower()
         super().__init__(
             FloatingField(name, css_class=css_class, id=f"{name}_picker"),
             layout.HTML(self._gen_script()),
