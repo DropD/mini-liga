@@ -2,6 +2,7 @@
 
 from pytest_bdd import given, then  # noqa: I900  # dev requirements
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import wait
 
 
 @given("I am logged in on the season list", target_fixture="logged_in_on_season_list")
@@ -59,4 +60,7 @@ def redirected_to_season(
     authbrowser,
 ):
     """Ensure on season detail page."""
+    wait.WebDriverWait(authbrowser, 60).until(
+        lambda b: b.find_element(By.TAG_NAME, "h1").text == season_name
+    )
     assert authbrowser.find_element(By.TAG_NAME, "h1").text == season_name
