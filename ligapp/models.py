@@ -16,8 +16,7 @@ class Player(models.Model):
     """A participant in the league."""
 
     name = models.CharField(max_length=80, unique=True)
-    user = models.OneToOneField(
-        User, on_delete=models.SET_NULL, null=True, blank=True)
+    user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     class Meta:
         """Options for the player model."""
@@ -38,8 +37,7 @@ class Season(models.Model):
     start_date = models.DateTimeField("start date")
     end_date = models.DateTimeField("end date", null=True, blank=True)
     participants = models.ManyToManyField(Player, blank=True)
-    admins = models.ManyToManyField(
-        User, related_name="season_admin_for", blank=True)
+    admins = models.ManyToManyField(User, related_name="season_admin_for", blank=True)
 
     class Meta:
         """Options for the Season model."""
@@ -59,24 +57,21 @@ class Season(models.Model):
         """Add a player, starting at the bottom of the ranking."""
         with transaction.atomic():
             self.participants.add(player)
-            self.ranks.create(season=self, player=player,
-                              rank=self.next_free_rank)
+            self.ranks.create(season=self, player=player, rank=self.next_free_rank)
 
     def create_player(self, **kwargs) -> Player:
         """Create a new player, adding them to the season."""
         player = None
         with transaction.atomic():
             player = self.participants.create(**kwargs)
-            self.ranks.create(season=self, player=player,
-                              rank=self.next_free_rank)
+            self.ranks.create(season=self, player=player, rank=self.next_free_rank)
 
         return player
 
     def update_rank(self, player: Player, new_position: int):
         """Update a player's rank and everything that follows."""
         current_rank, _ = self.ranks.get_or_create(
-            player=player, defaults={
-                "season": self, "rank": self.next_free_rank}
+            player=player, defaults={"season": self, "rank": self.next_free_rank}
         )
         old_position = current_rank.rank
         if old_position == new_position:
@@ -142,10 +137,8 @@ class Season(models.Model):
 class Rank(models.Model):
     """A rank of a player in a season."""
 
-    season = models.ForeignKey(
-        Season, on_delete=models.CASCADE, related_name="ranks")
-    player = models.ForeignKey(
-        Player, on_delete=models.RESTRICT, related_name="ranks")
+    season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name="ranks")
+    player = models.ForeignKey(Player, on_delete=models.RESTRICT, related_name="ranks")
     rank = models.PositiveSmallIntegerField()
 
     class Meta:
@@ -362,14 +355,10 @@ class MultiSetMatch(Match):
 class Set(models.Model):
     """A set (game)."""
 
-    first_score = models.PositiveSmallIntegerField(
-        validators=[MaxValueValidator(90)])
-    second_score = models.PositiveSmallIntegerField(
-        validators=[MaxValueValidator(90)])
-    match = models.ForeignKey(
-        Match, related_name="sets", on_delete=models.CASCADE)
-    order = models.PositiveSmallIntegerField(
-        validators=[MaxValueValidator(99)])
+    first_score = models.PositiveSmallIntegerField(validators=[MaxValueValidator(90)])
+    second_score = models.PositiveSmallIntegerField(validators=[MaxValueValidator(90)])
+    match = models.ForeignKey(Match, related_name="sets", on_delete=models.CASCADE)
+    order = models.PositiveSmallIntegerField(validators=[MaxValueValidator(99)])
 
     class Meta:
         """Options for the set model."""
