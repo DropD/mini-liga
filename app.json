@@ -11,9 +11,6 @@
   },
   "environments": {
     "review": {
-      "addons": [
-        "heroku-postgresql:essential"
-      ],
       "scripts": {
         "postdeploy": "python manage.py loaddata ./ligapp/fixtures/examples.yaml"
       }
