@@ -15,5 +15,5 @@ services:
       #     property: connectionString
 
 databases: # Render PostgreSQL database
-  # - name: postgresql-colorful-28052
+  - name: miniliga-staging-postgres
   #   ipAllowList: [] # only allow internal connections

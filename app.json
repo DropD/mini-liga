@@ -15,11 +15,6 @@
         "postdeploy": "python manage.py loaddata ./ligapp/fixtures/examples.yaml"
       }
     },
-    "staging": {
-      "scripts": {
-        "postdeploy": "python manage.py loaddata ./ligapp/fixtures/examples.yaml"
-      }
-    },
     "test": {
       "scripts": {
         "test": "pytest",

@@ -56,6 +56,7 @@ class DatePickerLayout(layout.Layout):
     def _gen_config(self) -> str:
         return json.dumps(
             {
+                "container": f"document.querySelector('div#div_id_{self.name}')",
                 "localization": {"locale": f"'{self.date_lang}'"},
                 "display": {
                     "components": {
@@ -72,7 +73,7 @@ class DatePickerLayout(layout.Layout):
         ).replace('"', "")
 
     def _gen_script(self) -> str:
-        element = f"document.getElementById('div_id_{self.name}')"
+        element = f"document.getElementById('{self.name}_picker')"
         config = self._gen_config()
         return mark_safe(
             "<script type='text/javascript'>"
