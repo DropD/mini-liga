@@ -254,6 +254,15 @@ class Match(models.Model):
         """Get url to view this match."""
         return reverse("ligapp:match-detail", kwargs={"pk": self.pk})
 
+    def get_sets(self):
+        """Get sets if they exist."""
+        sets = None
+        try:
+            sets = self.sets.all()
+        except ValueError:
+            ...
+        return sets
+
     def clean(self) -> None:
         super().clean()
         if self.completed and self.date_played is None:
@@ -262,8 +271,9 @@ class Match(models.Model):
                     "The date when the match was played must be set for complete matches!"
                 )
             )
-        if self.completed and not self.sets.all():
-            raise ValidationError(_("A completed match must have scores."))
+
+        if self.completed and not self.get_sets():
+            raise ValidationError(_("A completed match must have at least one set."))
         if self.date_played and not self.completed:
             raise ValidationError(
                 _(
