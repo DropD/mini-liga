@@ -1,14 +1,22 @@
 """Ligapp views."""
+
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse
 from django.utils import timezone
-from django.views.generic import CreateView, DetailView, FormView, ListView
+from django.views.generic import (
+    CreateView,
+    DetailView,
+    FormView,
+    ListView,
+    TemplateView,
+)
 from django.views.generic.detail import SingleObjectMixin
 
 from .match_builder import MatchBuilder
 from .match_form import NewMatchForm, NewPlannedMatchForm, NewPlayerMatchForm
 from .models import Match, Player, Season
 from .player_form import AddPlayerForm
+from .stats import Head2Head
 
 
 class SeasonListView(LoginRequiredMixin, ListView):
@@ -281,9 +289,11 @@ class AddPlayerView(UserPassesTestMixin, SingleObjectMixin, FormView):
         data = form.cleaned_data
         season = data["season"]
         player = data["name"]
-        if player.pk is not None and not season.participants.contains(player):
-            season.add_player(player)
-        elif player.pk is None and not season.participants.filter(name=player.name):
+        try:
+            existing = Player.objects.get(name=player.name)
+            if not season.participants.contains(existing):
+                season.add_player(existing)
+        except Player.DoesNotExist:
             season.create_player(name=player.name)
         return super().form_valid(form)
 
@@ -300,6 +310,7 @@ class AddPlayerView(UserPassesTestMixin, SingleObjectMixin, FormView):
         initial["date_played"] = timezone.now().date()
         if "season" in self.kwargs:
             initial["season"] = Season.objects.get(pk=self.kwargs["season"])
+
         return initial
 
     def get_context_data(self, **kwargs):
@@ -312,5 +323,18 @@ class AddPlayerView(UserPassesTestMixin, SingleObjectMixin, FormView):
     def get_form_kwargs(self):
         """Pass the season url parameter on to the form."""
         form_kwargs = super().get_form_kwargs()
-        form_kwargs.update({"season": self.kwargs["season"]})
+        form_kwargs.update({"season": self.kwargs["season"], "user": self.request.user})
         return form_kwargs
+
+
+class Head2HeadView(LoginRequiredMixin, TemplateView):
+    """Head-to-Head view for two players."""
+
+    template_name = "ligapp/head_to_head.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        first = Player.objects.get(pk=kwargs["first"])
+        second = Player.objects.get(pk=kwargs["second"])
+        context["h2hstats"] = Head2Head(first, second, self.request.user)
+        return context

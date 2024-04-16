@@ -1,4 +1,5 @@
 """Ligapp models."""
+
 import datetime
 from typing import Any, Optional
 
@@ -20,6 +21,8 @@ class Player(models.Model):
     class Meta:
         """Options for the player model."""
 
+        verbose_name = "player"
+        verbose_name_plural = "players"
         ordering = ["name"]
 
     def __str__(self) -> str:
@@ -35,6 +38,12 @@ class Season(models.Model):
     end_date = models.DateTimeField("end date", null=True, blank=True)
     participants = models.ManyToManyField(Player, blank=True)
     admins = models.ManyToManyField(User, related_name="season_admin_for", blank=True)
+
+    class Meta:
+        """Options for the Season model."""
+
+        verbose_name = "season"
+        verbose_name_plural = "seasons"
 
     def __str__(self) -> str:
         """Represent seaon as a string."""
@@ -135,6 +144,8 @@ class Rank(models.Model):
     class Meta:
         """Rank settings."""
 
+        verbose_name = "player rank"
+        verbose_name_plural = "player ranks"
         unique_together = [["season", "player"]]
         ordering = ["season", "rank"]
 
@@ -179,6 +190,12 @@ class RankingHistory(models.Model):
     )
     history = models.JSONField(default=ranking_history_entry)
 
+    class Meta:
+        """RankingHistory settings."""
+
+        verbose_name = "ranking history"
+        verbose_name_plural = "ranking histories"
+
     def __str__(self) -> str:
         """Stringify ranking history object."""
         return f"Ranking History | {self.season.name} | {self.player.name}"
@@ -207,7 +224,8 @@ class Match(models.Model):
     class Meta:
         """Options for the match model."""
 
-        verbose_name_plural = "Matches"
+        verbose_name = "match"
+        verbose_name_plural = "matches"
         ordering = ["date_played"]
 
     class MatchType(models.TextChoices):
@@ -236,6 +254,15 @@ class Match(models.Model):
         """Get url to view this match."""
         return reverse("ligapp:match-detail", kwargs={"pk": self.pk})
 
+    def get_sets(self):
+        """Get sets if they exist."""
+        sets = None
+        try:
+            sets = self.sets.all()
+        except ValueError:
+            ...
+        return sets
+
     def clean(self) -> None:
         super().clean()
         if self.completed and self.date_played is None:
@@ -244,8 +271,9 @@ class Match(models.Model):
                     "The date when the match was played must be set for complete matches!"
                 )
             )
-        if self.completed and not self.scores.all():
-            raise ValidationError(_("A completed match must have scores."))
+
+        if self.completed and not self.get_sets():
+            raise ValidationError(_("A completed match must have at least one set."))
         if self.date_played and not self.completed:
             raise ValidationError(
                 _(
@@ -290,7 +318,8 @@ class TimedMatch(Match):
     class Meta:
         """Options for the timed match model."""
 
-        verbose_name_plural = "TimedMatches"
+        verbose_name = "match for time"
+        verbose_name_plural = "matches for time"
 
     @property
     def minutes_played_str(self) -> str:
@@ -312,7 +341,8 @@ class MultiSetMatch(Match):
     class Meta:
         """Options for the multi set match model."""
 
-        verbose_name_plural = "MultiSetMatches"
+        verbose_name = "match for points"
+        verbose_name_plural = "matches for points"
 
     @property
     def winner(self) -> Optional[Player]:
@@ -344,6 +374,8 @@ class Set(models.Model):
         """Options for the set model."""
 
         ordering = ["order"]
+        verbose_name = "set of points"
+        verbose_name_plural = "sets of points"
 
     def __str__(self) -> str:
         """Represent a set as a string."""

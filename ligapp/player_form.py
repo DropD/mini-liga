@@ -1,4 +1,5 @@
 """Ligapp form for adding an existing or new player to a season."""
+
 from crispy_forms import layout  # noqa: I900 # comes from django-crispy-forms
 from crispy_forms.helper import FormHelper  # noqa: I900
 from django import forms
@@ -37,11 +38,13 @@ class AddPlayerForm(forms.Form):
         ),
     )
 
-    def __init__(self, *args, season, **kwargs):
+    def __init__(self, *args, season, user, **kwargs):
         """Exclude already added players from the queryset."""
         super().__init__(*args, **kwargs)
         self.season = season
-        self.fields["name"].queryset = Player.objects.exclude(season=season)
+        self.fields["name"].queryset = Player.objects.filter(
+            season__in=user.season_admin_for.all()
+        ).exclude(season=season)
         self.helper = self.get_helper()
 
     def get_helper(self) -> FormHelper:

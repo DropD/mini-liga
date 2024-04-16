@@ -4,7 +4,7 @@
 {% block season_actions_section %}{% endblock %}
 
 {% block season_content %}
-<div class="row season-section" id="season-full-ranking" style>
+<div class="row season-section" id="season-full-ranking">
   <h4 class="section-title">Full Match History</h4><hr>
   {% with matches_by_date=season.match_history %}
   {% include "ligapp/season/matches.html" %}

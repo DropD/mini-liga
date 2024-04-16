@@ -1,4 +1,5 @@
 """Ligapp url configuration."""
+
 from django.urls import path
 
 from . import views
@@ -41,5 +42,10 @@ urlpatterns = [
         "season/<int:season>/add-player",
         views.AddPlayerView.as_view(),
         name="add-player",
+    ),
+    path(
+        "head2head/<int:first>/<int:second>",
+        views.Head2HeadView.as_view(),
+        name="head2head",
     ),
 ]

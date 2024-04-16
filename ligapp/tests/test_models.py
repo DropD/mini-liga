@@ -3,6 +3,7 @@ Test custom models code.
 
 Such as custom properties, string representations etc. DO NOT TEST ordinary django provided model functionality.
 """
+
 import pytest
 from django.utils import timezone
 from pytest_cases import parametrize_with_cases
