@@ -1,5 +1,6 @@
 babel
 crispy-bootstrap5
+dj-database-url
 django ~= 4.0
 django-crispy-forms
 django-heroku
