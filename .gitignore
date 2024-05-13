@@ -1,5 +1,6 @@
 # Django specific
 staticfiles
+*.dump
 
 # pytest-bdd
 ligapp.tests*
@@ -138,3 +139,6 @@ dmypy.json
 
 # pyright
 pyrightconfig.json
+
+# zed
+.project
