@@ -19,9 +19,7 @@ def test_existing_player(
     """Collect scenario steps."""
 
 
-@scenario(
-    "add_player.feature", "Try to add an existing player from inaccessible season"
-)
+@scenario("add_player.feature", "Try to add an existing player from inaccessible season")
 def test_no_crossadmin_suggestions(authbrowser, hidden_player_names):
     """Collect scenario steps."""
 
@@ -57,24 +55,16 @@ def click_player_name_input(authbrowser):
 
 @then("the ranking should be updated with the new player")
 def new_player_ranked(authbrowser):
-    assert (
-        authbrowser.find_elements(By.CSS_SELECTOR, "#season-ranking li")[2].text
-        == "3. Toma"
-    )
+    assert authbrowser.find_elements(By.CSS_SELECTOR, "#season-ranking li")[2].text == "3. Toma"
 
 
 @then("the ranking should be updated with the added existing player")
 def added_player_ranked(authbrowser):
-    assert (
-        authbrowser.find_elements(By.CSS_SELECTOR, "#season-ranking li")[3].text
-        == "4. Christo"
-    )
+    assert authbrowser.find_elements(By.CSS_SELECTOR, "#season-ranking li")[3].text == "4. Christo"
 
 
 @then("No players from the other season should be suggested")
 def no_cross_admin_players(authbrowser, hidden_player_names):
-    option_elements = authbrowser.find_elements(
-        By.CSS_SELECTOR, ".select2-results__option"
-    )
+    option_elements = authbrowser.find_elements(By.CSS_SELECTOR, ".select2-results__option")
     suggested_names = [o.text for o in option_elements]
     assert not set(hidden_player_names).issubset(set(suggested_names))

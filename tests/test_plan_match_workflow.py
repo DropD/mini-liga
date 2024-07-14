@@ -50,9 +50,7 @@ def planned_match_shown(authbrowser, player_1, player_2):
         if item and item != "\n"
     ]
     matches = planned_list[1:]
-    planned_matches = [
-        match.find(attrs={"class": "col"}).text.strip() for match in matches
-    ]
+    planned_matches = [match.find(attrs={"class": "col"}).text.strip() for match in matches]
     assert planned_list[0].text == "May 10, 2022"
     assert f"{player_1}\n{player_2}" in planned_matches
 
@@ -74,9 +72,7 @@ def has_planned_match(authbrowser, index_page, player_1, player_2):
         if item and item != "\n"
     ]
     matches = planned_list[1:]
-    planned_matches = [
-        match.find(attrs={"class": "col"}).text.strip() for match in matches
-    ]
+    planned_matches = [match.find(attrs={"class": "col"}).text.strip() for match in matches]
     assert f"{player_1}\n{player_2}" in planned_matches
 
 
@@ -119,22 +115,15 @@ def match_in_played_list(authbrowser, player_1, player_2, p11, p21, p12, p22):
         assert f"{player_1}\n{player_2}" not in [
             i.text.strip() for i in plannedlist.children if i != "\n"
         ]
-    matchlist = soup.find(string="Latest Matches").parent.parent.find(
-        attrs={"class": "matchlist"}
-    )
+    matchlist = soup.find(string="Latest Matches").parent.parent.find(attrs={"class": "matchlist"})
     matches = []
     for item in matchlist:
         if item == "\n":
             continue
         matches.append(
             {
-                "players": [
-                    i.text.strip()
-                    for i in item.find_all(attrs={"class": "match-player"})
-                ],
-                "scores": [
-                    i.text for i in item.find_all(attrs={"class": "match-score"})
-                ],
+                "players": [i.text.strip() for i in item.find_all(attrs={"class": "match-player"})],
+                "scores": [i.text for i in item.find_all(attrs={"class": "match-score"})],
             }
         )
     reference = {

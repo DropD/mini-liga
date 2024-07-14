@@ -182,12 +182,8 @@ def ranking_history_entry(rank: int = -1):
 class RankingHistory(models.Model):
     """History of a player's rank in a season."""
 
-    season = models.ForeignKey(
-        Season, on_delete=models.CASCADE, related_name="histories"
-    )
-    player = models.ForeignKey(
-        Player, on_delete=models.RESTRICT, related_name="histories"
-    )
+    season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name="histories")
+    player = models.ForeignKey(Player, on_delete=models.RESTRICT, related_name="histories")
     history = models.JSONField(default=ranking_history_entry)
 
     class Meta:
@@ -207,9 +203,7 @@ class Match(models.Model):
     date_played = models.DateTimeField("date played", null=True, blank=True)
     date_planned = models.DateTimeField("date planned", null=True, blank=True)
     completed = models.BooleanField(default=True)
-    first_player = models.ForeignKey(
-        Player, on_delete=models.PROTECT, related_name="matches_first"
-    )
+    first_player = models.ForeignKey(Player, on_delete=models.PROTECT, related_name="matches_first")
     second_player = models.ForeignKey(
         Player, on_delete=models.PROTECT, related_name="matches_second"
     )
@@ -267,9 +261,7 @@ class Match(models.Model):
         super().clean()
         if self.completed and self.date_played is None:
             raise ValidationError(
-                _(
-                    "The date when the match was played must be set for complete matches!"
-                )
+                _("The date when the match was played must be set for complete matches!")
             )
 
         if self.completed and not self.get_sets():
@@ -311,9 +303,7 @@ class Match(models.Model):
 class TimedMatch(Match):
     """A match played for time, not points."""
 
-    minutes_played = models.PositiveSmallIntegerField(
-        validators=[MaxValueValidator(60)]
-    )
+    minutes_played = models.PositiveSmallIntegerField(validators=[MaxValueValidator(60)])
 
     class Meta:
         """Options for the timed match model."""

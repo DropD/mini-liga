@@ -25,9 +25,7 @@ def logged_in_nonadmin(
 ):
     """Ensure logged in and on seasons list."""
     nonadmin_authbrowser.get(index_page)
-    assert (
-        nonadmin_authbrowser.find_element(By.TAG_NAME, "h2").text == "Running Seasons"
-    )
+    assert nonadmin_authbrowser.find_element(By.TAG_NAME, "h2").text == "Running Seasons"
 
 
 @given("I am logged in on the season detail view")

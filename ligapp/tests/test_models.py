@@ -1,7 +1,8 @@
 """
 Test custom models code.
 
-Such as custom properties, string representations etc. DO NOT TEST ordinary django provided model functionality.
+Such as custom properties, string representations etc. DO NOT TEST ordinary
+django provided model functionality.
 """
 
 import pytest
@@ -86,14 +87,9 @@ def test_season_rank_up_player(season, player):
 @pytest.mark.django_db
 def test_timed_match_str(timed_match, get_sets):
     """Test the string representation of a TimedMatch object."""
-    assert (
-        str(timed_match) == "2000-01-02 (10 minutes): Test Player vs Other Player; --"
-    )
+    assert str(timed_match) == "2000-01-02 (10 minutes): Test Player vs Other Player; --"
     get_sets(timed_match)[0].save()
-    assert (
-        str(timed_match)
-        == "2000-01-02 (10 minutes): Test Player vs Other Player; 17 : 9"
-    )
+    assert str(timed_match) == "2000-01-02 (10 minutes): Test Player vs Other Player; 17 : 9"
 
 
 @pytest.mark.django_db
