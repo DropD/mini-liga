@@ -379,3 +379,32 @@ class Set(models.Model):
         elif self.first_score < self.second_score:
             return self.match.second_player
         return None
+
+
+# TODO: add unit tests
+class SparringDay(models.Model):
+    """A Date on which one or more rounds of matches are played."""
+
+    season = models.ForeignKey(
+        Season, on_delete=models.CASCADE, related_name="sparring_days", null=True, blank=True
+    )
+    date = models.DateField()
+
+
+# TODO: add unit tests
+class Round(models.Model):
+    """
+    A round of matches.
+
+    A player may play only once per round.
+    """
+
+    sparring_day = models.ForeignKey(SparringDay, on_delete=models.CASCADE, related_name="rounds")
+
+
+# TODO: add unit tests
+class RoundItem(models.Model):
+    """A reference to a match played as part of a round."""
+
+    match = models.OneToOneField(Match, on_delete=models.CASCADE, related_name="round_item")
+    round = models.ForeignKey(Round, on_delete=models.RESTRICT, related_name="matches")
