@@ -46,4 +46,9 @@ urlpatterns = [
         views.Head2HeadView.as_view(),
         name="head2head",
     ),
+    path(
+        "season/<int:season>/new-sparring-day",
+        views.NewSparringDayView.as_view(),
+        name="new-sparring-day",
+    ),
 ]

@@ -18,6 +18,8 @@ from .models import Match, Player, Season
 from .player_form import AddPlayerForm
 from .stats import Head2Head
 
+from . import sparring_day_form
+
 
 class SeasonListView(LoginRequiredMixin, ListView):
     """Main view lists Seasons."""
@@ -334,3 +336,36 @@ class Head2HeadView(LoginRequiredMixin, TemplateView):
         second = Player.objects.get(pk=kwargs["second"])
         context["h2hstats"] = Head2Head(first, second, self.request.user)
         return context
+
+
+# TODO(DropD): make sure user can only access for allowed seasons
+# TODO(DropD): add unit tests
+# TODO(DropD): create first round
+# TODO(DropD): redirect user to first round detail view
+class NewSparringDayView(LoginRequiredMixin, SingleObjectMixin, FormView):
+    """Create a sparring day."""
+
+    template_name = "ligapp/sparringday_form.html"
+    form_class = sparring_day_form.CreateSparringDayForm
+    model = Season
+    pk_url_kwarg = "season"
+    context_object_name = "season"
+
+    def get_initial(self):
+        """Get initial data to prefill the form."""
+        initial = super().get_initial()
+        initial["date"] = timezone.now().date()
+        if "season" in self.kwargs:
+            initial["season"] = Season.objects.get(pk=self.kwargs["season"])
+        return initial
+
+    def get_form_kwargs(self):
+        """Pass the season url parameter on to the form."""
+        form_kwargs = super().get_form_kwargs()
+        form_kwargs.update({"season": self.kwargs["season"]})
+        return form_kwargs
+
+    def get_context_data(self, **kwargs):
+        """Inject the season object into the template context."""
+        self.object = self.get_object()
+        return super().get_context_data(**kwargs)

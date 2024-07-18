@@ -1,0 +1,11 @@
+{% extends "ligapp/season_base.html" %}
+{% load crispy_forms_tags %}
+
+{% block season_actions_section %}{% endblock %}
+
+{% block season_content %}
+<div class="row season-section" id="season-add-sparringday">
+    <h4 class "section-title">Create Sparring Day</h4><hr>
+    {% crispy form %}
+</div>
+{% endblock %}
