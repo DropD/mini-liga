@@ -1,6 +1,6 @@
 babel
 crispy-bootstrap5
-django ~= 4.0
+django ~= 5.0
 django-crispy-forms
 django-heroku
 django-select2

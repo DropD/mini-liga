@@ -19,7 +19,7 @@ class NewOrExistingModelChoiceField(forms.ModelChoiceField):
             try:
                 value = self.queryset.model(**{self.to_field_name: value})
             except (ValueError, TypeError):
-                raise err
+                raise err from err
         return value
 
 
@@ -33,18 +33,18 @@ class AddPlayerForm(forms.Form):
         queryset=Player.objects,
         label="",
         to_field_name="name",
-        widget=BootstrapSelect2(
-            label="Select a Player or make a new one", new_allowed=True
-        ),
+        widget=BootstrapSelect2(label="Select a Player or make a new one", new_allowed=True),
     )
 
     def __init__(self, *args, season, user, **kwargs):
         """Exclude already added players from the queryset."""
         super().__init__(*args, **kwargs)
         self.season = season
-        self.fields["name"].queryset = Player.objects.filter(
-            season__in=user.season_admin_for.all()
-        ).exclude(season=season)
+        self.fields["name"].queryset = (
+            Player.objects.filter(season__in=user.season_admin_for.all())
+            .exclude(season=season)
+            .distinct()
+        )
         self.helper = self.get_helper()
 
     def get_helper(self) -> FormHelper:

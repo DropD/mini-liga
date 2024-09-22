@@ -1,0 +1,17 @@
+line-length = 100
+indent-width = 4
+extend-exclude = ["ligapp/migrations/*.py"]
+
+[lint]
+select = ["F", "E", "W", "C90", "TD", "ERA", "B", "S", "DJ", ]
+
+[lint.per-file-ignores]
+"**/tests/*" = ["S101"]
+
+[format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+docstring-code-format = true
+docstring-code-line-length = "dynamic"

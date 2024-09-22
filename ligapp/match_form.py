@@ -44,8 +44,8 @@ class DatePickerField(forms.DateField):
         except (babel.dates.ParseError, IndexError, ValueError):
             try:
                 return datetime.fromisoformat(value)
-            except ValueError:
-                raise ValidationError(_("Invalid date."), code="invalid")
+            except ValueError as err:
+                raise ValidationError(_("Invalid date."), code="invalid") from err
 
 
 class BootstrapSelect2(s2forms.Select2Widget):
@@ -109,14 +109,17 @@ class ConditionalMixin:
         widget_html = super().render(name, value, attrs, renderer)
         switch_element = f"'id_{self.switch_field}'"
         conditional_element = f"'id_{name}'"
-        return widget_html + mark_safe(
-            "<script type='text/javascript'>"
-            f"const {name}_switcher = new ConditionalFieldSwitcher("
-            f"{conditional_element}, {switch_element}, '{self.switch_value}'"
-            f", {str(self.switch_show).lower()}, {str(self.switch_required).lower()}"
-            ");\n"
-            f"register_switcher({name}_switcher);"
-            "</script>"
+        return (
+            widget_html
+            + mark_safe(  # noqa: S308 ## safe because no user input involved
+                "<script type='text/javascript'>"
+                f"const {name}_switcher = new ConditionalFieldSwitcher("
+                f"{conditional_element}, {switch_element}, '{self.switch_value}'"
+                f", {str(self.switch_show).lower()}, {str(self.switch_required).lower()}"
+                ");\n"
+                f"register_switcher({name}_switcher);"
+                "</script>"
+            )
         )
 
 
@@ -142,9 +145,7 @@ class NewMatchForm(forms.Form):
         label="",
         widget=BootstrapSelect2(label="Second Player"),
     )
-    match_type = forms.ChoiceField(
-        choices=Match.MatchType.choices, initial=Match.MatchType.SETS
-    )
+    match_type = forms.ChoiceField(choices=Match.MatchType.choices, initial=Match.MatchType.SETS)
     minutes_played = forms.IntegerField(
         validators=[validators.MaxValueValidator(60)],
         required=False,
@@ -182,9 +183,7 @@ class NewMatchForm(forms.Form):
                 "",
                 FloatingField("match_type", css_class="match-input"),
                 FloatingField("minutes_played", css_class="match-input"),
-                DatePickerLayout(
-                    "date_played", css_class="match-input", date_lang=date_lang
-                ),
+                DatePickerLayout("date_played", css_class="match-input", date_lang=date_lang),
             ),
             layout.Fieldset(
                 "",
@@ -228,9 +227,7 @@ class NewMatchForm(forms.Form):
             if first == second:
                 self.add_error(
                     "second_player",
-                    ValidationError(
-                        _("Can not be the same as the first player."), code="invalid"
-                    ),
+                    ValidationError(_("Can not be the same as the first player."), code="invalid"),
                 )
 
     def validate_players_in_season(self, cleaned_data: dict[str, Any]) -> None:
@@ -242,9 +239,7 @@ class NewMatchForm(forms.Form):
             if player and player not in season.participants.all():
                 self.add_error(
                     player_field,
-                    ValidationError(
-                        _("Is not a participant in this season."), code="invalid"
-                    ),
+                    ValidationError(_("Is not a participant in this season."), code="invalid"),
                 )
 
     def validate_scores(self, cleaned_data: dict[str, Any]) -> None:
@@ -268,13 +263,9 @@ class NewMatchForm(forms.Form):
         message = _("Incomplete set.")
         if any(scores_added):
             if not scores_added[0]:
-                self.add_error(
-                    f"first_score_{set_nr}", ValidationError(message, code="required")
-                )
+                self.add_error(f"first_score_{set_nr}", ValidationError(message, code="required"))
             if not scores_added[1]:
-                self.add_error(
-                    f"second_score_{set_nr}", ValidationError(message, code="required")
-                )
+                self.add_error(f"second_score_{set_nr}", ValidationError(message, code="required"))
 
     def _validate_set_is_regulation(
         self, score_set: tuple[Optional[int], Optional[int]], set_nr: int
@@ -289,12 +280,8 @@ class NewMatchForm(forms.Form):
         message = _("Scores in set must be different.")
         if any(scores_added):
             if score_set[0] == score_set[1]:
-                self.add_error(
-                    f"first_score_{set_nr}", ValidationError(message, code="invalid")
-                )
-                self.add_error(
-                    f"second_score_{set_nr}", ValidationError(message, code="invalid")
-                )
+                self.add_error(f"first_score_{set_nr}", ValidationError(message, code="invalid"))
+                self.add_error(f"second_score_{set_nr}", ValidationError(message, code="invalid"))
 
 
 class NewPlayerMatchForm(NewMatchForm):
@@ -322,9 +309,7 @@ class NewPlannedMatchForm(forms.Form):
         label="",
         widget=BootstrapSelect2(label="Second Player"),
     )
-    match_type = forms.ChoiceField(
-        choices=Match.MatchType.choices, initial=Match.MatchType.SETS
-    )
+    match_type = forms.ChoiceField(choices=Match.MatchType.choices, initial=Match.MatchType.SETS)
     minutes_played = forms.IntegerField(
         validators=[validators.MaxValueValidator(60)],
         required=False,
@@ -356,9 +341,7 @@ class NewPlannedMatchForm(forms.Form):
                 "",
                 FloatingField("match_type", css_class="match-input"),
                 FloatingField("minutes_played", css_class="match-input"),
-                DatePickerLayout(
-                    "date_planned", css_class="match-input", date_lang=date_lang
-                ),
+                DatePickerLayout("date_planned", css_class="match-input", date_lang=date_lang),
             ),
             layout.Div(
                 layout.Submit("submit", "Save", css_class="btn btn-success"),

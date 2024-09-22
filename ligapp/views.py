@@ -129,9 +129,7 @@ class NewMatchView(UserPassesTestMixin, SingleObjectMixin, FormView):
                 "minutes_played",
             ]
         }
-        match_builder = MatchBuilder(**kwargs).set_type_from_enum_value(
-            data["match_type"]
-        )
+        match_builder = MatchBuilder(**kwargs).set_type_from_enum_value(data["match_type"])
         for i in range(1, 4):
             match_builder.add_score(data[f"first_score_{i}"], data[f"second_score_{i}"])
         match_builder.build()
@@ -202,9 +200,7 @@ class CompletePlannedMatchView(UserPassesTestMixin, SingleObjectMixin, FormView)
 
     def test_func(self):
         """Make sure the user should be allowed to see this view."""
-        is_season_admin = self.request.user.season_admin_for.contains(
-            self.get_object().season
-        )
+        is_season_admin = self.request.user.season_admin_for.contains(self.get_object().season)
         is_staff = self.request.user.is_staff
         is_superuser = self.request.user.is_superuser
         return is_season_admin or is_staff or is_superuser

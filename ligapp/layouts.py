@@ -17,7 +17,7 @@ class ConditionalMixin:
 
     def gen_script(self) -> str:
         name = self.conditional_id.replace("-", "_") + "_switcher"
-        return mark_safe(
+        return mark_safe(  # noqa: S308 ## safe because no user input involved
             "<script type='text/javascript'>"
             f"const {name} = new ConditionalFieldSwitcher("
             f"'{self.conditional_id}', '{self.switch_id}', '{self.switch_value}', true, false"
@@ -75,7 +75,7 @@ class DatePickerLayout(layout.Layout):
     def _gen_script(self) -> str:
         element = f"document.getElementById('{self.name}_picker')"
         config = self._gen_config()
-        return mark_safe(
+        return mark_safe(  # noqa: S308 ## safe because no user input involved
             "<script type='text/javascript'>"
             f"const {self.name}_datepicker = new tempusDominus.TempusDominus({element}, {config})"
             "</script>"
@@ -105,8 +105,8 @@ class SetScoresLayout(layout.Layout):
                     ),
                     css_class="col",
                 ),
-                css_class="row g-0 match-input",
                 *args,
+                css_class="row g-0 match-input",
                 **kwargs,
             ),
         )

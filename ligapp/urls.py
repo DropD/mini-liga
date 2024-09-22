@@ -30,9 +30,7 @@ urlpatterns = [
         views.NewPlannedMatchView.as_view(),
         name="plan-match",
     ),
-    path(
-        "season/<int:season>/new-match", views.NewMatchView.as_view(), name="new-match"
-    ),
+    path("season/<int:season>/new-match", views.NewMatchView.as_view(), name="new-match"),
     path(
         "season/<int:season>/new-match/as-player/<int:player>",
         views.NewPlayerMatchView.as_view(),

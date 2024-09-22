@@ -53,8 +53,7 @@ def browse_to_seasons_list(
 def click_add_match(authbrowser):
     matches = authbrowser.find_elements(By.CSS_SELECTOR, ".match.row")
     assert ("Kento", "Victor") not in [
-        (p.text for p in m.find_elements(By.CSS_SELECTOR, ".match-player"))
-        for m in matches
+        (p.text for p in m.find_elements(By.CSS_SELECTOR, ".match-player")) for m in matches
     ]
     authbrowser.find_element(By.ID, "button-new-match").click()
 
@@ -69,9 +68,7 @@ def enter_valid_match_data(authbrowser):
     authbrowser.find_element(By.CSS_SELECTOR, ".select2-search__field").send_keys(
         "Vic" + Keys.RETURN
     )
-    select.Select(
-        authbrowser.find_element(By.NAME, "match_type")
-    ).select_by_visible_text("Sets")
+    select.Select(authbrowser.find_element(By.NAME, "match_type")).select_by_visible_text("Sets")
     date_input = authbrowser.find_element(By.NAME, "date_played")
     date_input.clear()
     date_input.send_keys("1.3.2020")
@@ -92,9 +89,7 @@ def enter_valid_timed_match_data(authbrowser):
     authbrowser.find_element(By.CSS_SELECTOR, ".select2-search__field").send_keys(
         "Ken" + Keys.RETURN
     )
-    select.Select(
-        authbrowser.find_element(By.NAME, "match_type")
-    ).select_by_visible_text("Time")
+    select.Select(authbrowser.find_element(By.NAME, "match_type")).select_by_visible_text("Time")
     authbrowser.find_element(By.NAME, "minutes_played").send_keys("10")
     date_input = authbrowser.find_element(By.NAME, "date_played")
     date_input.clear()
@@ -106,9 +101,7 @@ def enter_valid_timed_match_data(authbrowser):
 
 @when("I click cancel")
 def cancel_new_match(authbrowser):
-    [e for e in authbrowser.find_elements(By.CLASS_NAME, "btn") if e.text == "Cancel"][
-        0
-    ].click()
+    [e for e in authbrowser.find_elements(By.CLASS_NAME, "btn") if e.text == "Cancel"][0].click()
 
 
 @then("The new match should be in the list")

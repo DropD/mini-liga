@@ -20,9 +20,7 @@ class MatchBuilder:
     completed = True
     first_player: Optional[models.Player] = None
     second_player: Optional[models.Player] = None
-    match_type: Union[Type[models.MultiSetMatch], Type[models.TimedMatch]] = (
-        models.MultiSetMatch
-    )
+    match_type: Union[Type[models.MultiSetMatch], Type[models.TimedMatch]] = models.MultiSetMatch
     minutes_played: Optional[int] = None
     scores: list[models.Set] = field(default_factory=list)
 
@@ -166,8 +164,6 @@ class MatchBuilder:
             self.first_player.ranks.get(season=self.season).rank,
             self.second_player.ranks.get(season=self.season).rank,
         ]
-        lower_ranked_player = (
-            self.first_player if ranks[0] > ranks[1] else self.second_player
-        )
+        lower_ranked_player = self.first_player if ranks[0] > ranks[1] else self.second_player
         if match.winner == lower_ranked_player:
             self.season.update_rank(lower_ranked_player, min(ranks))

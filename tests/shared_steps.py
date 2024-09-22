@@ -25,9 +25,7 @@ def logged_in_nonadmin(
 ):
     """Ensure logged in and on seasons list."""
     nonadmin_authbrowser.get(index_page)
-    assert (
-        nonadmin_authbrowser.find_element(By.TAG_NAME, "h2").text == "Running Seasons"
-    )
+    assert nonadmin_authbrowser.find_element(By.TAG_NAME, "h2").text == "Running Seasons"
 
 
 @given("I am logged in on the season detail view")
@@ -50,6 +48,12 @@ def am_season_admin():
 
 @given("Another season which I do not manage contains separate players")
 def other_season_exists():
+    """Guaranteed by tests fixtures."""
+    ...
+
+
+@given("Multiple seasons I manage contain my target player")
+def multiple_seasons_contain_player():
     """Guaranteed by tests fixtures."""
     ...
 
