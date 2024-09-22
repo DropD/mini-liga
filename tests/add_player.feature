@@ -28,3 +28,13 @@ Feature: Add Player
     And I click the player name input
 
     Then No players from the other season should be suggested
+
+  Scenario: Add an existing player who is in multiple accessible seasons
+    Given I am logged in on the season detail view
+    And Multiple seasons I manage contain my target player
+
+    When I click to add a player
+    And I enter the name of the target player and submit
+
+    Then I should be redirected to the season detail page
+    And the ranking should be updated with the added target player

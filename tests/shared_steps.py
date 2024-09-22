@@ -52,6 +52,12 @@ def other_season_exists():
     ...
 
 
+@given("Multiple seasons I manage contain my target player")
+def multiple_seasons_contain_player():
+    """Guaranteed by tests fixtures."""
+    ...
+
+
 @then("I should be redirected to the season detail page")
 def redirected_to_season(
     season_name,

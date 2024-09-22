@@ -40,9 +40,11 @@ class AddPlayerForm(forms.Form):
         """Exclude already added players from the queryset."""
         super().__init__(*args, **kwargs)
         self.season = season
-        self.fields["name"].queryset = Player.objects.filter(
-            season__in=user.season_admin_for.all()
-        ).exclude(season=season)
+        self.fields["name"].queryset = (
+            Player.objects.filter(season__in=user.season_admin_for.all())
+            .exclude(season=season)
+            .distinct()
+        )
         self.helper = self.get_helper()
 
     def get_helper(self) -> FormHelper:
