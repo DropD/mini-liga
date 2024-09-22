@@ -70,6 +70,10 @@
   pk: 9
   fields:
     name: Jenny
+- model: ligapp.player
+  pk: 10
+  fields:
+    name: Akane
 - model: ligapp.season
   pk: 1
   fields:
@@ -105,6 +109,24 @@
     - 9
     admins:
     - 2
+- model: ligapp.season
+  pk: 4
+  fields:
+    name: "Multi Season 1"
+    start_date: 2021-09-01 00:00:00+00:00
+    participants:
+    - 10
+    admins:
+    - 1
+- model: ligapp.season
+  pk: 5
+  fields:
+    name: "Multi Season 2"
+    start_date: 2021-09-01 00:00:00+00:00
+    participants:
+    - 10
+    admins:
+    - 1
 - model: ligapp.rank
   pk: 1
   fields:
@@ -153,6 +175,18 @@
     season: 3
     player: 9
     rank: 2
+- model: ligapp.rank
+  pk: 9
+  fields:
+    season: 4
+    player: 10
+    rank: 1
+- model: ligapp.rank
+  pk: 10
+  fields:
+    season: 5
+    player: 10
+    rank: 1
 - model: ligapp.rankinghistory
   pk: 1
   fields:

@@ -1,6 +1,6 @@
 line-length = 100
 indent-width = 4
-extend-exclude = ["ligapp/migrations/.*.py"]
+extend-exclude = ["ligapp/migrations/*.py"]
 
 [lint]
 select = ["F", "E", "W", "C90", "TD", "ERA", "B", "S", "DJ", ]
